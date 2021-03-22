@@ -4,13 +4,14 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Internal User Representation
  * This class composes the internal representation of the user and defines how the user is stored in the database.
  * Every variable will be mapped into a database field with the @Column annotation
  * - nullable = false -> this cannot be left empty
- * - unique = true -> this value must be unqiue across the database -> composes the primary key
+ * - unique = true -> this value must be unique across the database -> composes the primary key
  */
 @Entity
 @Table(name = "USER")
@@ -32,7 +33,8 @@ public class User implements Serializable {
     private String token;
 
     @Column(nullable = false)
-    private UserStatus status;
+    private String password;
+
 
     public Long getId() {
         return id;
@@ -58,6 +60,14 @@ public class User implements Serializable {
         this.username = username;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getToken() {
         return token;
     }
@@ -66,11 +76,4 @@ public class User implements Serializable {
         this.token = token;
     }
 
-    public UserStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(UserStatus status) {
-        this.status = status;
-    }
 }
