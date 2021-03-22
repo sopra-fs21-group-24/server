@@ -5,7 +5,6 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.exceptions.MissingInformationException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs21.service.AuthService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,8 +56,6 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
-    @MockBean
-    private AuthService authService;
 
 
 
@@ -71,7 +68,7 @@ public class UserControllerTest {
         User user = new User();
         user.setName("Jerome");
         user.setId(1L);
-        user.setLogged_in(UserStatus.ONLINE);
+
         user.setToken("1");
         user.setUsername("jeromehadorn");
         user.setPassword("password");
@@ -108,7 +105,6 @@ public class UserControllerTest {
         User user = new User();
         user.setName("Jerome");
         user.setId(1L);
-        user.setLogged_in(UserStatus.ONLINE);
         user.setToken("1");
         user.setUsername("jeromehadorn");
         user.setPassword("password");
@@ -141,7 +137,6 @@ public class UserControllerTest {
         User user = new User();
         user.setName("Jerome");
         user.setId(1L);
-        user.setLogged_in(UserStatus.ONLINE);
         user.setToken("1");
         user.setUsername("jeromehadorn");
         user.setPassword("password");
@@ -170,7 +165,6 @@ public class UserControllerTest {
         User user = new User();
         user.setName("Jerome");
         user.setId(1L);
-        user.setLogged_in(UserStatus.ONLINE);
         user.setToken("1");
         user.setUsername("jeromehadorn");
         user.setPassword("password");
@@ -198,7 +192,6 @@ public class UserControllerTest {
         User user = new User();
         user.setName("Jerome Updated");
         user.setId(1L);
-        user.setLogged_in(UserStatus.ONLINE);
         user.setToken("1");
         user.setUsername("jeromehadorn");
         user.setPassword("password");
@@ -228,7 +221,6 @@ public class UserControllerTest {
         User user = new User();
         user.setName("Jerome Updated");
         user.setId(1L);
-        user.setLogged_in(UserStatus.ONLINE);
         user.setToken("1");
         user.setUsername("jeromehadorn");
         user.setPassword("password");
