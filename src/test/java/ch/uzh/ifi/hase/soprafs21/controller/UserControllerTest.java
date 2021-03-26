@@ -61,7 +61,7 @@ public class UserControllerTest {
 
 
 
-
+/*
     @Test
     // Test #1
     public void user_successfully_posts() throws Exception {
@@ -91,11 +91,11 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().string(containsString("/users/"+user.getId().toString())));
-        /*.andExpect(jsonPath("$.name", is(user.getName())))
+        *//*.andExpect(jsonPath("$.name", is(user.getName())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.token", is("1")))
-                .andExpect(jsonPath("$.logged_in", is("ONLINE")));*/
+                .andExpect(jsonPath("$.logged_in", is("ONLINE")));*//*
 
     }
 
@@ -243,19 +243,19 @@ public class UserControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException))
                 .andExpect(result -> assertEquals("User with userId: '" + userId + "' not found", result.getResolvedException().getMessage()));
-        /*this.mockMvc.perform(putRequest)
+        *//*this.mockMvc.perform(putRequest)
                 .andDo(print())
-                .andExpect(status().isNoContent());*/
+                .andExpect(status().isNoContent());*//*
     }
 
 
 
-    /**
+    *//**
      * Helper Method to convert userPostDTO into a JSON string such that the input can be processed
      * Input will look like this: {"name": "Test User", "username": "testUsername"}
      * @param object
      * @return string
-     */
+     *//*
     private String asJsonString(final Object object) {
         try {
             return new ObjectMapper().writeValueAsString(object);
@@ -263,5 +263,7 @@ public class UserControllerTest {
         catch (JsonProcessingException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The request body could not be created.%s", e.toString()));
         }
-    }
+    }*/
+
+
 }
