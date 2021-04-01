@@ -40,7 +40,6 @@ public class UserService {
     }
 
     public User login(User unauthorizedUser){
-        //TODO: set online status
         User foundUser = userRepository.findByUsername(unauthorizedUser.getUsername());
         if (foundUser == null){
             throw new NotFoundException("user with userId: '" + unauthorizedUser.getUsername() + "' was not found!");
@@ -80,10 +79,6 @@ public class UserService {
 
     public List<User> getUsers() {
         return this.userRepository.findAll();
-    }
-
-    public String greet() {
-        return "Hello, World";
     }
 
     public User createUser(User newUser) {
@@ -127,7 +122,6 @@ public class UserService {
         if (user.getUsername() != null){
             userToBeUpdated.setUsername(user.getUsername());
         }
-
 
         User newUser = userRepository.save(userToBeUpdated);
         userRepository.flush();

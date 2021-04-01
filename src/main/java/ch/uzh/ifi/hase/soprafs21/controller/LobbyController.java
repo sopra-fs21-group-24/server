@@ -2,9 +2,6 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
-
-
 /**
  * User Controller
  * This class is responsible for handling all REST request that are related to the user.
@@ -12,11 +9,12 @@ import ch.uzh.ifi.hase.soprafs21.service.UserService;
  */
 @RestController
 public class LobbyController {
+/*
+    private final LobbyService lobbyService;
 
-    private final UserService userService;
-
-    LobbyController(UserService userService) {
-        this.userService = userService;
-    }
+    LobbyController(LobbyService lobbyService) {
+        this.lobbyService = lobbyService;
+    }*/
+    
 
 }

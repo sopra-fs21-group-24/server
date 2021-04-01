@@ -2,8 +2,6 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
-
 
 /**
  * User Controller
@@ -13,10 +11,10 @@ import ch.uzh.ifi.hase.soprafs21.service.UserService;
 @RestController
 public class GameController {
 
-    private final UserService userService;
+   // private final GameService gameService;
 
-    GameController(UserService userService) {
-        this.userService = userService;
-    }
+    /*GameController(GameService gameService) {
+        this.gameService = gameService;
+    }*/
 
 }

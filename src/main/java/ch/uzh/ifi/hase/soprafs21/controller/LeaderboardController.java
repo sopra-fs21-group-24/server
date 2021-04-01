@@ -1,8 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 import org.springframework.web.bind.annotation.RestController;
 
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
-
 /**
  * User Controller
  * This class is responsible for handling all REST request that are related to the user.
@@ -11,10 +9,10 @@ import ch.uzh.ifi.hase.soprafs21.service.UserService;
 @RestController
 public class LeaderboardController {
 
-    private final UserService userService;
+   /* private final LeaderboardService leaderboardService;
 
-    LeaderboardController(UserService userService) {
-        this.userService = userService;
+    LeaderboardController(LeaderboardService leaderboardService) {
+        this.leaderboardService = leaderboardService;
     }
-
+*/
 }
