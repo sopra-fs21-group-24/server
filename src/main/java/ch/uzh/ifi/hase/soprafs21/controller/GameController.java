@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,10 +23,10 @@ import java.util.List;
 @RestController
 public class GameController {
 
-    private final UserService userService;
+   // private final GameService gameService;
 
-    GameController(UserService userService) {
-        this.userService = userService;
-    }
+    /*GameController(GameService gameService) {
+        this.gameService = gameService;
+    }*/
 
 }

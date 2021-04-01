@@ -1,18 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
+import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
+import ch.uzh.ifi.hase.soprafs21.service.UserService;
+
+import org.springframework.web.bind.annotation.*;
+
 
 /**
  * User Controller
@@ -21,11 +14,12 @@ import java.util.List;
  */
 @RestController
 public class LobbyController {
+/*
+    private final LobbyService lobbyService;
 
-    private final UserService userService;
-
-    LobbyController(UserService userService) {
-        this.userService = userService;
-    }
+    LobbyController(LobbyService lobbyService) {
+        this.lobbyService = lobbyService;
+    }*/
+    
 
 }
