@@ -40,5 +40,6 @@ hs_err_pid*
 local.properties
 
 .context.json
+.vscode/*
 .vscode/launch.json
 bin/main/application.properties

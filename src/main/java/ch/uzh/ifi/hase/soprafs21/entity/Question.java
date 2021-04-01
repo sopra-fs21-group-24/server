@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
-import java.net.URL;
-
 public class Question {
 
     public int questionId;
