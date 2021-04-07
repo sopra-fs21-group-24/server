@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
 import ch.uzh.ifi.hase.soprafs21.entity.patterns.SubjetObserver;
 
 public class Game implements SubjetObserver{
@@ -46,7 +45,7 @@ public class Game implements SubjetObserver{
     // Observer Methods
     @Override
     public void registerObserver(Observer observer) {
-        observers.add(observer);
+        this.observers.add(observer);
     }
 
     @Override
@@ -56,7 +55,7 @@ public class Game implements SubjetObserver{
 
     @Override
     public void notifyObservers() {
-        Iterator<Observer> it = observer.Iterator();
+        Iterator<Observer> it = this.observers.Iterator();
         Observer observer;
 
         while(it.hasNext()){
@@ -88,13 +87,4 @@ public class Game implements SubjetObserver{
         // notifyOverver()
         return new Score();
     }
-    
-    
-    
-
-
-    
-
 }
-
-
