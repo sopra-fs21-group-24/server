@@ -1,7 +1,4 @@
-package ch.uzh.ifi.hase.soprafs21.entity.GameModes;
-
-import ch.uzh.ifi.hase.soprafs21.entity.GameMode;
-
+package ch.uzh.ifi.hase.soprafs21.entity.gamemodes;
 public class Pixelation extends GameMode {
     public Pixelation(String name, int duration){
         this.GameDuration = duration;

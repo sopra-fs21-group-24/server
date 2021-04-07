@@ -1,6 +1,4 @@
-package ch.uzh.ifi.hase.soprafs21.entity.UserModes;
-
-import ch.uzh.ifi.hase.soprafs21.entity.UserMode;
+package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
 public class Multiplayer extends UserMode {
     public Multiplayer(){

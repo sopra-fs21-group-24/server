@@ -1,8 +1,4 @@
-package ch.uzh.ifi.hase.soprafs21.entity;
-
-
-
-
+package ch.uzh.ifi.hase.soprafs21.entity.gamemodes;
 public abstract class GameMode {
 
     public int gameModeId;

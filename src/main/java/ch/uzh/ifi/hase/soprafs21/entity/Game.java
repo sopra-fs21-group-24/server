@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
+import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
 import ch.uzh.ifi.hase.soprafs21.entity.patterns.SubjetObserver;
+import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
 
 public class Game implements SubjetObserver{
     private final String gameId;
@@ -55,7 +58,7 @@ public class Game implements SubjetObserver{
 
     @Override
     public void notifyObservers() {
-        Iterator<Observer> it = this.observers.Iterator();
+        Iterator<Observer> it = this.observers.iterator();
         Observer observer;
 
         while(it.hasNext()){

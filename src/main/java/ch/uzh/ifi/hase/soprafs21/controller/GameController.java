@@ -28,6 +28,7 @@ public class GameController {
         this.gameService = gameService;
     }
 
+    // eventuell öndern auf lobbies
     @GetMapping("/games")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
