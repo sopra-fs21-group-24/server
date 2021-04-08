@@ -1,43 +1,66 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
-import java.util.Arrays;
-import java.lang.reflect.Array;
-import java.util.HashMap;
-
 import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
-import org.yaml.snakeyaml.util.ArrayUtils;
+import javassist.runtime.Desc;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+
 
 @Entity
 @Table(name = "Leaderboard")
-public class Leaderboard implements Observer{
-    
-
+public class Leaderboard implements Observer {
     @Id
-    @GeneratedValue
-    private Long id; //same as gamemodeid?
+    @Column(nullable = false, unique = true)
+    private long userId;
 
-    @Transient
-    private HashMap<Integer,Score[]> scores;
+    @Column(nullable = false, unique = true)
+    private String userName;
 
-    public void addScoreEntry(Score newScore){
-        Score[] s =  this.scores.get(newScore.gameModeId);
-        s= Arrays.copyOf(s, s.length + 1);
-        s[s.length - 1] = newScore;
-       //this.scores.put(newScore.gameModeId, ArrayUtils.add(scores.get(newScore.gameModeId),newScore));
+    @Column(nullable = false)
+    private int gameModeId;
+
+    @Column(nullable = false)
+    @OrderBy
+    private int score;
+
+
+    public String getUserName() {
+        return userName;
     }
 
-    public Score[] getScoresForGameMode(int gameModeId){
-        return this.scores.get(gameModeId);
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public int getGameModeId() {
+        return gameModeId;
+    }
+
+    public void setGameModeId(int gameModeId) {
+        this.gameModeId = gameModeId;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+
+    public long getUserId() {
+        return userId;
     }
 
     @Override
     public void update() {
-        // TODO Auto-generated method stub
+
     }
-
-    public void setId(Long id) {this.id = id;}
-
-    public Long getId() {return id;   }
 }
-

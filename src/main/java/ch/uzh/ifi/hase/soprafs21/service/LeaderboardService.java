@@ -1,11 +1,15 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.Game;
+import ch.uzh.ifi.hase.soprafs21.entity.GameMode;
+import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.exceptions.MissingInformationException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PerformingUnauthenticatedAction;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UserAlreadyExistsException;
+import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +34,17 @@ import java.util.UUID;
 @Transactional
 public class LeaderboardService {
 
-    private final Logger log = LoggerFactory.getLogger(UserService.class);
+    private final Logger log = LoggerFactory.getLogger(LeaderboardService.class);
 
-    private final UserRepository userRepository;
+    private final LeaderboardRepository leaderboardRepository;
 
     @Autowired
-    public LeaderboardService(@Qualifier("userRepository") UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public LeaderboardService(@Qualifier("leaderboardRepository") LeaderboardRepository leaderboardRepository) {
+        this.leaderboardRepository = leaderboardRepository;
+    }
+    public Leaderboard getScoresForGameMode(int gameModeId){
+        return leaderboardRepository.findBygameModeId(gameModeId);
+
     }
 
 }
