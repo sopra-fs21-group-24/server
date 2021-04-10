@@ -9,8 +9,8 @@ public class LobbyPostDTO {
 
 
     private Long id;
-    private String creater;
-    private List<User> users;
+    private String creator;
+  //  private List<User> users;
 
     public Long getId() {
         return id;
@@ -20,21 +20,17 @@ public class LobbyPostDTO {
         this.id = id;
     }
 
-    public String getCreater() {
-        return creater;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setCreater(String creater) {
-        this.creater = creater;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
-    public List<User> getUsers() {
-        return users;
-    }
+  //  public List<User> getUsers() {return users;    }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
+//    public void setUsers(List<User> users) {this.users = users;    }
 
 
 

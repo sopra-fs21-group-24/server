@@ -13,21 +13,21 @@ public class Lobby {
     private Long id;
 
     @Column(nullable = false)
-    private String creater;
+    private String creator;
 
 
-    @OneToMany(targetEntity= User.class)
+    @OneToMany(mappedBy="USER",targetEntity= User.class)
     @Column(nullable = false)
     private List<User> users;
 
 
 
-    public String getCreater() {
-        return creater;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setCreater(String creater) {
-        this.creater = creater;
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public List<User> getUsers() {

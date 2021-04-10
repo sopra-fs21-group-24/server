@@ -6,7 +6,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 
 public class LobbyGetDTO {
     private Long id;
-    private String creater;
+    private String creator;
     private List<User> users;
 
     public Long getId() {
@@ -17,12 +17,12 @@ public class LobbyGetDTO {
         this.id = id;
     }
 
-    public String getCreater() {
-        return creater;
+    public String getCreator() {
+        return creator;
     }
 
-    public void setCreater(String creater) {
-        this.creater = creater;
+    public void setCreator(String creater) {
+        this.creator = creator;
     }
 
     public List<User> getUsers() {
