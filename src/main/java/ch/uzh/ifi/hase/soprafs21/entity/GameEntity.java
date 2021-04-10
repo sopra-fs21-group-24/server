@@ -25,15 +25,15 @@ import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
  * - unique = true -> this value must be unique across the database -> composes the primary key
  */
 @Entity
-@Table(name = "USER")
+@Table(name = "GAMEENTITY")
 public class GameEntity implements Serializable {
     
     
     // Observer pattern fields
-    final List<Observer> observers;
+  //  final List<Observer> observers;
 
     // brauchen wir das?
-    private Map<String, Integer> userScores;
+  //  private Map<String, Integer> userScores;
 
     private static final long serialVersionUID = 1L;
 
@@ -41,33 +41,33 @@ public class GameEntity implements Serializable {
     @GeneratedValue
     private Long gameId;
 
-    @Column(nullable = false)
-    private final String roomKey;
+   // @Column(nullable = false)
+  //  private final String roomKey;
 
-    @Column(nullable = false)
+ //   @Column(nullable = false)
     private GameStatus status;
 
     @Column(nullable = false)
     @OneToMany
     private List<Question> questions = new ArrayList<>();
 
-    @Column(nullable = false)
-    private final UserMode userMode;
+  //  @Column(nullable = false)
+   // private final UserMode userMode;
 
-    @Column(nullable = false)
-    private final GameMode gameMode;
+    //@Column(nullable = false)
+    //private final GameMode gameMode;
 
-    public List<Observer> getObservers() {
-        return observers;
-    }
+    //public List<Observer> getObservers() {
+    //    return observers;
+  //  }
 
-    public GameMode getGameMode() {
-        return gameMode;
-    }
+    //   public GameMode getGameMode() {
+    //       return gameMode;
+    //   }
 
-    public UserMode getUserMode() {
-        return userMode;
-    }
+    //    public UserMode getUserMode() {
+    //        return userMode;
+    //    }
 
 
     public GameStatus getStatus() {
@@ -82,21 +82,21 @@ public class GameEntity implements Serializable {
         return gameId;
     }
 
-    public Map<String, Integer> getUserScores() {
-        return userScores;
-    }
+    //    public Map<String, Integer> getUserScores() {
+    //       return userScores;
+    //   }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
 
-    public String getRoomKey() {
-        return roomKey;
-    }
+    //   public String getRoomKey() {
+    //       return roomKey;
+    //   }
 
-    public void setUserScores(HashMap<String, Integer> userScores) {
-        this.userScores = userScores;
-    }
+    //  public void setUserScores(HashMap<String, Integer> userScores) {
+    //       this.userScores = userScores;
+    //   }
 
     public void setGameId(Long gameId) {
         this.gameId = gameId;
