@@ -1,14 +1,17 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
-
-import javax.persistence.Column;
-import javax.persistence.OrderBy;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 
 /**
  * DTOMapper
@@ -41,7 +44,7 @@ public interface DTOMapper {
     @Mapping(source = "creater", target = "creater")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
 
-    @Mapping(source = "userId", target = "id")
+    @Mapping(source = "userId", target = "userId")
     @Mapping(source = "userName", target = "userName")
     @Mapping(source = "score", target = "score")
     @Mapping(source = "gameModeId", target = "gameModeId")

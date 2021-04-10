@@ -1,9 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
-
-import java.util.Date;
-
 // Contains no Secret Information
 
 public class UserGetDTO {
@@ -11,10 +7,10 @@ public class UserGetDTO {
     private Long id;
     private String name;
     private String username;
-    private UserStatus logged_in;
-    private String token;
+/*    private UserStatus logged_in;
+     private String token;
     private Date createdDate;
-    private String birthdate;
+    private String birthdate; */
 
 
     public Long getId() {
@@ -41,7 +37,7 @@ public class UserGetDTO {
         this.username = username;
     }
 
-    public UserStatus getLogged_in() {
+/*     public UserStatus getLogged_in() {
         return logged_in;
     }
 
@@ -62,7 +58,7 @@ public class UserGetDTO {
 
     public void setBirthdate(String birthdate) {
         this.birthdate = birthdate;
-    }
+    } */
 
 
 }
