@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
+import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
 
 /**
@@ -25,7 +26,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
  */
 @Entity
 @Table(name = "USER")
-public class User implements Serializable {
+public class GameEntity implements Serializable {
     
     
     // Observer pattern fields
