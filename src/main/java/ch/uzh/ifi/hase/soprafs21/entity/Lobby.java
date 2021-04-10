@@ -11,12 +11,13 @@ public class Lobby {
     @Id
     @GeneratedValue
     private Long id;
+
     @Column(nullable = false)
     private String creater;
 
+
+    @OneToMany(targetEntity= User.class)
     @Column(nullable = false)
-    @OneToMany
-    // Will this work?
     private List<User> users;
 
 
@@ -42,7 +43,7 @@ public class Lobby {
         this.id = id;
     }
 
-    @Id
+
     public Long getId() {
         return id;
     }
