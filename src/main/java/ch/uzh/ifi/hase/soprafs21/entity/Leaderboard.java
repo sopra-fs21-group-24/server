@@ -11,7 +11,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 public class Leaderboard implements Observer {
     @Id
     @Column(nullable = false, unique = true)
-    private long userId;
+    private long id;
 
     @Column(nullable = false, unique = true)
     private String userName;
@@ -50,13 +50,13 @@ public class Leaderboard implements Observer {
 
 
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setId(long id) {
+        this.id = id;
     }
 
 
-    public long getUserId() {
-        return userId;
+    public long getId() {
+        return id;
     }
 
     @Override

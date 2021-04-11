@@ -45,9 +45,9 @@ public interface DTOMapper {
     @Mapping(source = "creator", target = "creator")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
 
-    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "userName", target = "userName")
-    @Mapping(source = "score", target = "score")
     @Mapping(source = "gameModeId", target = "gameModeId")
+    @Mapping(source = "score", target = "score")
     LeaderboardGetDTO convertEntityToLeaderboardGetDTO(Leaderboard leaderboard);
 }

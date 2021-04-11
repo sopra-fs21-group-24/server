@@ -54,9 +54,9 @@ public class LobbyController {
     @PostMapping("/lobby/{Lobbyid}/{Userid}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<String> joinLobby(@PathVariable long lobbyid,@PathVariable long userid) {
-        Lobby lobbyToJoin = lobbyService.getLobbyWithId(lobbyid);
-        lobbyService.addUserToExistingLobby(userService.getUserByUserId(userid),lobbyToJoin);
+    public ResponseEntity<String> joinLobby(@PathVariable long Lobbyid,@PathVariable long Userid) {
+        Lobby lobbyToJoin = lobbyService.getLobbyWithId(Lobbyid);
+        lobbyService.addUserToExistingLobby(userService.getUserByUserId(Userid),lobbyToJoin);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

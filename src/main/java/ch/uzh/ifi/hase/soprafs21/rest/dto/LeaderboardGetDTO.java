@@ -4,17 +4,17 @@ package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
 public class LeaderboardGetDTO {
 
-    private long userId;
+    private long id;
     private String userName;
     private int gameModeId;
     private int score;
 
-    public long getUserId() {
-        return userId;
+    public long getId() {
+        return id;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getUserName() {

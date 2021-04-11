@@ -16,7 +16,7 @@ public class Lobby {
     private String creator;
 
 
-    @OneToMany(mappedBy="USER",targetEntity= User.class)
+    @OneToMany()
     @Column(nullable = false)
     private List<User> users;
 
