@@ -2,9 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,10 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
-import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
-import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
 
 /**
  * Internal User Representation
@@ -106,7 +100,7 @@ public class GameEntity implements Serializable {
         this.status = status;
     }
 
-    public void setQuestions(ArrayList<Question> questions) {
+    public void setQuestions(List<Question> questions) {
         this.questions = questions;
     }
 }

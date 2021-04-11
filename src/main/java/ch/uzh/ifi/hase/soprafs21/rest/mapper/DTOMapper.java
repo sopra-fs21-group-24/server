@@ -26,15 +26,17 @@ public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
+    // evt Login dto erstellen damit ein token returned wird
+
     @Mapping(source = "name", target = "name")
     @Mapping(source = "username", target = "username")
-    //@Mapping(source = "id", target = "id")
-    //@Mapping(source = "token", target = "token")
+    @Mapping(source = "password", target = "password")
     User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "username", target = "username")
+    @Mapping(source = "token", target = "token")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
     @Mapping(source = "id", target = "id")

@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+
 public class UserPostDTO {
 
     private String name;
@@ -8,18 +10,18 @@ public class UserPostDTO {
 
     private String password;
 
-//    private String token;
+    private String token;
 
-    // private UserStatus logged_in;
+    private UserStatus logged_in;
 
-/*     public UserStatus getLogged_in() {
+    public UserStatus getLogged_in() {
         return this.logged_in;
-    } */
+    }
 
-/*     public void setLogged_in(UserStatus logged_in) {
+    public void setUserStatus(UserStatus logged_in) {
         this.logged_in = logged_in;
     }
- */
+
     public String getName() {
         return name;
     }
@@ -40,8 +42,8 @@ public class UserPostDTO {
 
     public void setPassword(String password){this.password = password; }
 
-//      public String getToken(){return token;}
+    public String getToken(){return token;}
 
-/*     public void setToken(String token){this.token = token; } */
+    public void setToken(String token){this.token = token; } 
 
 }

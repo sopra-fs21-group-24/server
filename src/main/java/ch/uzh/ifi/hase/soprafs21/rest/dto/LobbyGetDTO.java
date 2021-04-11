@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 import java.util.List;
+
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 
 
@@ -21,7 +22,7 @@ public class LobbyGetDTO {
         return creator;
     }
 
-    public void setCreator(String creater) {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 

@@ -7,8 +7,8 @@ public class UserGetDTO {
     private Long id;
     private String name;
     private String username;
+    private String token;
 /*    private UserStatus logged_in;
-     private String token;
     private Date createdDate;
     private String birthdate; */
 
@@ -37,6 +37,14 @@ public class UserGetDTO {
         this.username = username;
     }
 
+    public String getToken(){
+        return token;
+    }
+
+    public void setToken(String token){
+        this.token = token; 
+    }
+
 /*     public UserStatus getLogged_in() {
         return logged_in;
     }
@@ -44,10 +52,6 @@ public class UserGetDTO {
     public void setLogged_in(UserStatus logged_in) {
         this.logged_in = logged_in;
     }
-
-    public String getToken(){return token;}
-
-    public void setToken(String token){this.token = token; }
 
     public Date getCreatedDate(){return createdDate;}
 

@@ -44,30 +44,25 @@ public class UserService {
 
         // Ensure Password Match
         if (foundUser.getPassword().equals(unauthorizedUser.getPassword())){
-            User newUser = userRepository.save(foundUser);
-            return newUser;
+            foundUser.setToken(UUID.randomUUID().toString());
+            return userRepository.save(foundUser);
         } else {
-            // Not great from a security stand point
-            //throw new UserAlreadyExistsException();
             throw new PerformingUnauthenticatedAction("Invalid Password Username Combination!" + foundUser.getPassword());
         }
     }
 
 
     public User logOut(User unauthorizedUser) {
-
         User foundUser = userRepository.findByUsername(unauthorizedUser.getUsername());
-        if (unauthorizedUser.getToken().equals(foundUser.getToken())){
-            User newUser = userRepository.save(foundUser);
-            return newUser;
+        if (foundUser != null && foundUser.getToken() != null && unauthorizedUser.getToken().equals(foundUser.getToken())){
+            return userRepository.save(foundUser);
         } else {
             throw new PerformingUnauthenticatedAction("No/Wrong Token was provided to authenticate logout procedure!");
         }
     }
 
     public User getUserByUserId(Long userId){
-        Optional<User> found = null;
-        found = this.userRepository.findById(userId);
+        Optional<User> found = this.userRepository.findById(userId);
         if (!found.isPresent()) {
           throw new NotFoundException("User with userId: '" + userId + "' not found");
       }
@@ -141,15 +136,12 @@ public class UserService {
         String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
         if (userByUsername != null && userByName != null) {
             throw new UserAlreadyExistsException(String.format(baseErrorMessage, "username and the name", "are"));
-            //throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username and the name", "are"));
         }
         else if (userByUsername != null) {
             throw new UserAlreadyExistsException(String.format(baseErrorMessage, "username", "is"));
-            //throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
         }
         else if (userByName != null) {
             throw new UserAlreadyExistsException(String.format(baseErrorMessage, "name", "is"));
-            //throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
         }
     }
 }
