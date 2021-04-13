@@ -9,6 +9,7 @@ public class LobbyGetDTO {
     private Long id;
     private String creator;
     private List<User> users;
+    private Boolean isPublic;
 
     public Long getId() {
         return id;
@@ -32,5 +33,13 @@ public class LobbyGetDTO {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
     }
 }

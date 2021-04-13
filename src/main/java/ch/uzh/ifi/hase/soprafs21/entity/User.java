@@ -37,6 +37,8 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String password;
 
+    //List with already answered questions
+
 
     public Long getId() {
         return id;

@@ -36,7 +36,7 @@ public class LobbyController {
 
     @GetMapping("/lobby/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Lobby getLeaderboardByGameMode(@PathVariable("id") Long lobbyid){
+    public Lobby getLeobbyWithId(@PathVariable("id") Long lobbyid){
 
         return lobbyService.getLobbyWithId(lobbyid);
 

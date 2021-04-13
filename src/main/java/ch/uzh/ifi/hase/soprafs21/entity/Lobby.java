@@ -15,10 +15,12 @@ public class Lobby {
     @Column(nullable = false)
     private String creator;
 
-
     @OneToMany()
     @Column(nullable = false)
     private List<User> users;
+
+    @Column(nullable = false)
+    private Boolean isPublic;
 
 
 
@@ -46,5 +48,14 @@ public class Lobby {
 
     public Long getId() {
         return id;
+    }
+
+
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
     }
 }

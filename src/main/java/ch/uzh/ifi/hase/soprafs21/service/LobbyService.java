@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,7 +33,8 @@ public class LobbyService {
     public Lobby createLobby(Lobby newlobby){
 
         newlobby = lobbyRepository.save(newlobby);
-        List<User> users = newlobby.getUsers();
+        lobbyRepository.flush();
+        List<User> users = new ArrayList<User>();
         User creator = userRepository.findByUsername(newlobby.getCreator());
         users.add(creator);
         newlobby.setUsers(users);
@@ -41,6 +44,7 @@ public class LobbyService {
         return newlobby;
 
     }
+
     public Lobby getLobbyWithId(Long lobbyid) {
         return lobbyRepository.findByid(lobbyid);
 
