@@ -1,33 +1,32 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-/**
- * Internal User Representation
- * This class composes the internal representation of the user and defines how the user is stored in the database.
- * Every variable will be mapped into a database field with the @Column annotation
- * - nullable = false -> this cannot be left empty
- * - unique = true -> this value must be unique across the database -> composes the primary key
- */
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
+import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
+
+/* 
+TODO:
+- user and game mode enum?
+- random roomkey
+- get OneToMany to work
+- makeguess()
+- Round int
+*/
+
 @Entity
 @Table(name = "GAMEENTITY")
 public class GameEntity implements Serializable {
-    
-    
-    // Observer pattern fields
-  //  final List<Observer> observers;
-
-    // brauchen wir das?
-  //  private Map<String, Integer> userScores;
 
     private static final long serialVersionUID = 1L;
 
@@ -35,39 +34,55 @@ public class GameEntity implements Serializable {
     @GeneratedValue
     private Long gameId;
 
-   // @Column(nullable = false)
-  //  private final String roomKey;
+    @Column(nullable = false)
+    private final String roomKey;
 
- //   @Column(nullable = false)
+    @Column(nullable = false)
+    private int round = 0;
+
     private GameStatus status;
 
     @Column(nullable = false)
     @OneToMany
-    private List<Question> questions = new ArrayList<>();
+    private List<Question> questions;
 
-  //  @Column(nullable = false)
-   // private final UserMode userMode;
+    @Column(nullable = false)
+    private final UserMode userMode;
 
-    //@Column(nullable = false)
-    //private final GameMode gameMode;
+    @Column(nullable = false)
+    private final GameMode gameMode;
 
-    //public List<Observer> getObservers() {
-    //    return observers;
-  //  }
+    @Column
+    private long gameTime;
 
-    //   public GameMode getGameMode() {
-    //       return gameMode;
-    //   }
 
-    //    public UserMode getUserMode() {
-    //        return userMode;
-    //    }
+    public GameMode getGameMode() {
+        return gameMode;
+    }
 
+    public UserMode getUserMode() {
+        return userMode;
+    }
+
+    public void start() {
+        this.gameTime = System.currentTimeMillis();
+
+    }
+
+    public void setStatus(GameStatus status) {
+        this.status = status;
+    }
 
     public GameStatus getStatus() {
         return status;
     }
 
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
+
+    @ManyToOne
+    @JoinColumn(name="CUST_ID", nullable=false)
     public List<Question> getQuestions() {
         return questions;
     }
@@ -76,31 +91,16 @@ public class GameEntity implements Serializable {
         return gameId;
     }
 
-    //    public Map<String, Integer> getUserScores() {
-    //       return userScores;
-    //   }
+    public Map<String, Integer> getUserScores() {
+        return userScores;
+    }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
 
-    //   public String getRoomKey() {
-    //       return roomKey;
-    //   }
-
-    //  public void setUserScores(HashMap<String, Integer> userScores) {
-    //       this.userScores = userScores;
-    //   }
-
-    public void setGameId(Long gameId) {
-        this.gameId = gameId;
+    public String getRoomKey() {
+        return roomKey;
     }
 
-    public void setStatus(GameStatus status) {
-        this.status = status;
-    }
-
-    public void setQuestions(List<Question> questions) {
-        this.questions = questions;
-    }
 }
