@@ -22,6 +22,8 @@ TODO:
 - get OneToMany to work
 - makeguess()
 - Round int
+- userscores
+- creator id saven?
 */
 
 @Entity
@@ -34,8 +36,11 @@ public class GameEntity implements Serializable {
     @GeneratedValue
     private Long gameId;
 
-    @Column(nullable = false)
-    private final String roomKey;
+    @Column(nullable = false, unique = true)
+    private String roomKey;
+
+    @Column(nullable = false, unique = true)
+    private Long creatorUserId;
 
     @Column(nullable = false)
     private int round = 0;
@@ -47,10 +52,10 @@ public class GameEntity implements Serializable {
     private List<Question> questions;
 
     @Column(nullable = false)
-    private final UserMode userMode;
+    private UserMode userMode;
 
     @Column(nullable = false)
-    private final GameMode gameMode;
+    private GameMode gameMode;
 
     @Column
     private long gameTime;
@@ -66,6 +71,9 @@ public class GameEntity implements Serializable {
 
     public void start() {
         this.gameTime = System.currentTimeMillis();
+        this.round += 1;
+
+        // choose questions
 
     }
 
@@ -91,16 +99,28 @@ public class GameEntity implements Serializable {
         return gameId;
     }
 
-    public Map<String, Integer> getUserScores() {
-        return userScores;
-    }
-
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
 
+    public void setRoomKey(String roomKey) {
+        this.roomKey = roomKey;
+    }
+
     public String getRoomKey() {
         return roomKey;
+    }
+
+    public void setGameMode(GameMode gameMode){
+        this.gameMode = gameMode;
+    }
+
+    public void setUserMode(UserMode userMode){
+        this.userMode = userMode;
+    }
+
+    public void setCreatorUserId(Long creatorUserId) {
+        this.creatorUserId = creatorUserId;
     }
 
 }
