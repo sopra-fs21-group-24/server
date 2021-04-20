@@ -12,14 +12,14 @@ public class UserPostDTO {
 
     private String token;
 
-    private UserStatus logged_in;
+    private UserStatus status;
 
-    public UserStatus getLogged_in() {
-        return this.logged_in;
+    public UserStatus getUserStatus() {
+        return this.status;
     }
 
-    public void setUserStatus(UserStatus logged_in) {
-        this.logged_in = logged_in;
+    public void setUserStatus(UserStatus status) {
+        this.status = status;
     }
 
     public String getName() {

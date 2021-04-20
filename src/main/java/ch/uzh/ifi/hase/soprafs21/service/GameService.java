@@ -34,12 +34,24 @@ public class GameService {
         throw new UnsupportedOperationException();
     }
 
+<<<<<<< Updated upstream
     public Game createGame(){
         throw new UnsupportedOperationException();
     }
+=======
+    public void startGame(){
+    
+    }
+
+    public void makeGuess(){
+
+    }
+
+>>>>>>> Stashed changes
     public Game exitGame(){
         throw new UnsupportedOperationException();
     }
+
     public Question allQuestions(){
         throw new UnsupportedOperationException();
     }
