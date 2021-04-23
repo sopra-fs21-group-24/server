@@ -17,7 +17,7 @@ public class GameMode implements Serializable {
     @GeneratedValue
     private Long gModeId;
 
-    public int calculateScore(int time, int difficultyFactor) {
+    public int calculateScore(float lon, float lat, float difficultyFactor) {
         return 0;
     } 
 

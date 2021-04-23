@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -62,13 +63,13 @@ public class GameEntity implements Serializable {
     private GameMode gameMode;
 
     @Column
-    private long gameTime;
+    private Long gameTime;
 
     @Column(nullable = false)
-    private Set<Long> userIds = Collections.synchronizedSet(new HashSet<Long>() );
+    private Set<Long> userIds = Collections.synchronizedSet(new HashSet<Long>());
 
     @Column(nullable = false)
-    private HashMap<Long, Long> scores = new HashMap<>(); 
+    private Map<Long, Score> scores = Collections.synchronizedMap(new HashMap<Long, Score>());
 
 
     public GameMode getGameMode() {
@@ -149,11 +150,11 @@ public class GameEntity implements Serializable {
         this.userIds = userIds;
     }
 
-    public List<Long> getScoreIds() {
-        return scoreIds;
+    public Map<Long, Score> getScores() {
+        return scores;
     }
 
-    public void setScoreIds(List<Long> scoreIds) {
-        this.scoreIds = scoreIds;
+    public void setScores(Map<Long, Score> scores) {
+        this.scores = scores;
     }
 }

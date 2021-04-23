@@ -1,8 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
-import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "LOBBY")
@@ -13,7 +18,7 @@ public class Lobby {
     private Long id;
 
     @Column(nullable = false)
-    private String creator;
+    private Long creator;
 
     @OneToMany()
     @Column(nullable = false)
@@ -24,11 +29,11 @@ public class Lobby {
 
 
 
-    public String getCreator() {
+    public Long getCreator() {
         return creator;
     }
 
-    public void setCreator(String creator) {
+    public void setCreator(Long creator) {
         this.creator = creator;
     }
 

@@ -63,6 +63,6 @@ public class Leaderboard implements Observer {
 
     @Override
     public void update() {
-
+        throw new UnsupportedOperationException();
     }
 }

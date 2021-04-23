@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+
 @Entity
 @Table(name = "USERMODE")
 public class UserMode implements Serializable {
@@ -17,7 +19,11 @@ public class UserMode implements Serializable {
     @GeneratedValue
     private Long uModeId;
 
-    public void init(){
+    public void init(GameEntity game, boolean publicStatus){
+        throw new UnsupportedOperationException();
+    };
+
+    public void start(GameEntity game){
         throw new UnsupportedOperationException();
     };
 }

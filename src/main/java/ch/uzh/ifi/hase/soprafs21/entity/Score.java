@@ -1,4 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -8,7 +10,10 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Score")
-public class Score {
+public class Score implements Serializable{
+
+    private static final long serialVersionUID = 1L;
+
     @Id
     @Column(nullable = false, unique = true)
     private long userId;

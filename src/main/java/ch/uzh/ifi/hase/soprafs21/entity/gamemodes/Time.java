@@ -3,7 +3,7 @@ public class Time extends GameMode {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public int calculateScore(int time, int difficultyFactor) {
+    public int calculateScore(float lon, float lat, float difficultyFactor) {
         return 0;
     }
 }
