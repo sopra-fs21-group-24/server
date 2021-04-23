@@ -1,10 +1,17 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs21.entity.*;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+
+import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 
 /**
  * DTOMapper
@@ -44,7 +51,7 @@ public interface DTOMapper {
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "userName", target = "userName")
-    @Mapping(source = "gameModeId", target = "gameModeId")
+    @Mapping(source = "gameMode", target = "gameMode")
     @Mapping(source = "score", target = "score")
     LeaderboardGetDTO convertEntityToLeaderboardGetDTO(Leaderboard leaderboard);
 

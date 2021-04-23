@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
-import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
-import javassist.runtime.Desc;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
-import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
+import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
 
 
 @Entity
@@ -17,7 +19,7 @@ public class Leaderboard implements Observer {
     private String userName;
 
     @Column(nullable = false)
-    private int gameModeId;
+    private gameSetting gameMode;
 
     @Column(nullable = false)
     @OrderBy
@@ -32,12 +34,12 @@ public class Leaderboard implements Observer {
         this.userName = userName;
     }
 
-    public int getGameModeId() {
-        return gameModeId;
+    public gameSetting getGameMode() {
+        return gameMode;
     }
 
-    public void setGameModeId(int gameModeId) {
-        this.gameModeId = gameModeId;
+    public void setGameMode(gameSetting gameMode) {
+        this.gameMode = gameMode;
     }
 
     public int getScore() {

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
+import ch.uzh.ifi.hase.soprafs21.entity.gameSetting;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.LeaderboardService;
@@ -28,8 +28,8 @@ public class LeaderboardController {
     // Getting a leaderboard by Gamemode
     @GetMapping("/leaderboard/{GameMode}")
     @ResponseStatus(HttpStatus.OK)
-    public LeaderboardGetDTO getLeaderboardByGameMode(@PathVariable("GameMode") GameMode gameMode){
-        Leaderboard foundLeaderboard = leaderboardService.getScoresForGameMode(gameMode.gameModeId);
+    public LeaderboardGetDTO getLeaderboardByGameMode(@PathVariable("GameMode") gameSetting gameMode){
+        Leaderboard foundLeaderboard = leaderboardService.getScoresForGameMode(gameMode);
         return DTOMapper.INSTANCE.convertEntityToLeaderboardGetDTO(foundLeaderboard);
     }
 

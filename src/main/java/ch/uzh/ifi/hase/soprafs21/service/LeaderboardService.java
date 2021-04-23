@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
+import ch.uzh.ifi.hase.soprafs21.entity.gameSetting;
 import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 
 /**
@@ -27,8 +28,8 @@ public class LeaderboardService {
     public LeaderboardService(@Qualifier("leaderboardRepository") LeaderboardRepository leaderboardRepository) {
         this.leaderboardRepository = leaderboardRepository;
     }
-    public Leaderboard getScoresForGameMode(int gameModeId){
-        return leaderboardRepository.findBygameModeId(gameModeId);
+    public Leaderboard getScoresForGameMode(gameSetting gameMode){
+        return leaderboardRepository.findBygameMode(gameMode);
 
     }
 
