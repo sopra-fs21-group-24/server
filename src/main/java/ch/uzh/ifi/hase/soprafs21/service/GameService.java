@@ -6,7 +6,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+// import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.stereotype.Service;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Game;
@@ -46,7 +46,7 @@ public class GameService {
         GameMode gMode;
         // TODO
 
-        Optional<User> creator = userRepository.findById(userId);
+        Optional<ch.uzh.ifi.hase.soprafs21.entity.User> creator = userRepository.findById(userId);
         if (creator.isEmpty()){
            // throw Error 
         }
@@ -67,6 +67,8 @@ public class GameService {
             case TIME:
                 gMode = new Time();
                 break;
+            default:
+                gMode = new Time();
         }
 
         GameEntity game = new GameEntity();
