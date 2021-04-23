@@ -1,12 +1,25 @@
 package ch.uzh.ifi.hase.soprafs21.entity.gamemodes;
-public abstract class GameMode {
 
-    public int gameModeId;
-    public int difficultyFactor;
-    public String GameModeName;
+import java.io.Serializable;
 
-    public int GameDuration;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-    public abstract int calculateScore(int time, int difficultyFactor);
+@Entity
+@Table(name = "GAMEMODE")
+public class GameMode implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue
+    private Long gModeId;
+
+    public int calculateScore(int time, int difficultyFactor) {
+        return 0;
+    } 
+
 
 }
