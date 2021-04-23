@@ -1,12 +1,18 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
-import javax.persistence.*;
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 
 @Entity
 @Table(name = "Question")
-public class Question {
+public class Question implements Serializable{
 
-
+    private static final long serialVersionUID = 1L;
 
     @Column(nullable = false)
     public float zoomLevel;

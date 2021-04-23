@@ -1,7 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,6 +64,12 @@ public class GameEntity implements Serializable {
     @Column
     private long gameTime;
 
+    @Column(nullable = false)
+    private Set<Long> userIds = Collections.synchronizedSet(new HashSet<Long>() );
+
+    @Column(nullable = false)
+    private HashMap<Long, Long> scores = new HashMap<>(); 
+
 
     public GameMode getGameMode() {
         return gameMode;
@@ -69,12 +79,8 @@ public class GameEntity implements Serializable {
         return userMode;
     }
 
-    public void start() {
+    public void setCurrentTime() {
         this.gameTime = System.currentTimeMillis();
-        this.round += 1;
-
-        // choose questions
-
     }
 
     public void setStatus(GameStatus status) {
@@ -123,4 +129,31 @@ public class GameEntity implements Serializable {
         this.creatorUserId = creatorUserId;
     }
 
+    public int getRound() {
+        return round;
+    }
+
+    public void setRound(int round) {
+        this.round = round;
+    }
+
+    public Long getCreatorUserId() {
+        return creatorUserId;
+    }
+
+    public Set<Long> getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(Set<Long> userIds) {
+        this.userIds = userIds;
+    }
+
+    public List<Long> getScoreIds() {
+        return scoreIds;
+    }
+
+    public void setScoreIds(List<Long> scoreIds) {
+        this.scoreIds = scoreIds;
+    }
 }

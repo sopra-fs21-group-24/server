@@ -11,50 +11,57 @@ import javax.persistence.Table;
 public class Score {
     @Id
     @Column(nullable = false, unique = true)
-    public long userId;
-
-    @Column(nullable = false, unique = true)
-    public String userName;
+    private long userId;
 
     @Column(nullable = false)
-    public int gameModeId;
+    private int tempScore = 0;
 
     @Column(nullable = false)
-    public int score;
+    private int totalScore = 0;
 
+    @Column(nullable = true)
+    private float lastLat; 
 
-    public String getUserName() {
-        return userName;
+    @Column(nullable = true)
+    private float lastLong; 
+
+    public long getUserId() {
+        return userId;
     }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public int getGameModeId() {
-        return gameModeId;
-    }
-
-    public void setGameModeId(int gameModeId) {
-        this.gameModeId = gameModeId;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-
 
     public void setUserId(long userId) {
         this.userId = userId;
     }
 
+    public int getTempScore() {
+        return tempScore;
+    }
 
-    public long getUserId() {
-        return userId;
+    public void setTempScore(int score) {
+        this.tempScore = score;
+    }
+
+    public int getTotalScore(){
+        return totalScore;
+    }
+
+    public void setTotalScore(int totalScore){
+        this.totalScore = totalScore;
+    }
+
+    public float getLastLat() {
+        return lastLat;
+    }
+
+    public void setLastLat(float lastLat) {
+        this.lastLat = lastLat;
+    }
+
+    public float getLastLong() {
+        return lastLong;
+    }
+
+    public void setLastLong(float lastLong) {
+        this.lastLong = lastLong;
     }
 }

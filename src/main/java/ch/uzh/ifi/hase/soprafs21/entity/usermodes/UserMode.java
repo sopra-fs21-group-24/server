@@ -16,4 +16,8 @@ public class UserMode implements Serializable {
     @Id
     @GeneratedValue
     private Long uModeId;
+
+    public void init(){
+        throw new UnsupportedOperationException();
+    };
 }

@@ -6,12 +6,11 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-// import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.stereotype.Service;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Game;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gameSetting;
 import ch.uzh.ifi.hase.soprafs21.entity.userSetting;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Clouds;
@@ -21,6 +20,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.SinglePlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
@@ -46,7 +46,7 @@ public class GameService {
         GameMode gMode;
         // TODO
 
-        Optional<ch.uzh.ifi.hase.soprafs21.entity.User> creator = userRepository.findById(userId);
+        Optional<User> creator = userRepository.findById(userId);
         if (creator.isEmpty()){
            // throw Error 
         }
@@ -72,13 +72,50 @@ public class GameService {
         }
 
         GameEntity game = new GameEntity();
-        game.setGameMode(gMode);
+
+        uMode.init();
         game.setUserMode(uMode);
+
+        game.setGameMode(gMode);
         game.setCreatorUserId(userId);
         return game;
     }
 
-    public Game exitGame(){
+    public void startGame(Long userId, Long gameId){
+       Optional<GameEntity> found = gameRepository.findById(gameId);
+       if(!found.isPresent()){
+           throw new NotFoundException("Game Entity is not found");
+       } else {
+           GameEntity game = found.get();
+           if (userId.equals(game.getCreatorUserId())) {
+                throw new NotFoundException("User starting the game is not the game-creator");
+           }
+           game.setCurrentTime();
+           game.setRound(game.getRound() + 1);
+       }
+    }
+
+    public int makeGuess(Long userId, Long gameId, float lon, float lat, float difficultyFactor){
+       Optional<GameEntity> found = gameRepository.findById(gameId);
+       if(!found.isPresent()){
+           throw new NotFoundException("Game Entity is not found");
+       } else { 
+           GameEntity game = found.get();
+           // TODO
+           // - check if user under players
+           // - check if rounds do not exede
+        
+            GameMode gMode = game.getGameMode();
+            int tempScore = gMode.calculateScore(lon, lat, difficultyFactor);
+
+            // get score for player
+
+            return tempScore;
+       }
+
+    }
+
+    public int exitGame(){
         throw new UnsupportedOperationException();
     }
     public Question allQuestions(){
@@ -89,8 +126,5 @@ public class GameService {
         throw new UnsupportedOperationException();
     }
 
-    public Long makeGuess(){
-        throw new UnsupportedOperationException();
-    }
 
 }
