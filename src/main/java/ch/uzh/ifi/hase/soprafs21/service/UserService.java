@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import java.nio.file.NotDirectoryException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -61,9 +62,17 @@ public class UserService {
         }
     }
 
+    public User getUserByToken(String token){
+        Optional<User> found = this.userRepository.findByToken(token);
+        if (found.isEmpty()){
+            throw new NotFoundException("User with this token does not exist");
+        }
+        return found.get();
+    }
+
     public User getUserByUserId(Long userId){
         Optional<User> found = this.userRepository.findById(userId);
-        if (!found.isPresent()) {
+        if (found.isEmpty()) {
           throw new NotFoundException("User with userId: '" + userId + "' not found");
       }
         return found.orElseThrow();

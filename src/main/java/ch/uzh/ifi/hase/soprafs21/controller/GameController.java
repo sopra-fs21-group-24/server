@@ -1,13 +1,16 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +23,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
+import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
 
 /**
@@ -31,9 +35,11 @@ import ch.uzh.ifi.hase.soprafs21.service.GameService;
 public class GameController {
 
     private final GameService gameService;
+    private final UserService userService;
 
-    GameController(GameService gameService) {
+    GameController(GameService gameService, UserService userService) {
         this.gameService = gameService;
+        this.userService = userService;
     }
 
     // evtl implementieren fürs debugging
@@ -45,10 +51,21 @@ public class GameController {
     }
 
     @GetMapping("/games")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public GamePostDTOCreate createGame(@RequestBody GamePostDTOCreate gamePostDTOCreate) {
+    public ResponseEntity<GamePostDTOCreate> createGame(@RequestBody GamePostDTOCreate gamePostDTOCreate,
+    @RequestHeader Map<String, String> header) {
+
         GameEntity gameRaw = DTOMapper.INSTANCE.convertGamePostDTOCreateToGameEntity(gamePostDTOCreate);
+
+        String token = header.get("token");
+
+        try {
+            userService.getUserByToken(token);
+            return ResponseEntity.created().RequestBody(gamePostDTOCreate);
+        }
+        catch (NotFoundException e) {
+
+        }
+
 
         gameService.createGame(gameRaw);
         // catch errors and return other code

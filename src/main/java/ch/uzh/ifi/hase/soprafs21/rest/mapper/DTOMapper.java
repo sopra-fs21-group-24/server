@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.mapstruct.ReportingPolicy;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
@@ -24,7 +25,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
  * Additional mappers can be defined for new entities.
  * Always created one mapper for getting information (GET) and one mapper for creating information (POST).
  */
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
