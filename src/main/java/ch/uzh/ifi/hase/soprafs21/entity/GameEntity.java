@@ -2,18 +2,14 @@ package ch.uzh.ifi.hase.soprafs21.entity;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -54,7 +50,7 @@ public class GameEntity implements Serializable {
 
     @Column(nullable = false)
     @OneToMany
-    private List<Question> questions;
+    private List<Long> questions;
 
     @Column(nullable = false)
     private UserMode userMode;
@@ -67,10 +63,6 @@ public class GameEntity implements Serializable {
 
     @Column(nullable = false)
     private Set<Long> userIds = Collections.synchronizedSet(new HashSet<Long>());
-
-    @Column(nullable = false)
-    private Map<Long, Score> scores = Collections.synchronizedMap(new HashMap<Long, Score>());
-
 
     public GameMode getGameMode() {
         return gameMode;
@@ -92,13 +84,11 @@ public class GameEntity implements Serializable {
         return status;
     }
 
-    public void setQuestions(List<Question> questions) {
+    public void setQuestions(List<Long> questions) {
         this.questions = questions;
     }
 
-    @ManyToOne
-    @JoinColumn(name="CUST_ID", nullable=false)
-    public List<Question> getQuestions() {
+    public List<Long> getQuestions() {
         return questions;
     }
 
@@ -150,11 +140,4 @@ public class GameEntity implements Serializable {
         this.userIds = userIds;
     }
 
-    public Map<Long, Score> getScores() {
-        return scores;
-    }
-
-    public void setScores(Map<Long, Score> scores) {
-        this.scores = scores;
-    }
 }

@@ -19,16 +19,13 @@ public class Score implements Serializable{
     private long userId;
 
     @Column(nullable = false)
-    private int tempScore = 0;
+    private long tempScore = 0;
 
     @Column(nullable = false)
-    private int totalScore = 0;
+    private long totalScore = 0;
 
     @Column(nullable = true)
-    private float lastLat; 
-
-    @Column(nullable = true)
-    private float lastLong; 
+    private Coordinate lastCoordinate; 
 
     public long getUserId() {
         return userId;
@@ -38,35 +35,28 @@ public class Score implements Serializable{
         this.userId = userId;
     }
 
-    public int getTempScore() {
+    public long getTempScore() {
         return tempScore;
     }
 
-    public void setTempScore(int score) {
+    public void setTempScore(long score) {
         this.tempScore = score;
     }
 
-    public int getTotalScore(){
+    public long getTotalScore(){
         return totalScore;
     }
 
-    public void setTotalScore(int totalScore){
+    public void setTotalScore(long totalScore){
         this.totalScore = totalScore;
     }
 
-    public float getLastLat() {
-        return lastLat;
+    public Coordinate getLastCoordinate() {
+        return lastCoordinate;
     }
 
-    public void setLastLat(float lastLat) {
-        this.lastLat = lastLat;
+    public void setLastCoordinate(Coordinate lastCoordinate) {
+        this.lastCoordinate = lastCoordinate;
     }
 
-    public float getLastLong() {
-        return lastLong;
-    }
-
-    public void setLastLong(float lastLong) {
-        this.lastLong = lastLong;
-    }
 }

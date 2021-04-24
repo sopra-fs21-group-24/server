@@ -14,20 +14,22 @@ public class Question implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    @Column(nullable = false)
-    public float zoomLevel;
-    @Column(nullable = false)
-    public float lat;
-    @Column(nullable = false)
-    public float lng;
     @Id
     @GeneratedValue
     private Long questionId;
 
+    @Column(nullable = false)
+    public float zoomLevel;
 
-    public void setQuestionId(Long questionId) {
-        this.questionId = questionId;
-    }
+    @Column(nullable = false)
+    public float lat;
+
+    @Column(nullable = false)
+    public float lng;
+
+    @Column(nullable = false)
+    public Coordinate coordinate;
+
 
     @Id
     public Long getQuestionId() {
@@ -42,20 +44,12 @@ public class Question implements Serializable{
         this.zoomLevel = zoomLevel;
     }
 
-    public float getLat() {
-        return lat;
+    public Coordinate getCoordinate() {
+        return coordinate;
     }
 
-    public void setLat(float lat) {
-        this.lat = lat;
-    }
-
-    public float getLng() {
-        return lng;
-    }
-
-    public void setLng(float lng) {
-        this.lng = lng;
+    public void setCoordinate(Coordinate coordinate) {
+        this.coordinate = coordinate;
     }
 }
 
