@@ -67,7 +67,7 @@ public class UserController {
     }
 
     // Updating a User Profile by ID
-    @PutMapping("/users/{ID}")
+    @PutMapping("/users/{ID}")                              //Token as identificaion
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserGetDTO updateUser(@PathVariable("ID") long userId, @RequestBody UserPostDTO userPostDTO){
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
