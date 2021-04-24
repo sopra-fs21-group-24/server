@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 import org.aspectj.util.FileUtil;
@@ -34,9 +35,10 @@ public class QuestionService {
     public String getMapImage(int height, int width, Long questionId) throws MalformedURLException {
         Question questionn = new Question();
         questionId = 1L;
-        questionn.setLat((float) 40.730610);
+        questionn.setCoordinate(new Coordinate( -73.935242, 40.730610));
+
         questionn.setZoomLevel(15);
-        questionn.setLng((float) -73.935242);
+
         questionn.setQuestionId(1L);
         questionRepository.save(questionn);
         questionRepository.flush();
@@ -45,7 +47,7 @@ public class QuestionService {
 
         try {
             String apikey = "AIzaSyCbLudPiesxon89uVFg9qloApgl_8BXviY";
-            String url = "https://maps.googleapis.com/maps/api/staticmap?center="+question.getLat()+","+question.getLng()+"&zoom="+ question.getZoomLevel() +
+            String url = "https://maps.googleapis.com/maps/api/staticmap?center="+question.getCoordinate().getLat()+","+question.getCoordinate().getLon()+"&zoom="+ question.getZoomLevel() +
                     "&size="+ height +"x"+ width +"&scale=2&maptype=satellite&key="+apikey;
             System.out.println(url);
             URL mapUrl = new URL(url);
