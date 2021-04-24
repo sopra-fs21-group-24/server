@@ -19,10 +19,10 @@ public class Question implements Serializable{
     private Long questionId;
 
     @Column(nullable = false)
-    public float zoomLevel;
+    private int zoomLevel;
 
     @Column(nullable = false)
-    public Coordinate coordinate;
+    private Coordinate coordinate;
 
 
     public Long getQuestionId() {
@@ -33,11 +33,11 @@ public class Question implements Serializable{
         this.questionId = questionId;
     }
 
-    public float getZoomLevel() {
+    public int getZoomLevel() {
         return zoomLevel;
     }
 
-    public void setZoomLevel(float zoomLevel) {
+    public void setZoomLevel(int zoomLevel) {
         this.zoomLevel = zoomLevel;
     }
 
