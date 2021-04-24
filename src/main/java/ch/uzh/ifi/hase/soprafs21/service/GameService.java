@@ -40,8 +40,12 @@ public class GameService {
         this.questionRepository = questionRepository;
     }
 
-    public Optional<GameEntity> gameById(Long gameId) {
-        return gameRepository.findById(gameId);
+    public GameEntity gameById(Long gameId) {
+        Optional<GameEntity> found = gameRepository.findById(gameId);
+        if(found.isEmpty()){
+            throw new NotFoundException("Game with this gameId does not exist");
+        }
+        return found.get();
     }
 
     public GameEntity createGame(GameEntity gameRaw) {
@@ -146,15 +150,6 @@ public class GameService {
         throw new UnsupportedOperationException();
     }
 
-    public List<Long> allQuestions(Long gameId) {
-        Optional<GameEntity> found = gameRepository.findById(gameId);
-        if (found.isEmpty()) {
-            throw new NotFoundException("Game Entity is not found");
-        } else {
-            GameEntity game = found.get();
-            return game.getQuestions();
-        }
-    }
 
     public Question questionById(Long questionId) {
         Optional<Question> found = questionRepository.findById(questionId);

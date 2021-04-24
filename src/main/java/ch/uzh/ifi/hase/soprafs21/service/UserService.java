@@ -63,7 +63,7 @@ public class UserService {
     }
 
     public User getUserByToken(String token){
-        Optional<User> found = this.userRepository.findByToken(token);
+        Optional<User> found = userRepository.findByToken(token);
         if (found.isEmpty()){
             throw new NotFoundException("User with this token does not exist");
         }
@@ -71,7 +71,7 @@ public class UserService {
     }
 
     public User getUserByUserId(Long userId){
-        Optional<User> found = this.userRepository.findById(userId);
+        Optional<User> found = userRepository.findById(userId);
         if (found.isEmpty()) {
           throw new NotFoundException("User with userId: '" + userId + "' not found");
       }

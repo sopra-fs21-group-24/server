@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
+import ch.uzh.ifi.hase.soprafs21.entity.usermodes.SinglePlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
 
 /* 
@@ -108,6 +109,7 @@ public class GameEntity implements Serializable {
     public void setUserMode(UserMode userMode){
         this.userMode = userMode;
     }
+
 
     public void setCreatorUserId(Long creatorUserId) {
         this.creatorUserId = creatorUserId;
