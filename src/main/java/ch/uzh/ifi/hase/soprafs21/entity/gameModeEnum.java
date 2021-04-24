@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
-public enum gameSetting {
+public enum gameModeEnum{
     CLOUDS,
     PIXEL,
     TIME

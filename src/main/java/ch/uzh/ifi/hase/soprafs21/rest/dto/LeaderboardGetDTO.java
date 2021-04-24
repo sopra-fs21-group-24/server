@@ -1,12 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs21.entity.gameSetting;
+import ch.uzh.ifi.hase.soprafs21.entity.gameModeEnum;
 
 public class LeaderboardGetDTO {
 
     private long id;
     private String userName;
-    private gameSetting gameMode;
+    private gameModeEnum gameMode;
     private int score;
 
     public long getId() {
@@ -25,11 +25,11 @@ public class LeaderboardGetDTO {
         this.userName = userName;
     }
 
-    public gameSetting getGameMode() {
+    public gameModeEnum getGameMode() {
         return gameMode;
     }
 
-    public void setGameMode(gameSetting gameMode) {
+    public void setGameMode(gameModeEnum gameMode) {
         this.gameMode = gameMode;
     }
 

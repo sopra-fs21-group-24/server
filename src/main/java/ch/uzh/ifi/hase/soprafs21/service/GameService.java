@@ -15,14 +15,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.entity.gameSetting;
-import ch.uzh.ifi.hase.soprafs21.entity.userSetting;
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Clouds;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Pixelation;
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
-import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
-import ch.uzh.ifi.hase.soprafs21.entity.usermodes.SinglePlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
@@ -51,44 +44,18 @@ public class GameService {
         return gameRepository.findById(gameId);
     }
 
-    public GameEntity createGame(Long userId, userSetting uSetting, gameSetting gSetting, boolean publicStatus) {
-        UserMode uMode;
-        GameMode gMode;
+    public GameEntity createGame(GameEntity gameRaw) {
         // TODO
 
-        Optional<User> creator = userRepository.findById(userId);
+        Optional<User> creator = userRepository.findById(gameRaw.getCreatorUserId());
         if (creator.isEmpty()) {
-            // throw Error
+            throw new NotFoundException("A user with this userId doesn't exist");
         }
 
-        if (uSetting == userSetting.SINGLEPLAYER) {
-            uMode = new SinglePlayer();
-        } else {
-            uMode = new MultiPlayer();
-        }
+        UserMode uMode = gameRaw.getUserMode();
+        uMode.init(gameRaw);
 
-        switch (gSetting) {
-        case CLOUDS:
-            gMode = new Clouds();
-            break;
-        case PIXEL:
-            gMode = new Pixelation();
-            break;
-        case TIME:
-            gMode = new Time();
-            break;
-        default:
-            gMode = new Time();
-        }
-
-        GameEntity game = new GameEntity();
-
-        uMode.init(game, publicStatus);
-        game.setUserMode(uMode);
-
-        game.setGameMode(gMode);
-        game.setCreatorUserId(userId);
-        return game;
+        return gameRaw;
     }
 
     public void startGame(Long userId, Long gameId) {
@@ -139,7 +106,11 @@ public class GameService {
         if(!questions.contains(answer.getQuestionId())){
             throw new NotFoundException("Questionid is not part of the game questions");
         } 
+
         Question question = foundQuestion.get();
+        answer.setCoordQuestion(question.getCoordinate());
+
+        // calculate time score
 
         // check for timelegitimacy
         if(!isTimeValid(game, currentTime)){

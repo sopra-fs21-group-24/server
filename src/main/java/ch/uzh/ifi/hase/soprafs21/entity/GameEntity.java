@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
@@ -46,10 +46,10 @@ public class GameEntity implements Serializable {
     @Column(nullable = false)
     private int round = 0;
 
-    private GameStatus status;
+    private boolean publicStatus; // fühlt sich komisch an
 
     @Column(nullable = false)
-    @OneToMany
+    @ElementCollection
     private List<Long> questions;
 
     @Column(nullable = false)
@@ -62,6 +62,7 @@ public class GameEntity implements Serializable {
     private Long gameTime;
 
     @Column(nullable = false)
+    @ElementCollection
     private Set<Long> userIds = Collections.synchronizedSet(new HashSet<Long>());
 
     public GameMode getGameMode() {
@@ -74,14 +75,6 @@ public class GameEntity implements Serializable {
 
     public void setCurrentTime() {
         this.gameTime = System.currentTimeMillis();
-    }
-
-    public void setStatus(GameStatus status) {
-        this.status = status;
-    }
-
-    public GameStatus getStatus() {
-        return status;
     }
 
     public void setQuestions(List<Long> questions) {
@@ -138,6 +131,14 @@ public class GameEntity implements Serializable {
 
     public void setUserIds(Set<Long> userIds) {
         this.userIds = userIds;
+    }
+
+    public boolean getPublicStatus(){
+        return publicStatus;
+    }
+
+    public void setPublicStatus(boolean publicStatus) {
+        this.publicStatus = publicStatus;
     }
 
 }

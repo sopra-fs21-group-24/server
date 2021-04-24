@@ -31,9 +31,12 @@ public class Question implements Serializable{
     public Coordinate coordinate;
 
 
-    @Id
     public Long getQuestionId() {
         return questionId;
+    }
+
+    public void setQuestionId(Long questionId) {
+        this.questionId = questionId;
     }
 
     public float getZoomLevel() {

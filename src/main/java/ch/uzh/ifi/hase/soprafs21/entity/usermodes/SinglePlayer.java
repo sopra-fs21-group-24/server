@@ -12,7 +12,7 @@ public class SinglePlayer extends UserMode {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void init(GameEntity game, boolean publicStatus) {
+    public void init(GameEntity game) {
         throw new UnsupportedOperationException();
     };
 

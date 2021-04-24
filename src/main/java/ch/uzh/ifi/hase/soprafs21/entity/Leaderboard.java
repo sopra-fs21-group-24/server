@@ -19,7 +19,7 @@ public class Leaderboard implements Observer {
     private String userName;
 
     @Column(nullable = false)
-    private gameSetting gameMode;
+    private gameModeEnum gameMode;
 
     @Column(nullable = false)
     @OrderBy
@@ -34,11 +34,11 @@ public class Leaderboard implements Observer {
         this.userName = userName;
     }
 
-    public gameSetting getGameMode() {
+    public gameModeEnum getGameMode() {
         return gameMode;
     }
 
-    public void setGameMode(gameSetting gameMode) {
+    public void setGameMode(gameModeEnum gameMode) {
         this.gameMode = gameMode;
     }
 

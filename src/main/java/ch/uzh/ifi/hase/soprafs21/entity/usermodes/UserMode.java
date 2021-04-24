@@ -19,11 +19,11 @@ public class UserMode implements Serializable {
     @GeneratedValue
     private Long uModeId;
 
-    public void init(GameEntity game, boolean publicStatus){
+    public void init(GameEntity game){
         throw new UnsupportedOperationException();
-    };
+    }
 
     public void start(GameEntity game){
         throw new UnsupportedOperationException();
-    };
+    }
 }

@@ -13,10 +13,10 @@ public class MultiPlayer extends UserMode {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void init(GameEntity game, boolean publicStatus) {
+    public void init(GameEntity game) {
         Lobby lobby = new Lobby();
         lobby.setCreator(game.getCreatorUserId());
-        lobby.setPublic(publicStatus);
+        lobby.setPublic(game.getPublicStatus());
     }
 
     @Override
