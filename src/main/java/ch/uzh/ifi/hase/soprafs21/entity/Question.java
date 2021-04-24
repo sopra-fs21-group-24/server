@@ -22,12 +22,6 @@ public class Question implements Serializable{
     public float zoomLevel;
 
     @Column(nullable = false)
-    public float lat;
-
-    @Column(nullable = false)
-    public float lng;
-
-    @Column(nullable = false)
     public Coordinate coordinate;
 
 
