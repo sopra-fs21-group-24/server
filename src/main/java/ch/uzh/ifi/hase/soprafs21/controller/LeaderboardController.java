@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.gameModeEnum;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.LeaderboardService;
+
+import java.util.ArrayList;
 
 /**
  * Leaderboard.java  Controller
@@ -28,9 +28,9 @@ public class LeaderboardController {
     // Getting a leaderboard by Gamemode
     @GetMapping("/leaderboard/{GameMode}")
     @ResponseStatus(HttpStatus.OK)
-    public LeaderboardGetDTO getLeaderboardByGameMode(@PathVariable("GameMode") gameModeEnum gameMode){
-        Leaderboard foundLeaderboard = leaderboardService.getScoresForGameMode(gameMode);
-        return DTOMapper.INSTANCE.convertEntityToLeaderboardGetDTO(foundLeaderboard);
+    public ArrayList<Leaderboard> getLeaderboardByGameMode(@PathVariable("GameMode") gameModeEnum gameMode){
+        return leaderboardService.getScoresForGameMode(gameMode);
+
     }
 
 }

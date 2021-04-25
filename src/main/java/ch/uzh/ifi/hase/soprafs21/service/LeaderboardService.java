@@ -11,6 +11,8 @@ import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.gameModeEnum;
 import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 
+import java.util.ArrayList;
+
 /**
  * User Service
  * This class is the "worker" and responsible for all functionality related to the user
@@ -28,8 +30,10 @@ public class LeaderboardService {
     public LeaderboardService(@Qualifier("leaderboardRepository") LeaderboardRepository leaderboardRepository) {
         this.leaderboardRepository = leaderboardRepository;
     }
-    public Leaderboard getScoresForGameMode(gameModeEnum gameMode){
-        return leaderboardRepository.findBygameMode(gameMode);
+    public ArrayList<Leaderboard> getScoresForGameMode(gameModeEnum gameMode){
+
+        System.out.println(leaderboardRepository.findTop5ByGameMode(gameMode));
+        return (ArrayList<Leaderboard>) leaderboardRepository.findTop5ByGameMode(gameMode);
 
     }
 

@@ -18,6 +18,8 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PerformingUnauthenticatedAction;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
+import javax.swing.text.html.parser.Entity;
+
 @Service
 @Transactional
 public class LobbyService {
@@ -34,30 +36,32 @@ public class LobbyService {
     }
 
     public Lobby createLobby(Lobby newlobby){
-        List<User> users = new ArrayList<>();
+
+        List<Long> users = new ArrayList<>();
         Optional<User> creator = userRepository.findById(newlobby.getCreator());
         if(creator.isEmpty()){
             throw new NotFoundException("No user found for lobby creator");
         }
-        users.add(creator.get());
+        users.add(creator.get().getId());
         newlobby.setUsers(users);
         newlobby.setRoomKey(generateRoomKey(newlobby));
         lobbyRepository.flush();
 
-        log.debug("Created Information for User: {}", newlobby);
+        log.debug("Created Information for Lobby: {}", newlobby);
         return newlobby;
 
     }
 
     public Lobby getLobbyWithId(Long lobbyid) {
+        if (lobbyRepository.findByid(lobbyid) == null){throw new NotFoundException("No lobby found with id:"+lobbyid);}
         return lobbyRepository.findByid(lobbyid);
 
     }
 
     public void addUserToExistingLobby(User userToAdd, Lobby lobbyAddTo){
         if (lobbyAddTo.getUsers().size() < 3){
-            List<User> users = lobbyAddTo.getUsers();
-            users.add(userToAdd);
+            List<Long> users = lobbyAddTo.getUsers();
+            users.add(userToAdd.getId());
             lobbyAddTo.setUsers(users);
             lobbyRepository.save(lobbyAddTo);
             lobbyRepository.flush();
@@ -69,5 +73,11 @@ public class LobbyService {
 
     public Long generateRoomKey(Lobby lobby){
         return 30000 - lobby.getId();
+    }
+
+
+
+    public List getAllLobbies(){
+        return lobbyRepository.findAllByIsPublicTrue();
     }
 }
