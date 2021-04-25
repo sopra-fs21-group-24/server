@@ -1,12 +1,25 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -23,10 +36,24 @@ public class UserController {
         this.userService = userService;
     }
 
+    private User checkAuth(Map<String, String> header){
+        try {
+            String token = header.get("token");
+            return userService.getUserByToken(token);
+        }
+        catch (NotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public UserGetDTO register(@RequestBody UserPostDTO userPostDTO) {
+    public UserGetDTO register(
+        @RequestBody UserPostDTO userPostDTO
+        ) {
+
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
         User createdUser = userService.createUser(user);
         User loggedInUser = userService.login(createdUser);
@@ -37,10 +64,11 @@ public class UserController {
     @PostMapping(value = "/login")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UserGetDTO login(@RequestBody UserPostDTO userPostDTO) {
+    public UserGetDTO login(
+        @RequestBody UserPostDTO userPostDTO
+        ) {
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
-        // Check if user exists and has credentials
         User authenticatedUser = userService.login(user);
 
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(authenticatedUser);
@@ -50,29 +78,50 @@ public class UserController {
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UserGetDTO logout(@RequestBody UserPostDTO userPostDTO) {
-        // Ensure he sends his token so I know it's him
+    public ResponseEntity<UserGetDTO> logout(
+        @RequestBody UserPostDTO userPostDTO,
+        @RequestHeader Map<String, String> header
+        ) {
+       
+        User userFromToken = checkAuth(header);
+        if(userFromToken == null){
+            return ResponseEntity.status(403).body(null);
+        }
+
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
         User loggedOutUser = userService.logOut(user);
 
-        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedOutUser);
+        UserGetDTO response = DTOMapper.INSTANCE
+                                       .convertEntityToUserGetDTO(loggedOutUser);
+        return ResponseEntity.ok(response);
     }
 
-    // Getting a User Profile by ID
     @GetMapping("/users/{ID}")
     @ResponseStatus(HttpStatus.OK)
-    public UserGetDTO getUserById(@PathVariable("ID") long userId){
+    public UserGetDTO getUserById(
+        @PathVariable("ID") long userId
+        ){
         User foundUser = userService.getUserByUserId(userId);
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
     }
 
-    // Updating a User Profile by ID
-    @PutMapping("/users/{ID}")                              //Token as identificaion
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public UserGetDTO updateUser(@PathVariable("ID") long userId, @RequestBody UserPostDTO userPostDTO){
+    @PutMapping("/users/{ID}")                             
+    public ResponseEntity<UserGetDTO> updateUser(
+        @PathVariable("ID") long userId, 
+        @RequestBody UserPostDTO userPostDTO,
+        @RequestHeader Map<String, String> header
+        ){
+        
+        User userFromToken = checkAuth(header);
+        if(userFromToken == null){
+            return ResponseEntity.status(403).body(null);
+        }
+
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
         User updatedUser = userService.updateUser(userId, user);
-        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
+        UserGeDTO response = DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
+        
+        return ResponseEntity.ok(response);
     }
 
 
