@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
+import ch.uzh.ifi.hase.soprafs21.entity.usermodes.SinglePlayer;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
@@ -62,8 +64,11 @@ public class GameController {
     @GetMapping("/games")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UserGetDTO getAllGames(@RequestBody UserPostDTO userPostDTO) {
-        return new UserGetDTO();
+    public GameGetDTO getAllGames(@RequestBody UserPostDTO userPostDTO) {
+        GameEntity game = new GameEntity();
+        game.setUserMode(new SinglePlayer());
+        game.setGameMode(new Time());
+        return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
     }
 
     @PostMapping("/games")

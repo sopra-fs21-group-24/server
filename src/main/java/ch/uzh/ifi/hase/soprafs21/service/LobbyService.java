@@ -37,8 +37,6 @@ public class LobbyService {
 
     public Lobby createLobby(Lobby newlobby){
 
-        lobbyRepository.save(newlobby);
-        lobbyRepository.flush();
         List<User> users = new ArrayList<>();
         Optional<User> creator = userRepository.findById(newlobby.getCreator());
         if(creator.isEmpty()){
@@ -46,6 +44,7 @@ public class LobbyService {
         }
         users.add(creator.get());
         newlobby.setUsers(users);
+        newlobby.setRoomKey(generateRoomKey(newlobby));
         lobbyRepository.flush();
 
         log.debug("Created Information for Lobby: {}", newlobby);
@@ -58,15 +57,22 @@ public class LobbyService {
         return lobbyRepository.findByid(lobbyid);
 
     }
+
     public void addUserToExistingLobby(User userToAdd, Lobby lobbyAddTo){
-        if (lobbyAddTo.getUsers().size()<3){
-        List<User> users = lobbyAddTo.getUsers();
-        users.add(userToAdd);
-        lobbyAddTo.setUsers(users);
-        lobbyRepository.save(lobbyAddTo);
-        lobbyRepository.flush();
-}
-        else {throw  new PerformingUnauthenticatedAction("To many users in the lobby!"); }
+        if (lobbyAddTo.getUsers().size() < 3){
+            List<User> users = lobbyAddTo.getUsers();
+            users.add(userToAdd);
+            lobbyAddTo.setUsers(users);
+            lobbyRepository.save(lobbyAddTo);
+            lobbyRepository.flush();
+        }
+        else {
+            throw  new PerformingUnauthenticatedAction("To many users in the lobby!"); 
+        }
+    }
+
+    public Long generateRoomKey(Lobby lobby){
+        return 30000 - lobby.getId();
     }
 
 
