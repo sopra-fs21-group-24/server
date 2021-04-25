@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,6 +21,9 @@ public class Lobby {
 
     @Column(nullable = false)
     private Long creator;
+
+    @Column(nullable = false, unique =  true)
+    private Long roomKey;
 
     @OneToMany()
     @Column(nullable = false)
@@ -64,4 +68,13 @@ public class Lobby {
     public void setPublic(Boolean aPublic) {
         isPublic = aPublic;
     }
+
+    public Long getRoomKey() {
+        return roomKey;
+    }
+
+    public void setRoomKey(Long roomKey) {
+        this.roomKey = roomKey;
+    }
+
 }
