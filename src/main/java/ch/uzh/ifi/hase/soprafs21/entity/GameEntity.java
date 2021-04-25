@@ -41,6 +41,7 @@ public class GameEntity implements Serializable {
     @Column(nullable = false)
     private int round = 0;
 
+    // variable rausnehtmen aus dto?
     private boolean publicStatus; // fühlt sich komisch an
 
     @Column(nullable = false)
@@ -53,8 +54,11 @@ public class GameEntity implements Serializable {
     @Column(nullable = false)
     private GameMode gameMode;
 
-    @Column
+    @Column(nullable = true)
     private Long gameTime;
+
+    @Column(nullable = true)
+    private Long lobbyId;
 
     @Column(nullable = false)
     @ElementCollection
@@ -128,6 +132,14 @@ public class GameEntity implements Serializable {
 
     public void setPublicStatus(boolean publicStatus) {
         this.publicStatus = publicStatus;
+    }
+
+    public Long getLobbyId() {
+        return lobbyId;
+    }
+
+    public void setLobbyId(Long lobbyId) {
+        this.lobbyId = lobbyId;
     }
 
 }
