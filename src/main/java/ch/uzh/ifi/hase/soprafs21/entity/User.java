@@ -34,6 +34,7 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String password;
 
+    // TODO
     //List with already answered questions
 
 
