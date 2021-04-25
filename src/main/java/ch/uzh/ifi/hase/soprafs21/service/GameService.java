@@ -48,7 +48,7 @@ public class GameService {
         return found.get();
     }
 
-    public GameEntity createGame(GameEntity gameRaw) {
+    public GameEntity createGame(GameEntity gameRaw, boolean publicStatus) {
         // TODO
 
         Optional<User> creator = userRepository.findById(gameRaw.getCreatorUserId());
@@ -57,7 +57,7 @@ public class GameService {
         }
 
         UserMode uMode = gameRaw.getUserMode();
-        uMode.init(gameRaw);
+        uMode.init(gameRaw, publicStatus);
 
         return gameRaw;
     }

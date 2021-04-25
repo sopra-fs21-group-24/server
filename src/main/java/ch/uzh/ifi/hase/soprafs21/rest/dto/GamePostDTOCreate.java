@@ -1,12 +1,14 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
-import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import ch.uzh.ifi.hase.soprafs21.deserialitzers.GameDeserializer;
+
+@JsonDeserialize(using = GameDeserializer.class)
 public class GamePostDTOCreate {
     private Long userId;
-    private UserMode userMode;
-    private GameMode gameMode;
+    private String userMode;
+    private String gameMode;
     private boolean publicStatus;
 
     public Long getUserId() {
@@ -17,19 +19,19 @@ public class GamePostDTOCreate {
         this.userId = userId;
     }
 
-    public UserMode getUserMode() {
+    public String getUserMode() {
         return userMode;
     }
 
-    public void setUserMode(UserMode userMode) {
+    public void setUserMode(String userMode) {
         this.userMode = userMode;
     }
 
-    public GameMode getGameMode() {
+    public String getGameMode() {
         return gameMode;
     }
 
-    public void setGameMode(GameMode gameMode) {
+    public void setGameMode(String gameMode) {
         this.gameMode = gameMode;
     }
 

@@ -1,10 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
+import ch.uzh.ifi.hase.soprafs21.deserialitzers.GameDeserializer;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
@@ -58,9 +61,11 @@ public interface DTOMapper {
     LeaderboardGetDTO convertEntityToLeaderboardGetDTO(Leaderboard leaderboard);
 
 
+    @JsonDeserialize(using = GameDeserializer.class)
     @Mapping(source = "userId", target = "creatorUserId")
     @Mapping(source = "gameMode", target = "gameMode")
     @Mapping(source = "userMode", target = "userMode")
+    @Mapping(source = "publicStatus", target = "publicStatus")
     GameEntity convertGamePostDTOCreateToGameEntity(GamePostDTOCreate gamePostDTOCreate);
 
     @Mapping(source = "gameId", target = "gameId")

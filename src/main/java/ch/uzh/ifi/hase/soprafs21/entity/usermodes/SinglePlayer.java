@@ -11,10 +11,12 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 public class SinglePlayer extends UserMode {
     private static final long serialVersionUID = 1L;
 
+    private String name = "SinglePlayer";
+
     @Override
-    public void init(GameEntity game) {
+    public void init(GameEntity game, boolean publicStatus) {
         throw new UnsupportedOperationException();
-    };
+    }
 
     @Override
     public void start(GameEntity game) {
@@ -29,5 +31,15 @@ public class SinglePlayer extends UserMode {
         score.setUserId(userId);
         scores.put(userId, score);
 
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

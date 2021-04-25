@@ -11,19 +11,28 @@ import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 
 @Entity
 @Table(name = "USERMODE")
-public class UserMode implements Serializable {
+public abstract class UserMode implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private String name;
 
     @Id
     @GeneratedValue
     private Long uModeId;
 
-    public void init(GameEntity game){
+    public void init(GameEntity game, boolean publicStatus){
         throw new UnsupportedOperationException();
     }
 
     public void start(GameEntity game){
         throw new UnsupportedOperationException();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
