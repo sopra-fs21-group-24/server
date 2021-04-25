@@ -119,7 +119,7 @@ public class UserController {
 
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
         User updatedUser = userService.updateUser(userId, user);
-        UserGeDTO response = DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
+        UserGetDTO response = DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
         
         return ResponseEntity.ok(response);
     }

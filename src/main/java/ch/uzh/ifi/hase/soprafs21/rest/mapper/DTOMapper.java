@@ -2,8 +2,8 @@ package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
@@ -32,15 +32,12 @@ public interface DTOMapper {
 
     // evt Login dto erstellen damit ein token returned wird
 
-    @Mapping(source = "name", target = "name")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
     User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
     @Mapping(source = "id", target = "id")
-    @Mapping(source = "name", target = "name")
     @Mapping(source = "username", target = "username")
-    @Mapping(source = "token", target = "token")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
     @Mapping(source = "id", target = "id")

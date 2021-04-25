@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import java.nio.file.NotDirectoryException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -79,7 +78,7 @@ public class UserService {
     }
 
     public List<User> getUsers() {
-        return this.userRepository.findAll();
+        return userRepository.findAll();
     }
 
     public User createUser(User newUser) {
@@ -89,9 +88,6 @@ public class UserService {
         }
         if (newUser.getUsername() == null || newUser.getUsername().equals("")){
             throw new MissingInformationException("Please provide a username");
-        }
-        if (newUser.getName() == null || newUser.getName().equals("")){
-            throw new MissingInformationException("Please provide a name");
         }
 
         newUser.setToken(UUID.randomUUID().toString());
@@ -112,10 +108,6 @@ public class UserService {
         // ensure userId matches token, e.g. you can only update yourself
         if (!userToBeUpdated.getToken().equals(user.getToken())) {
             throw new PerformingUnauthenticatedAction("You're trying to update an user other than yourself!");
-        }
-
-        if (user.getName() != null){
-            userToBeUpdated.setName(user.getName());
         }
         if (user.getPassword() != null){
             userToBeUpdated.setPassword(user.getPassword());
@@ -140,16 +132,9 @@ public class UserService {
      */
     private void checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-        User userByName = userRepository.findByName(userToBeCreated.getName());
 
         String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-        if (userByUsername != null && userByName != null) {
-            throw new UserAlreadyExistsException(String.format(baseErrorMessage, "username and the name", "are"));
-        }
-        else if (userByUsername != null) {
-            throw new UserAlreadyExistsException(String.format(baseErrorMessage, "username", "is"));
-        }
-        else if (userByName != null) {
+        if (userByUsername != null) {
             throw new UserAlreadyExistsException(String.format(baseErrorMessage, "name", "is"));
         }
     }
