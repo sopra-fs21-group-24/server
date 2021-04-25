@@ -17,6 +17,8 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
+import java.util.List;
+
 /**
  * User Controller
  * This class is responsible for handling all REST request that are related to the user.
@@ -41,6 +43,16 @@ public class LobbyController {
         return lobbyService.getLobbyWithId(lobbyid);
 
     }
+
+    @GetMapping("/lobby")
+    @ResponseStatus(HttpStatus.OK)
+    public List getAllLobbies(){
+
+        return lobbyService.getAllLobbies();
+
+    }
+
+    //only for testing
     @PostMapping("/lobby")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody

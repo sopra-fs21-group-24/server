@@ -14,14 +14,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
-import ch.uzh.ifi.hase.soprafs21.entity.usermodes.SinglePlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
 
 /* 
 TODO:
 - user and game mode enum?
-- random roomkey
-- get OneToMany to work
 - makeguess()
 - Round int
 - userscores
@@ -37,9 +34,6 @@ public class GameEntity implements Serializable {
     @Id
     @GeneratedValue
     private Long gameId;
-
-    @Column(nullable = false, unique = true)
-    private String roomKey;
 
     @Column(nullable = false, unique = true)
     private Long creatorUserId;
@@ -94,13 +88,6 @@ public class GameEntity implements Serializable {
         return serialVersionUID;
     }
 
-    public void setRoomKey(String roomKey) {
-        this.roomKey = roomKey;
-    }
-
-    public String getRoomKey() {
-        return roomKey;
-    }
 
     public void setGameMode(GameMode gameMode){
         this.gameMode = gameMode;

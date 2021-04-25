@@ -1,12 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * DTOMapperTest
@@ -26,7 +20,7 @@ public class DTOMapperTest {
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
         // check content
-        assertEquals(userPostDTO.getName(), user.getName());
+        assertEquals(userPostDTO.getName(), user.getName()); // entfernen nicht mehr relevant
         assertEquals(userPostDTO.getUsername(), user.getUsername());*/
     }
 
@@ -46,7 +40,7 @@ public class DTOMapperTest {
 
         // check content
         assertEquals(user.getId(), userGetDTO.getId());
-        assertEquals(user.getName(), userGetDTO.getName());
+        assertEquals(user.getName(), userGetDTO.getName()); // entfernen nicht mehr relevant
         assertEquals(user.getUsername(), userGetDTO.getUsername());
         assertEquals(user.getStatus(), userGetDTO.getStatus());*/
     }

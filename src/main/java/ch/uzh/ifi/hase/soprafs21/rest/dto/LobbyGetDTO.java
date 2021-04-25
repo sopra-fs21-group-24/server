@@ -8,7 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 public class LobbyGetDTO {
     private Long id;
     private String creator;
-    private List<User> users;
+    private List<Long> users;
     private Boolean isPublic;
 
     public Long getId() {
@@ -27,19 +27,19 @@ public class LobbyGetDTO {
         this.creator = creator;
     }
 
-    public List<User> getUsers() {
+    public List<Long> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(List<Long> users) {
         this.users = users;
     }
 
-    public boolean isPublic() {
+    public Boolean getPublic() {
         return isPublic;
     }
 
-    public void setPublic(boolean aPublic) {
+    public void setPublic(Boolean aPublic) {
         isPublic = aPublic;
     }
 }

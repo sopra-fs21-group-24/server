@@ -1,42 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.exceptions.MissingInformationException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collections;
-import java.util.List;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import ch.uzh.ifi.hase.soprafs21.controller.UserController;
+import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
 /**
  * UserControllerTest
@@ -120,7 +90,7 @@ public void assert_successful_logout() throws Exception {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().string(containsString("/users/"+user.getId().toString())));
-        *//*.andExpect(jsonPath("$.name", is(user.getName())))
+        *//*.andExpect(jsonPath("$.name", is(user.getName()))) // entfernen
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.token", is("1")))
@@ -177,7 +147,7 @@ public void assert_successful_logout() throws Exception {
         this.mockMvc.perform(getRequest)
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(user.getName())))
+                .andExpect(jsonPath("$.name", is(user.getName()))) // entfernen
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.logged_in", is("ONLINE")))
                 .andExpect(jsonPath("$.id", is(1)))
