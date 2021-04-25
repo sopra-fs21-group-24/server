@@ -1,10 +1,21 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+import org.mapstruct.ReportingPolicy;
+
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
 /**
  * DTOMapper
@@ -14,18 +25,54 @@ import org.mapstruct.factory.Mappers;
  * Additional mappers can be defined for new entities.
  * Always created one mapper for getting information (GET) and one mapper for creating information (POST).
  */
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
+    // evt Login dto erstellen damit ein token returned wird
+
     @Mapping(source = "name", target = "name")
     @Mapping(source = "username", target = "username")
-    //@Mapping(source = "logged_in", target = "logged_in")
+    @Mapping(source = "password", target = "password")
     User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "username", target = "username")
+    @Mapping(source = "token", target = "token")
     UserGetDTO convertEntityToUserGetDTO(User user);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "creator", target = "creator")
+    Lobby convertLobbyPostDTOtoEntity(LobbyPostDTO lobbyPostDTO);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "creator", target = "creator")
+    @Mapping(source = "users", target = "users")
+    @Mapping(source = "public", target = "public")
+    LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "userName", target = "userName")
+    @Mapping(source = "gameMode", target = "gameMode")
+    @Mapping(source = "score", target = "score")
+    LeaderboardGetDTO convertEntityToLeaderboardGetDTO(Leaderboard leaderboard);
+
+
+    @Mapping(source = "userId", target = "creatorUserId")
+    @Mapping(source = "gameMode", target = "gameMode")
+    @Mapping(source = "userMode", target = "userMode")
+    @Mapping(source = "publicStatus", target = "publicStatus")
+    GameEntity convertGamePostDTOCreateToGameEntity(GamePostDTOCreate gamePostDTOCreate);
+
+    @Mapping(source = "gameId", target = "gameId")
+    @Mapping(source = "creatorUserId", target = "creatorId")
+    @Mapping(source = "round", target = "round")
+    @Mapping(source = "userMode", target = "userMode")
+    @Mapping(source = "gameMode", target = "gameMode")
+    @Mapping(source = "userIds", target = "players")
+    GameGetDTO convertGameEntityToGameGetDTO(GameEntity gameEntity);
+    
+    
 }

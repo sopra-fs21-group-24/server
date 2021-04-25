@@ -12,15 +12,14 @@ public class UserPostDTO {
 
     private String token;
 
-    private String birthdate;
-    private UserStatus logged_in;
+    private UserStatus status;
 
-    public UserStatus getLogged_in() {
-        return this.logged_in;
+    public UserStatus getUserStatus() {
+        return this.status;
     }
 
-    public void setLogged_in(UserStatus logged_in) {
-        this.logged_in = logged_in;
+    public void setUserStatus(UserStatus status) {
+        this.status = status;
     }
 
     public String getName() {
@@ -45,9 +44,6 @@ public class UserPostDTO {
 
     public String getToken(){return token;}
 
-    public void setToken(String token){this.token = token; }
+    public void setToken(String token){this.token = token; } 
 
-    public String getBirthdate(){return birthdate;}
-
-    public void setBirthdate(String birthdate){this.birthdate = birthdate; }
 }

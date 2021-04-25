@@ -6,13 +6,8 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User Controller
@@ -63,22 +58,20 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loggedOutUser);
     }
 
-    // AKA Getting a User Profile by ID
+    // Getting a User Profile by ID
     @GetMapping("/users/{ID}")
     @ResponseStatus(HttpStatus.OK)
     public UserGetDTO getUserById(@PathVariable("ID") long userId){
         User foundUser = userService.getUserByUserId(userId);
-
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
     }
 
-    // AKA Updating a User Profile by ID
-    @PutMapping("/users/{ID}")
+    // Updating a User Profile by ID
+    @PutMapping("/users/{ID}")                              //Token as identificaion
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserGetDTO updateUser(@PathVariable("ID") long userId, @RequestBody UserPostDTO userPostDTO){
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
         User updatedUser = userService.updateUser(userId, user);
-
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
     }
 

@@ -25,8 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -57,6 +56,36 @@ public class UserControllerTest {
     private UserService userService;
 
 
+
+@Test
+public void assert_successful_registration() throws Exception{
+
+}
+
+@Test
+public void assert_successful_login() throws Exception {
+
+}
+
+/*@Test
+public void assert_successful_logout() throws Exception {
+
+}
+
+@Test
+public void assert_successful_registration() throws Exception{
+
+}
+
+@Test
+public void assert_successful_login() throws Exception {
+
+}
+
+@Test
+public void assert_successful_logout() throws Exception {
+
+}*/
 
 
 

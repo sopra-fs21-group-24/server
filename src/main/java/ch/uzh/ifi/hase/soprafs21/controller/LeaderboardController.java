@@ -1,31 +1,36 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
-
-import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
+import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
+import ch.uzh.ifi.hase.soprafs21.entity.gameModeEnum;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs21.service.LeaderboardService;
 
 /**
- * User Controller
- * This class is responsible for handling all REST request that are related to the user.
- * The controller will receive the request and delegate the execution to the UserService and finally return the result.
+ * Leaderboard.java  Controller
+ * This class is responsible for handling all REST request that are related to the leaderboard.
+ * The controller will receive the request and delegate the execution to the LeaderboardService and finally return the result.
  */
 @RestController
 public class LeaderboardController {
 
-    private final UserService userService;
+    private final LeaderboardService leaderboardService;
 
-    LeaderboardController(UserService userService) {
-        this.userService = userService;
+    LeaderboardController(LeaderboardService leaderboardService) {
+        this.leaderboardService = leaderboardService;
+    }
+
+    // Getting a leaderboard by Gamemode
+    @GetMapping("/leaderboard/{GameMode}")
+    @ResponseStatus(HttpStatus.OK)
+    public LeaderboardGetDTO getLeaderboardByGameMode(@PathVariable("GameMode") gameModeEnum gameMode){
+        Leaderboard foundLeaderboard = leaderboardService.getScoresForGameMode(gameMode);
+        return DTOMapper.INSTANCE.convertEntityToLeaderboardGetDTO(foundLeaderboard);
     }
 
 }
