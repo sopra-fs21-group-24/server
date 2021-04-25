@@ -1,13 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
+import javax.persistence.*;
 
 
 @Entity
@@ -25,9 +19,10 @@ public class Lobby {
     @Column(nullable = false, unique =  true)
     private Long roomKey;
 
-    @OneToMany()
+
+    @ElementCollection
     @Column(nullable = false)
-    private List<User> users;
+    private List<Long> users;
 
     @Column(nullable = false)
     private Boolean isPublic;
@@ -42,11 +37,11 @@ public class Lobby {
         this.creator = creator;
     }
 
-    public List<User> getUsers() {
+    public List<Long> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(List<Long> users) {
         this.users = users;
     }
 

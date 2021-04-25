@@ -37,12 +37,12 @@ public class LobbyService {
 
     public Lobby createLobby(Lobby newlobby){
 
-        List<User> users = new ArrayList<>();
+        List<Long> users = new ArrayList<>();
         Optional<User> creator = userRepository.findById(newlobby.getCreator());
         if(creator.isEmpty()){
             throw new NotFoundException("No user found for lobby creator");
         }
-        users.add(creator.get());
+        users.add(creator.get().getId());
         newlobby.setUsers(users);
         newlobby.setRoomKey(generateRoomKey(newlobby));
         lobbyRepository.flush();
@@ -60,8 +60,8 @@ public class LobbyService {
 
     public void addUserToExistingLobby(User userToAdd, Lobby lobbyAddTo){
         if (lobbyAddTo.getUsers().size() < 3){
-            List<User> users = lobbyAddTo.getUsers();
-            users.add(userToAdd);
+            List<Long> users = lobbyAddTo.getUsers();
+            users.add(userToAdd.getId());
             lobbyAddTo.setUsers(users);
             lobbyRepository.save(lobbyAddTo);
             lobbyRepository.flush();
