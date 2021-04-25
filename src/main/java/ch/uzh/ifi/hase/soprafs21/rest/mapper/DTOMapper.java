@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -9,13 +10,8 @@ import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
+
+import java.util.List;
 
 /**
  * DTOMapper
@@ -43,14 +39,15 @@ public interface DTOMapper {
     @Mapping(source = "token", target = "token")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
-    @Mapping(source = "id", target = "id")
     @Mapping(source = "creator", target = "creator")
+    @Mapping(source = "public", target = "public")
     Lobby convertLobbyPostDTOtoEntity(LobbyPostDTO lobbyPostDTO);
+
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "creator", target = "creator")
     @Mapping(source = "users", target = "users")
-    @Mapping(source = "public", target = "public")
+   @Mapping(source = "public", target = "public")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
 
     @Mapping(source = "id", target = "id")

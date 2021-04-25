@@ -18,6 +18,8 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PerformingUnauthenticatedAction;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
+import javax.swing.text.html.parser.Entity;
+
 @Service
 @Transactional
 public class LobbyService {
@@ -35,7 +37,7 @@ public class LobbyService {
 
     public Lobby createLobby(Lobby newlobby){
 
-        newlobby = lobbyRepository.save(newlobby);
+        lobbyRepository.save(newlobby);
         lobbyRepository.flush();
         List<User> users = new ArrayList<>();
         Optional<User> creator = userRepository.findById(newlobby.getCreator());
@@ -46,12 +48,13 @@ public class LobbyService {
         newlobby.setUsers(users);
         lobbyRepository.flush();
 
-        log.debug("Created Information for User: {}", newlobby);
+        log.debug("Created Information for Lobby: {}", newlobby);
         return newlobby;
 
     }
 
     public Lobby getLobbyWithId(Long lobbyid) {
+        if (lobbyRepository.findByid(lobbyid) == null){throw new NotFoundException("No lobby found with id:"+lobbyid);}
         return lobbyRepository.findByid(lobbyid);
 
     }
@@ -64,5 +67,11 @@ public class LobbyService {
         lobbyRepository.flush();
 }
         else {throw  new PerformingUnauthenticatedAction("To many users in the lobby!"); }
+    }
+
+
+
+    public List getAllLobbies(){
+        return lobbyRepository.findAllByIsPublicTrue();
     }
 }
