@@ -32,8 +32,8 @@ public class LeaderboardService {
     }
     public ArrayList<Leaderboard> getScoresForGameMode(gameModeEnum gameMode){
 
-        System.out.println(leaderboardRepository.findByTop5GameMode(gameMode));
-        return (ArrayList<Leaderboard>) leaderboardRepository.findByTop5GameMode(gameMode);
+        System.out.println(leaderboardRepository.findTop5ByGameMode(gameMode));
+        return (ArrayList<Leaderboard>) leaderboardRepository.findTop5ByGameMode(gameMode);
 
     }
 
