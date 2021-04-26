@@ -1,11 +1,15 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 
 @Entity
@@ -25,7 +29,7 @@ public class Lobby {
 
     @Column(nullable = false)
     @ElementCollection
-    private List<Long> users;
+    private List<Long> users = Collections.synchronizedList(new ArrayList<>());
 
     @Column(nullable = false)
     private Boolean isPublic;
@@ -46,6 +50,10 @@ public class Lobby {
 
     public void setUsers(List<Long> users) {
         this.users = users;
+    }
+
+    public void addUser(Long userId){
+        this.users.add(userId);
     }
 
 

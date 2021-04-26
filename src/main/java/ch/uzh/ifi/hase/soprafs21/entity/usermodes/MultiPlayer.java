@@ -17,8 +17,8 @@ public class MultiPlayer extends UserMode {
         Lobby lobby = new Lobby();
         lobby.setCreator(game.getCreatorUserId());
         lobby.setPublic(publicStatus);
-        game.setLobbyId(lobby.getId());
         this.lobbyService.createLobby(lobby);
+        game.setLobbyId(lobby.getId());
     }
 
     @Override

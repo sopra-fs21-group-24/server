@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +14,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
@@ -35,22 +35,23 @@ public class LobbyService {
 
     public Lobby createLobby(Lobby newlobby){
 
-        List<Long> users = new ArrayList<>();
-        Optional<User> creator = userRepository.findById(newlobby.getCreator());
-        if(creator.isEmpty()){
+        Optional<User> foundCreator = userRepository.findById(newlobby.getCreator());
+        if(foundCreator.isEmpty()){
             throw new NotFoundException("No user found for lobby creator");
         }
-        if(creator.get().getInLobby()){throw new NotFoundException("User is already in Lobby");}
-        users.add(creator.get().getId());
-        newlobby.setUsers(users);
+
+        User creator = foundCreator.get();
+
+        if(creator.getInLobby()){
+            throw new PreconditionFailedException("User is already in another Lobby");
+        }
+
+        newlobby.addUser(creator.getId());
         lobbyRepository.save(newlobby);
         lobbyRepository.flush();
-        Lobby createdlobby = lobbyRepository.findByCreator(newlobby.getCreator());
-        createdlobby.setRoomKey(generateRoomKey(createdlobby));
-        lobbyRepository.flush();
+
         log.debug("Created Information for Lobby: {}", newlobby);
         return newlobby;
-
     }
 
     public Lobby getLobbyWithId(Long lobbyid) {
@@ -74,12 +75,12 @@ public class LobbyService {
     }
 
     public Long generateRoomKey(Lobby lobby){
-        return 30000 - lobby.getId();
+        return 3000 - lobby.getCreator();
     }
 
 
 
-    public List getAllLobbies(){
+    public List<Lobby> getAllLobbies(){
         return lobbyRepository.findAllByIsPublicTrue();
     }
     public Lobby getLobbyWithRoomKey(Long roomKey){
