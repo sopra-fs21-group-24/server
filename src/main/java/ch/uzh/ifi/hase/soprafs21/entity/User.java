@@ -34,15 +34,17 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = true)
-    private Integer highClouds;
+    @Column(nullable = false)
+    private Integer highClouds = 0;
 
-    @Column(nullable = true)
-    private Integer highTime;
+    @Column(nullable = false)
+    private Integer highTime = 0;
 
-    @Column(nullable = true)
-    private Integer highPixel;
+    @Column(nullable = false)
+    private Integer highPixel = 0;
 
+    @Column(nullable = false)
+    private Boolean isInLobby  = false;
     // TODO
     //List with already answered questions
 
@@ -51,29 +53,17 @@ public class User implements Serializable {
 
     public void setId(Long id) { this.id = id; }
 
-    public String getUsername() {
-        return username;
-    }
+    public String getUsername() { return username; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public void setUsername(String username) { this.username = username; }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getPassword() { return password; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public void setPassword(String password) { this.password = password; }
 
-    public String getToken() {
-        return token;
-    }
+    public String getToken() { return token; }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
+    public void setToken(String token) { this.token = token; }
 
     public Integer getHighClouds() { return highClouds; }
 
@@ -86,4 +76,8 @@ public class User implements Serializable {
     public Integer getHighPixel() { return highPixel; }
 
     public void setHighPixel(Integer highPixel) { this.highPixel = highPixel; }
+
+    public Boolean getInLobby() { return isInLobby; }
+
+    public void setInLobby(Boolean inLobby) { isInLobby = inLobby; }
 }

@@ -42,6 +42,7 @@ public class LobbyService {
         if(creator.isEmpty()){
             throw new NotFoundException("No user found for lobby creator");
         }
+        if(creator.get().getInLobby()){throw new NotFoundException("User is already in Lobby");}
         users.add(creator.get().getId());
         newlobby.setUsers(users);
         lobbyRepository.save(newlobby);
@@ -61,6 +62,7 @@ public class LobbyService {
     }
 
     public void addUserToExistingLobby(User userToAdd, Lobby lobbyAddTo){
+        if(userToAdd.getInLobby()){throw new NotFoundException("User is already in Lobby");}
         if (lobbyAddTo.getUsers().size() < 3){
             List<Long> users = lobbyAddTo.getUsers();
             users.add(userToAdd.getId());

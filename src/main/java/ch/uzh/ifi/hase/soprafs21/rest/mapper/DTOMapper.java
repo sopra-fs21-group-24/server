@@ -8,12 +8,14 @@ import org.mapstruct.factory.Mappers;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.ScoreGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
@@ -80,6 +82,13 @@ public interface DTOMapper {
     @Mapping(source = "userIds", target = "players")
     @Mapping(source = "lobbyId", target = "lobbyId")
     GameGetDTO convertGameEntityToGameGetDTO(GameEntity gameEntity);
-    
+
+
+
+    @Mapping(source = "userId", target = "userId")
+    @Mapping(source = "tempScore", target = "tempScore")
+    @Mapping(source = "totalScore", target = "totalScore")
+    @Mapping(source = "lastCoordinate", target = "lastCoordinate")
+    ScoreGetDTO convertScoreEntityToScoreGetDTO(Score score);
     
 }
