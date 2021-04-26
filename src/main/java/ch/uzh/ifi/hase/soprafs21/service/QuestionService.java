@@ -49,9 +49,8 @@ public class QuestionService {
             String apikey = "AIzaSyCbLudPiesxon89uVFg9qloApgl_8BXviY";
             String url = "https://maps.googleapis.com/maps/api/staticmap?center="+question.getCoordinate().getLat()+","+question.getCoordinate().getLon()+"&zoom="+ question.getZoomLevel() +
                     "&size="+ height +"x"+ width +"&scale=2&maptype=satellite&key="+apikey;
-            System.out.println(url);
-            URL mapUrl = new URL(url);
 
+            URL mapUrl = new URL(url);
             HttpURLConnection httpURLConnection = (HttpURLConnection) mapUrl.openConnection();
 
             InputStream responseStream = httpURLConnection.getInputStream();
