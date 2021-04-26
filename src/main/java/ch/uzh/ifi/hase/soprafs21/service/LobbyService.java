@@ -84,4 +84,9 @@ public class LobbyService {
     public List getAllLobbies(){
         return lobbyRepository.findAllByIsPublicTrue();
     }
+    public Lobby getLobbyWithRoomKey(Long roomKey){
+        if (lobbyRepository.findByRoomKey(roomKey) == null){throw  new PerformingUnauthenticatedAction("Lobby does not exist!"); }
+        return lobbyRepository.findByRoomKey(roomKey);
+
+    }
 }

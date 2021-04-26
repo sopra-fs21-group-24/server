@@ -10,6 +10,7 @@ public class LobbyGetDTO {
     private Long creator;
     private List<UserGetDTOWithoutToken> users;
     private Boolean isPublic;
+    private Long roomKey;
 
     public Long getId() {
         return id;
@@ -42,4 +43,8 @@ public class LobbyGetDTO {
     public void setPublic(Boolean aPublic) {
         isPublic = aPublic;
     }
+
+    public Long getRoomKey() { return roomKey; }
+
+    public void setRoomKey(Long roomKey) { this.roomKey = roomKey; }
 }

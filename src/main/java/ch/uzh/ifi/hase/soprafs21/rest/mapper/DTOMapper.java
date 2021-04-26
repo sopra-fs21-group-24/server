@@ -49,6 +49,7 @@ public interface DTOMapper {
     @Mapping(source = "creator", target = "creator")
     @Mapping(source = "public", target = "public")
     @Mapping(target = "users", ignore = true)
+    @Mapping(source = "roomKey", target = "roomKey")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
 
     @Mapping(source = "id", target = "id")

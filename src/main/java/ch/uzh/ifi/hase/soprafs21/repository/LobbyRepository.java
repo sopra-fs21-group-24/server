@@ -13,6 +13,6 @@ public interface LobbyRepository extends JpaRepository<Lobby, Long> {
     Lobby findByid(Long lobbyid);
     @Query("select r.id from Lobby r where r.isPublic = true")
     List findAllByIsPublicTrue();
-
+    Lobby findByRoomKey(Long roomKey);
     Lobby findByCreator(Long creator);
 }
