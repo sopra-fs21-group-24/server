@@ -70,12 +70,20 @@ public class LobbyController {
 
     }
 
-    @PostMapping("/lobby/{Lobbyid}/{Userid}")
+    @PostMapping("/lobby/{roomKey}/{Userid}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<String> joinLobby(@PathVariable long Lobbyid,@PathVariable long Userid) {
-        Lobby lobbyToJoin = lobbyService.getLobbyWithId(Lobbyid);
+    public ResponseEntity<String> joinLobby(@PathVariable long roomKey,@PathVariable long Userid) {
+        Lobby lobbyToJoin = lobbyService.getLobbyWithRoomKey(roomKey);
         lobbyService.addUserToExistingLobby(userService.getUserByUserId(Userid),lobbyToJoin);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @GetMapping("/lobby/roomKey/{roomKey}")
+    @ResponseStatus(HttpStatus.OK)
+    public LobbyGetDTO getLobbyWithRoomKey(@PathVariable("roomKey") Long roomKey) {
+        Lobby lobby = lobbyService.getLobbyWithRoomKey(roomKey);
+        return getLeobbyWithId(lobby.getId());
+    }
+
+
 }
