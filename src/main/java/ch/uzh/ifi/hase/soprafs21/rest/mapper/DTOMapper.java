@@ -15,6 +15,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 
 /**

@@ -150,9 +150,9 @@ public class GameController {
                 return ResponseEntity.status(403).body(null);
             }
 
-            if(!game.getCreatorUserId().equals(user.getId())){
+            /* if(!game.getCreatorUserId().equals(user.getId())){
                 return ResponseEntity.status(401).body(null);
-            }
+            } */
 
             GameGetDTO responseDTO = DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
             return ResponseEntity.status(200).body(responseDTO);

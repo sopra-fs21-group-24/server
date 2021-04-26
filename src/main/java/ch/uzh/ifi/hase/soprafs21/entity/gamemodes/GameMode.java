@@ -7,12 +7,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 
+@JsonDeserialize()
 @Entity
 @Table(name = "GAMEMODE")
-public class GameMode implements Serializable {
+public abstract class GameMode implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -58,4 +61,7 @@ public class GameMode implements Serializable {
  
         return(c * radius);
     }
+
+    public abstract String getName(); 
+    public abstract void setName(String name);
 }
