@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,33 +66,47 @@ public class GameController {
     @GetMapping("/games")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public GameGetDTO getAllGames(@RequestBody UserPostDTO userPostDTO) {
+    public GameGetDTO getAllGames(){
         GameEntity game = new GameEntity();
+        game.setCreatorUserId(1L);;
         game.setUserMode(new SinglePlayer());
         game.setGameMode(new Time());
+
+        Set<Long> a = new HashSet<>();
+        a.add(1L);
+        a.add(2L);
+        a.add(3L);
+
+        game.setUserIds(a);
+        game.setLobbyId(1L);
+        
         return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
     }
 
     @PostMapping("/games")
-    public ResponseEntity<GamePostDTOCreate> createGame(
+    public ResponseEntity<GameGetDTO> createGame(
         @RequestBody GamePostDTOCreate gamePostDTOCreate,
         @RequestHeader Map<String, String> header
     ) {
 
-        if(checkAuth(header) == null){
+/*         if(checkAuth(header) == null){
             return ResponseEntity.status(403).body(null);
-        }
+        } */
         
         try {
             GameEntity gameRaw = DTOMapper.INSTANCE.convertGamePostDTOCreateToGameEntity(gamePostDTOCreate);
-            gameService.createGame(gameRaw);
+            gameRaw.setGameModeFromName(gamePostDTOCreate.getGamemode());
+            gameRaw.setUserModeFromName(gamePostDTOCreate.getUsermode());
+
+            GameEntity game = gameService.createGame(gameRaw, gamePostDTOCreate.getPublicStatus());
+
+            GameGetDTO response = DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
+            return ResponseEntity.status(201).body(response);
         }
         catch (Exception e){
-            logger.error(e.getMessage());
-            return ResponseEntity.status(400).body(gamePostDTOCreate);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(new GameGetDTO());
         }
-
-        return ResponseEntity.status(201).body(gamePostDTOCreate);
     }
 
 

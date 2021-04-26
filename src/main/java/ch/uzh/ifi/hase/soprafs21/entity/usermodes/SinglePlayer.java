@@ -2,19 +2,24 @@ package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 
 public class SinglePlayer extends UserMode {
     private static final long serialVersionUID = 1L;
 
+    private String name = "SinglePlayer";
+
     @Override
-    public void init(GameEntity game) {
-        throw new UnsupportedOperationException();
-    };
+    public Optional<Lobby> init(GameEntity game, boolean publicStatus) {
+        game.setLobbyId(null);
+        return Optional.empty();
+    }
 
     @Override
     public void start(GameEntity game) {
@@ -29,5 +34,15 @@ public class SinglePlayer extends UserMode {
         score.setUserId(userId);
         scores.put(userId, score);
 
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

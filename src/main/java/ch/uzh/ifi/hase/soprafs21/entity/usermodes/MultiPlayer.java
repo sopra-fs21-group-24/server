@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
@@ -12,11 +13,15 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 public class MultiPlayer extends UserMode {
     private static final long serialVersionUID = 1L;
 
+    private String name = "MultiPlayer";
+
     @Override
-    public void init(GameEntity game) {
+    public Optional<Lobby> init(GameEntity game, boolean publicStatus) {
         Lobby lobby = new Lobby();
         lobby.setCreator(game.getCreatorUserId());
-        lobby.setPublic(game.getPublicStatus());
+        lobby.setPublic(publicStatus);
+        game.setLobbyId(lobby.getId());
+        return Optional.of(lobby); 
     }
 
     @Override
@@ -32,5 +37,15 @@ public class MultiPlayer extends UserMode {
             score.setUserId(user);
             scores.put(user, score);
         }
+    }  
+    
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

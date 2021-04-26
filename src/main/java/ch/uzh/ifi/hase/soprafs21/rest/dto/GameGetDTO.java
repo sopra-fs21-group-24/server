@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
 public class GameGetDTO {
     private String gameId;
     private Long creatorId;
+    private Long lobbyId;
     private int round;
     private UserMode userMode;
     private GameMode gameMode;
@@ -61,5 +62,13 @@ public class GameGetDTO {
 
     public void setPlayers(Set<Long> players) {
         this.players = players;
+    }
+
+    public Long getLobbyId() {
+        return lobbyId;
+    }
+
+    public void setLobbyId(Long lobbyId) {
+        this.lobbyId = lobbyId;
     }
 }

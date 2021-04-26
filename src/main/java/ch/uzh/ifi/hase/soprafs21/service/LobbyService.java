@@ -20,8 +20,6 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PerformingUnauthenticatedAction;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
-import javax.swing.text.html.parser.Entity;
-
 @Service
 @Transactional
 public class LobbyService {

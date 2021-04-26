@@ -43,3 +43,5 @@ local.properties
 .vscode/*
 .vscode/launch.json
 bin/main/application.properties
+
+.vscode/*

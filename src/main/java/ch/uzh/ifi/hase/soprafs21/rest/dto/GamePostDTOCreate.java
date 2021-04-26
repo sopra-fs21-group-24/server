@@ -1,12 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
-import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
-
 public class GamePostDTOCreate {
     private Long userId;
-    private UserMode userMode;
-    private GameMode gameMode;
+    private String usermode;
+    private String gamemode;
     private boolean publicStatus;
 
     public Long getUserId() {
@@ -17,20 +14,20 @@ public class GamePostDTOCreate {
         this.userId = userId;
     }
 
-    public UserMode getUserMode() {
-        return userMode;
+    public String getUsermode() {
+        return usermode;
     }
 
-    public void setUserMode(UserMode userMode) {
-        this.userMode = userMode;
+    public void setUsermode(String usermode) {
+        this.usermode = usermode;
     }
 
-    public GameMode getGameMode() {
-        return gameMode;
+    public String getGamemode() {
+        return gamemode;
     }
 
-    public void setGameMode(GameMode gameMode) {
-        this.gameMode = gameMode;
+    public void setGamemode(String gamemode) {
+        this.gamemode = gamemode;
     }
 
     public Boolean getPublicStatus(){
