@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -63,10 +62,8 @@ public class GameService {
         }
 
         UserMode uMode = gameRaw.getUserMode();
-        Optional<Lobby> optionalLobby= uMode.init(gameRaw, publicStatus);
-        if(optionalLobby.isPresent()){
-           lobbyService.createLobby(optionalLobby.get()); 
-        }
+        uMode.setLobbyService(lobbyService);
+        uMode.init(gameRaw, publicStatus);
 
         GameEntity game = gameRepository.save(gameRaw);
         gameRepository.flush();
@@ -103,7 +100,7 @@ public class GameService {
 
         GameEntity game = found.get();
 
-        Set<Long> users = game.getUserIds();
+        List<Long> users = game.getUserIds();
         if (!users.contains(answer.getUserId())) {
             throw new NotFoundException("User is not a player of this game");
         }
@@ -159,6 +156,13 @@ public class GameService {
         // exit Lobby
         // new Highscore?
         throw new UnsupportedOperationException();
+    }
+
+    public void moveLobbyUsers(GameEntity game){
+        if (game.getLobbyId() != null){
+            Lobby lobby = lobbyService.getLobbyWithId(game.getLobbyId());
+            game.setUserIds(lobby.getUsers());
+        }
     }
 
 

@@ -1,9 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +71,7 @@ public class GameController {
         game.setUserMode(new SinglePlayer());
         game.setGameMode(new Time());
 
-        Set<Long> a = new HashSet<>();
+        List<Long> a = new ArrayList<>();
         a.add(1L);
         a.add(2L);
         a.add(3L);

@@ -1,10 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -22,14 +21,6 @@ import ch.uzh.ifi.hase.soprafs21.entity.usermodes.SinglePlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 
-/* 
-TODO:
-- user and game mode enum?
-- makeguess()
-- Round int
-- userscores
-- creator id saven?
-*/
 
 @Entity
 @Table(name = "GAMEENTITY")
@@ -65,7 +56,7 @@ public class GameEntity implements Serializable {
 
     @Column(nullable = false)
     @ElementCollection
-    private Set<Long> userIds = Collections.synchronizedSet(new HashSet<Long>());
+    private List<Long> userIds =Collections.synchronizedList(new ArrayList<>());
 
     public GameMode getGameMode() {
         return gameMode;
@@ -163,11 +154,11 @@ public class GameEntity implements Serializable {
         return creatorUserId;
     }
 
-    public Set<Long> getUserIds() {
+    public List<Long> getUserIds() {
         return userIds;
     }
 
-    public void setUserIds(Set<Long> userIds) {
+    public void setUserIds(List<Long> userIds) {
         this.userIds = userIds;
     }
 

@@ -1,9 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
@@ -16,17 +15,17 @@ public class MultiPlayer extends UserMode {
     private String name = "MultiPlayer";
 
     @Override
-    public Optional<Lobby> init(GameEntity game, boolean publicStatus) {
+    public void init(GameEntity game, boolean publicStatus) {
         Lobby lobby = new Lobby();
         lobby.setCreator(game.getCreatorUserId());
         lobby.setPublic(publicStatus);
         game.setLobbyId(lobby.getId());
-        return Optional.of(lobby); 
+        this.lobbyService.createLobby(lobby);
     }
 
     @Override
     public void start(GameEntity game) {
-        Set<Long> users = game.getUserIds();
+        List<Long> users = game.getUserIds();
         if (users.size() < 2) {
             throw new NotFoundException("User is starting the game prematurly");
         }

@@ -1,14 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 
 public class SinglePlayer extends UserMode {
     private static final long serialVersionUID = 1L;
@@ -16,14 +15,13 @@ public class SinglePlayer extends UserMode {
     private String name = "SinglePlayer";
 
     @Override
-    public Optional<Lobby> init(GameEntity game, boolean publicStatus) {
+    public void init(GameEntity game, boolean publicStatus) {
         game.setLobbyId(null);
-        return Optional.empty();
     }
 
     @Override
     public void start(GameEntity game) {
-        Set<Long> users = game.getUserIds();
+        List<Long> users = game.getUserIds();
         if (users.size() != 1) {
             throw new NotFoundException("Single: Number of Users playing incorrect");
         }
@@ -45,4 +43,11 @@ public class SinglePlayer extends UserMode {
     public String getName() {
         return name;
     }
+
+    @Override
+    public void setLobbyService(LobbyService lobbyService) {
+        super.setLobbyService(null);
+    }
+
+    
 }
