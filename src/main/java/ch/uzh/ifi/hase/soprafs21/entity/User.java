@@ -34,17 +34,22 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = true)
+    private Integer highClouds;
+
+    @Column(nullable = true)
+    private Integer highTime;
+
+    @Column(nullable = true)
+    private Integer highPixel;
+
     // TODO
     //List with already answered questions
 
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setId(Long id) { this.id = id; }
 
     public String getUsername() {
         return username;
@@ -70,4 +75,15 @@ public class User implements Serializable {
         this.token = token;
     }
 
+    public Integer getHighClouds() { return highClouds; }
+
+    public void setHighClouds(Integer highClouds) { this.highClouds = highClouds; }
+
+    public Integer getHighTime() { return highTime; }
+
+    public void setHighTime(Integer highTime) { this.highTime = highTime; }
+
+    public Integer getHighPixel() { return highPixel; }
+
+    public void setHighPixel(Integer highPixel) { this.highPixel = highPixel; }
 }

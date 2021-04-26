@@ -11,39 +11,26 @@ public class UserGetDTO {
 /*    private UserStatus logged_in;
     private Date createdDate;
     private String birthdate; */
+    private Integer highClouds;
+    private Integer highPixel;
+    private Integer highTime;
 
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setId(Long id) { this.id = id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public void setName(String name) { this.name = name; }
 
-    public String getUsername() {
-        return username;
-    }
+    public String getUsername() { return username; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public void setUsername(String username) { this.username = username; }
 
-    public String getToken(){
-        return token;
-    }
+    public String getToken(){ return token; }
 
-    public void setToken(String token){
-        this.token = token; 
-    }
+    public void setToken(String token){ this.token = token; }
 
 /*     public UserStatus getLogged_in() {
         return logged_in;
@@ -64,5 +51,15 @@ public class UserGetDTO {
         this.birthdate = birthdate;
     } */
 
+    public Integer getHighClouds() { return highClouds; }
 
+    public void setHighClouds(Integer highClouds) { this.highClouds = highClouds; }
+
+    public Integer getHighPixel() { return highPixel; }
+
+    public void setHighPixel(Integer highPixel) { this.highPixel = highPixel; }
+
+    public Integer getHighTime() { return highTime; }
+
+    public void setHighTime(Integer highTime) { this.highTime = highTime; }
 }

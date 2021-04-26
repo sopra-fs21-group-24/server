@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import java.util.Map;
 
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -98,11 +99,11 @@ public class UserController {
 
     @GetMapping("/users/{ID}")
     @ResponseStatus(HttpStatus.OK)
-    public UserGetDTO getUserById(
+    public UserGetDTOWithoutToken getUserById(
         @PathVariable("ID") long userId
         ){
         User foundUser = userService.getUserByUserId(userId);
-        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(foundUser);
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTOWithoutToken(foundUser);
     }
 
     @PutMapping("/users/{ID}")                             
