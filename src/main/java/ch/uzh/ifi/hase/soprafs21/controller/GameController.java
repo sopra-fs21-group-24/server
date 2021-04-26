@@ -68,7 +68,7 @@ public class GameController {
     @ResponseBody
     public GameGetDTO getAllGames(){
         GameEntity game = new GameEntity();
-        game.setCreatorUserId(1L);;
+        game.setCreatorUserId(1L);
         game.setUserMode(new SinglePlayer());
         game.setGameMode(new Time());
 
@@ -125,6 +125,32 @@ public class GameController {
             }
 
             if(!game.getUserIds().contains(user.getId())){
+                return ResponseEntity.status(401).body(null);
+            }
+
+            GameGetDTO responseDTO = DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
+            return ResponseEntity.status(200).body(responseDTO);
+        } 
+        catch(NotFoundException e){
+            return ResponseEntity.status(400).body(null);
+        }
+    }
+
+    @GetMapping("/games/{gameId}/start")
+    public ResponseEntity<GameGetDTO> startGame(
+        @PathVariable Long gameId, 
+        @RequestHeader Map<String, String> header
+    ) {
+
+        try {
+            GameEntity game = gameService.gameById(gameId);
+            User user = checkAuth(header);
+
+            if(user == null){
+                return ResponseEntity.status(403).body(null);
+            }
+
+            if(!game.getCreatorUserId().equals(user.getId())){
                 return ResponseEntity.status(401).body(null);
             }
 
