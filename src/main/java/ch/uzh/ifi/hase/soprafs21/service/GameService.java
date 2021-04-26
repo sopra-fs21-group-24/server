@@ -17,7 +17,10 @@ import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.ScoreRepository;
@@ -79,7 +82,7 @@ public class GameService {
         GameEntity game = found.get();
 
         if (userId.equals(game.getCreatorUserId())) {
-            throw new NotFoundException("User starting the game is not the game-creator");
+            throw new NotCreatorException("User starting the game is not the game-creator");
         }
 
         UserMode uMode = game.getUserMode();
@@ -102,21 +105,21 @@ public class GameService {
 
         List<Long> users = game.getUserIds();
         if (!users.contains(answer.getUserId())) {
-            throw new NotFoundException("User is not a player of this game");
+            throw new UnauthorizedException("User is not a player of this game");
         }
 
         if (game.getRound() > 3) {
-            throw new NotFoundException("Rounds are exceeding max");
+            throw new PreconditionFailedException("Rounds are exceeding max");
         }
             
         Optional<Question> foundQuestion = questionRepository.findById(answer.getQuestionId());
         if (foundQuestion.isEmpty()){
-            throw new NotFoundException("Question with this questionId is not found");
+            throw new PreconditionFailedException("Question with this questionId is not found");
         } 
         
         List<Long> questions = game.getQuestions();
         if(!questions.contains(answer.getQuestionId())){
-            throw new NotFoundException("Questionid is not part of the game questions");
+            throw new PreconditionFailedException("Questionid is not part of the game questions");
         } 
 
         Question question = foundQuestion.get();
@@ -126,7 +129,7 @@ public class GameService {
 
         // check for timelegitimacy
         if(!isTimeValid(game, currentTime)){
-            throw new NotFoundException("Request outside of round timeframe");
+            throw new PreconditionFailedException("Request outside of round timeframe");
         }
 
         GameMode gMode = game.getGameMode();

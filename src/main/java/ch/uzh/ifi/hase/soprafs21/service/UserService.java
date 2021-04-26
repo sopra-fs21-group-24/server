@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.exceptions.MissingInformationException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.PerformingUnauthenticatedAction;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UserAlreadyExistsException;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
@@ -47,7 +47,7 @@ public class UserService {
             foundUser.setToken(UUID.randomUUID().toString());
             return userRepository.save(foundUser);
         } else {
-            throw new PerformingUnauthenticatedAction("Invalid Password Username Combination!" + foundUser.getPassword());
+            throw new NotCreatorException("Invalid Password Username Combination!" + foundUser.getPassword());
         }
     }
 
@@ -57,7 +57,7 @@ public class UserService {
         if (foundUser != null && foundUser.getToken() != null && unauthorizedUser.getToken().equals(foundUser.getToken())){
             return userRepository.save(foundUser);
         } else {
-            throw new PerformingUnauthenticatedAction("No/Wrong Token was provided to authenticate logout procedure!");
+            throw new NotCreatorException("No/Wrong Token was provided to authenticate logout procedure!");
         }
     }
 
@@ -107,7 +107,7 @@ public class UserService {
         User userToBeUpdated = getUserByUserId(userId);
         // ensure userId matches token, e.g. you can only update yourself
         if (!userToBeUpdated.getToken().equals(user.getToken())) {
-            throw new PerformingUnauthenticatedAction("You're trying to update an user other than yourself!");
+            throw new NotCreatorException("You're trying to update an user other than yourself!");
         }
         if (user.getPassword() != null){
             userToBeUpdated.setPassword(user.getPassword());

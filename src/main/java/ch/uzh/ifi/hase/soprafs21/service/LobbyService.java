@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
-import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.PerformingUnauthenticatedAction;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
@@ -71,7 +69,7 @@ public class LobbyService {
             lobbyRepository.flush();
         }
         else {
-            throw  new PerformingUnauthenticatedAction("To many users in the lobby!"); 
+            throw  new NotCreatorException("To many users in the lobby!"); 
         }
     }
 

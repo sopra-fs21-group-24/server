@@ -7,7 +7,7 @@ import java.util.Map;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
-import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 
 public class MultiPlayer extends UserMode {
     private static final long serialVersionUID = 1L;
@@ -27,7 +27,7 @@ public class MultiPlayer extends UserMode {
     public void start(GameEntity game) {
         List<Long> users = game.getUserIds();
         if (users.size() < 2) {
-            throw new NotFoundException("User is starting the game prematurly");
+            throw new PreconditionFailedException("User is starting the game prematurly");
         }
 
         Map<Long, Score> scores = new HashMap<>();
