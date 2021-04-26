@@ -108,7 +108,8 @@ public class GameController {
     @ResponseBody
     public GameGetDTO getGame(
         @PathVariable Long gameId, 
-        @RequestHeader Map<String, String> header) throws UnauthorizedException, NotFoundException {
+        @RequestHeader Map<String, String> header) 
+        throws UnauthorizedException, NotFoundException {
 
         User user = checkAuth(header);
         GameEntity game = gameService.gameById(gameId);
@@ -120,15 +121,27 @@ public class GameController {
     @GetMapping("/games/{gameId}/start")
     public GameGetDTO startGame(
         @PathVariable Long gameId, 
-        @RequestHeader Map<String, String> header) throws NotCreatorException, NotFoundException{
+        @RequestHeader Map<String, String> header) 
+        throws PreconditionFailedException, NotCreatorException, NotFoundException {
 
         GameEntity game = gameService.gameById(gameId);
         User user= checkAuth(header);
         checkPartofGame(game, user);
 
-        // user header
-        // need userId
-        return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
+        String userIdString = header.get("user");
+        logger.warn("Keys.....{}", header.keySet());
+        if (userIdString == null){
+            throw new PreconditionFailedException("userId is missing " + userIdString);
+        }
+
+        try {
+            Long userId = Long.parseLong(userIdString);
+            gameService.startGame(userId, gameId);
+            return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
+        }
+        catch (NumberFormatException e){
+            throw new PreconditionFailedException("userId is in a wrong format");
+        }
     }
 
     @PutMapping("/games/{gameId}")

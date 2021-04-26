@@ -1,11 +1,14 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.repository.ScoreRepository;
 
@@ -32,6 +35,15 @@ public class ScoreService {
         }
         catch (IllegalArgumentException e){
             throw new PreconditionFailedException("[ScoreService] There is already a Score in the database");
+        }
+    }
+
+    public Score findById(Long userId){
+        Optional<Score> foundScore = scoreRepository.findById(userId);
+        if (foundScore.isEmpty()){
+            throw new NotFoundException("Score for player could not be found");
+        } else {
+            return foundScore.get();
         }
     }
 

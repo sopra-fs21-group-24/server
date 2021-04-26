@@ -23,7 +23,6 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
-import ch.uzh.ifi.hase.soprafs21.repository.ScoreRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
 @Service
@@ -33,20 +32,20 @@ public class GameService {
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
-    private final ScoreRepository scoreRepository;
+    private final ScoreService scoreService;
     private final LobbyService lobbyService;
 
     @Autowired
     public GameService(@Qualifier("gameRepository") GameRepository gameRepository, 
     UserRepository userRepository, 
     QuestionRepository questionRepository, 
-    ScoreRepository scoreRepository,
+    ScoreService scoreService,
     LobbyService lobbyService 
     ) {
+        this.questionRepository = questionRepository;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
-        this.scoreRepository = scoreRepository;
-        this.questionRepository = questionRepository;
+        this.scoreService = scoreService;
         this.lobbyService = lobbyService;
     }
 
@@ -58,11 +57,21 @@ public class GameService {
         return found.get();
     }
 
+    public boolean existsGameByCreatorUserId(Long gameId) {
+        Optional<GameEntity> found = gameRepository.findByCreatorUserId(gameId);
+        if(found.isPresent()){
+            throw new PreconditionFailedException("User has already created a game");
+        } 
+        return false;
+    }
+
     public GameEntity createGame(GameEntity gameRaw, boolean publicStatus) {
-        Optional<User> creator = userRepository.findById(gameRaw.getCreatorUserId());
+        Long userId = gameRaw.getCreatorUserId();
+        Optional<User> creator = userRepository.findById(userId);
         if (creator.isEmpty()) {
             throw new NotFoundException("[createGame] A user with this userId " + gameRaw.getCreatorUserId() + "doesn't exist");
         }
+        existsGameByCreatorUserId(userId);
 
         UserMode uMode = gameRaw.getUserMode();
         uMode.setLobbyService(lobbyService);
@@ -73,24 +82,30 @@ public class GameService {
         return game;
     }
 
-    public void startGame(Long userId, Long gameId) {
+    public GameEntity startGame(Long userId, Long gameId) {
         Optional<GameEntity> found = gameRepository.findById(gameId);
         if (found.isEmpty()) {
             throw new NotFoundException("Game Entity is not found, to start the game");
         } 
 
+        // TODO
+        // - evtl. lobby hier killen
+        // - set questions?
+
         GameEntity game = found.get();
 
-        if (userId.equals(game.getCreatorUserId())) {
+        if (!userId.equals(game.getCreatorUserId())) {
             throw new NotCreatorException("User starting the game is not the game-creator");
         }
 
         UserMode uMode = game.getUserMode();
+        uMode.setScoreService(scoreService);
         uMode.start(game);
 
-        // set questions?
         game.setCurrentTime();
         game.setRound(game.getRound() + 1);
+
+        return game;
     }
 
     public Long makeGuess(Answer answer) {
@@ -135,15 +150,10 @@ public class GameService {
         GameMode gMode = game.getGameMode();
         Long tempScore = gMode.calculateScore(answer);
 
-        Optional<Score> foundScore = scoreRepository.findById(answer.getUserId());
-        if (foundScore.isEmpty()){
-            throw new NotFoundException("Score for player could not be found");
-        } else {
-            Score score = foundScore.get();
-            score.setTempScore(tempScore);
-            score.setTotalScore(score.getTotalScore() + tempScore);
-            score.setLastCoordinate(answer.getCoordGuess());
-        }
+        Score score = scoreService.findById(answer.getUserId());
+        score.setTempScore(tempScore);
+        score.setTotalScore(score.getTotalScore() + tempScore);
+        score.setLastCoordinate(answer.getCoordGuess());
 
         return tempScore;
     }

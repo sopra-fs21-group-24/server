@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
+import java.util.Arrays;
 import java.util.List;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
@@ -15,6 +16,7 @@ public class SinglePlayer extends UserMode {
     @Override
     public void init(GameEntity game, boolean publicStatus) {
         game.setLobbyId(null);
+        game.setUserIds(Arrays.asList(game.getCreatorUserId()));
     }
 
     @Override
