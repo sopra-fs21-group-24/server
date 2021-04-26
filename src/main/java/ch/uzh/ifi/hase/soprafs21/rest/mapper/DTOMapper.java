@@ -12,6 +12,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
@@ -74,6 +75,9 @@ public interface DTOMapper {
 
     @Mapping(source = "userId", target = "creatorUserId")
     GameEntity convertGamePostDTOCreateToGameEntity(GamePostDTOCreate gamePostDTOCreate);
+
+    @Mapping(source = "userId", target = "creatorUserId")
+    GameEntity convertGamePutDTOToGameEntity(GamePutDTO gamePutDTO);
 
     @Mapping(source = "gameId", target = "gameId")
     @Mapping(source = "creatorUserId", target = "creatorId")

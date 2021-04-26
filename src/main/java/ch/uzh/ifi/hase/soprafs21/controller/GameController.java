@@ -26,8 +26,8 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.ScoreGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
@@ -69,6 +69,12 @@ public class GameController {
             
     }
 
+    private void checkGameCreator(GameEntity game, User user){
+       if (!user.getId().equals(game.getCreatorUserId())) {
+            throw new NotCreatorException("User starting the game is not the game-creator");
+        } 
+    }
+
     // evtl implementieren fürs debugging
     @GetMapping("/games")
     @ResponseStatus(HttpStatus.OK)
@@ -89,7 +95,8 @@ public class GameController {
     @ResponseBody
     public GameGetDTO createGame(
         @RequestBody GamePostDTOCreate gamePostDTOCreate,
-        @RequestHeader Map<String, String> header) throws NotFoundException, NotCreatorException, PreconditionFailedException{
+        @RequestHeader Map<String, String> header) 
+        throws NotFoundException, NotCreatorException, PreconditionFailedException{
 
         checkAuth(header);
         
@@ -126,17 +133,11 @@ public class GameController {
 
         GameEntity game = gameService.gameById(gameId);
         User user= checkAuth(header);
-        checkPartofGame(game, user);
+        checkGameCreator(game, user);
 
-        String userIdString = header.get("user");
-        logger.warn("Keys.....{}", header.keySet());
-        if (userIdString == null){
-            throw new PreconditionFailedException("userId is missing " + userIdString);
-        }
 
         try {
-            Long userId = Long.parseLong(userIdString);
-            gameService.startGame(userId, gameId);
+            gameService.startGame(gameId);
             return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
         }
         catch (NumberFormatException e){
@@ -145,17 +146,25 @@ public class GameController {
     }
 
     @PutMapping("/games/{gameId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UserGetDTO changeGameInfo(
-        @RequestBody UserGetDTO gamePutDTO,
-        @RequestHeader Map<String, String> header) throws UnauthorizedException{
+    public GameGetDTO changeGameInfo(
+        @PathVariable Long gameId,
+        @RequestBody GamePutDTO gamePutDTO,
+        @RequestHeader Map<String, String> header) 
+        throws UnauthorizedException, NotCreatorException{
 
-        checkAuth(header);
+        GameEntity game = DTOMapper.INSTANCE.convertGamePutDTOToGameEntity(gamePutDTO);
 
-        // check if user is part of game
+        User user = checkAuth(header);
+        checkGameCreator(game, user);
 
-        return new UserGetDTO();
+        game.setGameId(gameId);
+        game.setGameModeFromName(gamePutDTO.getGamemode());
+        game.setUserModeFromName(gamePutDTO.getUsermode());
+        GameEntity gameLocal = gameService.update(game, gamePutDTO.getPublicStatus());
+
+        return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(gameLocal);
     }
 
     @PostMapping("/games/{gameId}/guess")

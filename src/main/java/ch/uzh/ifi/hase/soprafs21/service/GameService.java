@@ -17,10 +17,8 @@ import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
-import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
@@ -82,7 +80,7 @@ public class GameService {
         return game;
     }
 
-    public GameEntity startGame(Long userId, Long gameId) {
+    public GameEntity startGame(Long gameId) {
         Optional<GameEntity> found = gameRepository.findById(gameId);
         if (found.isEmpty()) {
             throw new NotFoundException("Game Entity is not found, to start the game");
@@ -93,11 +91,6 @@ public class GameService {
         // - set questions?
 
         GameEntity game = found.get();
-
-        if (!userId.equals(game.getCreatorUserId())) {
-            throw new NotCreatorException("User starting the game is not the game-creator");
-        }
-
         UserMode uMode = game.getUserMode();
         uMode.setScoreService(scoreService);
         uMode.start(game);
@@ -117,11 +110,6 @@ public class GameService {
         } 
 
         GameEntity game = found.get();
-
-        List<Long> users = game.getUserIds();
-        if (!users.contains(answer.getUserId())) {
-            throw new UnauthorizedException("User is not a player of this game");
-        }
 
         if (game.getRound() > 3) {
             throw new PreconditionFailedException("Rounds are exceeding max");
@@ -180,6 +168,34 @@ public class GameService {
 
     public List<GameEntity> getAllGames(){
         return gameRepository.findAll();
+    }
+
+    public GameEntity update(GameEntity game, Boolean publicStatus){
+        GameEntity gameLocal = gameById(game.getGameId());
+        if(gameLocal.getRound() != 0){
+            throw new PreconditionFailedException("Game has already started, Can not change running game");
+        } 
+
+        String nameUserModeLocal = gameLocal.getUserMode().getName();
+        String nameUserModePut = game.getUserMode().getName();
+        String nameGameModeLocal= gameLocal.getGameMode().getName();
+        String nameGameModePut= game.getGameMode().getName();
+        Lobby lobbyLocal = lobbyService.getLobbyWithId(gameLocal.getLobbyId());
+
+        // evt. wegnehmen
+        if(!nameUserModeLocal.equals(nameUserModePut)){
+            gameLocal.setUserMode(game.getUserMode());
+        }
+
+        if(!nameGameModeLocal.equals(nameGameModePut)){
+            gameLocal.setGameMode(game.getGameMode());
+        }
+
+        if(!lobbyLocal.getPublic().equals(publicStatus)){
+            lobbyLocal.setPublic(publicStatus);
+        }
+
+        return gameLocal;
     }
 
 
