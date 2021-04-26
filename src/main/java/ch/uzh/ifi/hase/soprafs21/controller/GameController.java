@@ -131,8 +131,11 @@ public class GameController {
         @RequestHeader Map<String, String> header) throws NotCreatorException, NotFoundException{
 
         GameEntity game = gameService.gameById(gameId);
-        checkAuth(header);
+        User user= checkAuth(header);
+        checkPartofGame(game, user);
 
+        // user header
+        // need userId
         return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
     }
 
@@ -142,6 +145,7 @@ public class GameController {
     public UserGetDTO changeGameInfo(
         @RequestBody UserGetDTO gamePutDTO,
         @RequestHeader Map<String, String> header) throws UnauthorizedException{
+
         checkAuth(header);
 
         // check if user is part of game

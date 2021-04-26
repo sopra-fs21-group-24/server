@@ -9,6 +9,7 @@ import javax.persistence.Table;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
+import ch.uzh.ifi.hase.soprafs21.service.ScoreService;
 
 @Entity
 @Table(name = "USERMODE")
@@ -17,6 +18,7 @@ public abstract class UserMode implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected transient LobbyService lobbyService;
+    protected transient ScoreService scoreService;
 
     @Id
     @GeneratedValue
@@ -33,5 +35,9 @@ public abstract class UserMode implements Serializable {
 
     public void setLobbyService(LobbyService lobbyService) {
         this.lobbyService = lobbyService;
+    }
+
+    public void setScoreService(ScoreService scoreService) {
+        this.scoreService = scoreService;
     }
 }
