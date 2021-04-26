@@ -2,9 +2,11 @@ package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 
@@ -14,8 +16,9 @@ public class SinglePlayer extends UserMode {
     private String name = "SinglePlayer";
 
     @Override
-    public void init(GameEntity game, boolean publicStatus) {
-        throw new UnsupportedOperationException();
+    public Optional<Lobby> init(GameEntity game, boolean publicStatus) {
+        game.setLobbyId(null);
+        return Optional.empty();
     }
 
     @Override

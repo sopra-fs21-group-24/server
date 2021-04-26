@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
@@ -15,10 +16,12 @@ public class MultiPlayer extends UserMode {
     private String name = "MultiPlayer";
 
     @Override
-    public void init(GameEntity game, boolean publicStatus) {
+    public Optional<Lobby> init(GameEntity game, boolean publicStatus) {
         Lobby lobby = new Lobby();
         lobby.setCreator(game.getCreatorUserId());
-        lobby.setPublic(game.getPublicStatus());
+        lobby.setPublic(publicStatus);
+        game.setLobbyId(lobby.getId());
+        return Optional.of(lobby); 
     }
 
     @Override

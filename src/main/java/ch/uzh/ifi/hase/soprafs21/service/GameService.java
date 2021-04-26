@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -31,13 +32,20 @@ public class GameService {
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final ScoreRepository scoreRepository;
+    private final LobbyService lobbyService;
 
     @Autowired
-    public GameService(@Qualifier("gameRepository") GameRepository gameRepository, UserRepository userRepository, QuestionRepository questionRepository, ScoreRepository scoreRepository) {
+    public GameService(@Qualifier("gameRepository") GameRepository gameRepository, 
+    UserRepository userRepository, 
+    QuestionRepository questionRepository, 
+    ScoreRepository scoreRepository,
+    LobbyService lobbyService 
+    ) {
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.scoreRepository = scoreRepository;
         this.questionRepository = questionRepository;
+        this.lobbyService = lobbyService;
     }
 
     public GameEntity gameById(Long gameId) {
@@ -49,17 +57,20 @@ public class GameService {
     }
 
     public GameEntity createGame(GameEntity gameRaw, boolean publicStatus) {
-        // TODO
-
         Optional<User> creator = userRepository.findById(gameRaw.getCreatorUserId());
         if (creator.isEmpty()) {
-            throw new NotFoundException("A user with this userId doesn't exist");
+            throw new NotFoundException("[createGame] A user with this userId " + gameRaw.getCreatorUserId() + "doesn't exist");
         }
 
         UserMode uMode = gameRaw.getUserMode();
-        uMode.init(gameRaw, publicStatus);
+        Optional<Lobby> optionalLobby= uMode.init(gameRaw, publicStatus);
+        if(optionalLobby.isPresent()){
+           lobbyService.createLobby(optionalLobby.get()); 
+        }
 
-        return gameRaw;
+        GameEntity game = gameRepository.save(gameRaw);
+        gameRepository.flush();
+        return game;
     }
 
     public void startGame(Long userId, Long gameId) {

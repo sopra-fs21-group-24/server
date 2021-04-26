@@ -95,14 +95,17 @@ public class GameController {
         
         try {
             GameEntity gameRaw = DTOMapper.INSTANCE.convertGamePostDTOCreateToGameEntity(gamePostDTOCreate);
+            gameRaw.setGameModeFromName(gamePostDTOCreate.getGamemode());
+            gameRaw.setUserModeFromName(gamePostDTOCreate.getUsermode());
+
             GameEntity game = gameService.createGame(gameRaw, gamePostDTOCreate.getPublicStatus());
+
             GameGetDTO response = DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
             return ResponseEntity.status(201).body(response);
         }
         catch (Exception e){
-            logger.error(e.getLocalizedMessage());
             e.printStackTrace();
-            return ResponseEntity.status(400).body(null);
+            return ResponseEntity.status(500).body(new GameGetDTO());
         }
     }
 

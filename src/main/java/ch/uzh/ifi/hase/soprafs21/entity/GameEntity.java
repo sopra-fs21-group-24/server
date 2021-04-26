@@ -13,8 +13,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Clouds;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Pixelation;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
+import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
+import ch.uzh.ifi.hase.soprafs21.entity.usermodes.SinglePlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 
 /* 
 TODO:
@@ -40,9 +46,6 @@ public class GameEntity implements Serializable {
 
     @Column(nullable = false)
     private int round = 0;
-
-    // variable rausnehtmen aus dto?
-    private boolean publicStatus; // fühlt sich komisch an
 
     @Column(nullable = false)
     @ElementCollection
@@ -88,6 +91,10 @@ public class GameEntity implements Serializable {
         return gameId;
     }
 
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
+    }
+
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
@@ -97,8 +104,46 @@ public class GameEntity implements Serializable {
         this.gameMode = gameMode;
     }
 
+    public void setGameModeFromName(String gameModeName){
+        GameMode gMode;
+
+        switch (gameModeName) {
+            case "Pixelation":
+                gMode = new Pixelation(); 
+                break;
+
+            case "Time":
+                gMode = new Time(); 
+                break;
+
+            case "Clouds":
+                gMode = new Clouds(); 
+                break;
+        
+            default:
+                gMode = new Time();
+                break;
+        }
+        
+        this.gameMode = gMode;
+    }
+
     public void setUserMode(UserMode userMode){
         this.userMode = userMode;
+    }
+
+    public void setUserModeFromName(String userModeName){
+        UserMode uMode;
+
+        if (userModeName.equals("Singleplayer")){
+            uMode = new SinglePlayer();
+        } else if(userModeName.equals("Multiplayer")){
+            uMode = new MultiPlayer();
+        } else {
+            throw new NotFoundException("Can not read this kind of Usermode");
+        }
+
+        this.userMode = uMode;
     }
 
 
@@ -124,14 +169,6 @@ public class GameEntity implements Serializable {
 
     public void setUserIds(Set<Long> userIds) {
         this.userIds = userIds;
-    }
-
-    public boolean getPublicStatus(){
-        return publicStatus;
-    }
-
-    public void setPublicStatus(boolean publicStatus) {
-        this.publicStatus = publicStatus;
     }
 
     public Long getLobbyId() {

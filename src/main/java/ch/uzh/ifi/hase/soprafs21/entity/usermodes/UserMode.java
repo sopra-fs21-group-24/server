@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 
 @Entity
 @Table(name = "USERMODE")
@@ -20,9 +22,7 @@ public abstract class UserMode implements Serializable {
     @GeneratedValue
     private Long uModeId;
 
-    public void init(GameEntity game, boolean publicStatus){
-        throw new UnsupportedOperationException();
-    }
+    public abstract Optional<Lobby> init(GameEntity game, boolean publicStatus);
 
     public void start(GameEntity game){
         throw new UnsupportedOperationException();
