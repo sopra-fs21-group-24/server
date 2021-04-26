@@ -15,5 +15,5 @@ public interface LobbyRepository extends JpaRepository<Lobby, Long> {
     @Query("select r.id from Lobby r where r.isPublic = true")
     List findAllByIsPublicTrue();
 
-    Lobby findByCreator(String creator);
+    Lobby findByCreator(Long creator);
 }

@@ -34,7 +34,17 @@ public interface DTOMapper {
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
+    @Mapping(source = "highPixel", target = "highPixel")
+    @Mapping(source = "highClouds", target = "highClouds")
+    @Mapping(source = "highTime", target = "highTime")
     UserGetDTO convertEntityToUserGetDTO(User user);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "highPixel", target = "highPixel")
+    @Mapping(source = "highClouds", target = "highClouds")
+    @Mapping(source = "highTime", target = "highTime")
+    UserGetDTOWithoutToken convertEntityToUserGetDTOWithoutToken(User user);
 
     @Mapping(source = "creator", target = "creator")
     @Mapping(source = "public", target = "public")
@@ -43,8 +53,8 @@ public interface DTOMapper {
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "creator", target = "creator")
-    @Mapping(source = "users", target = "users")
     @Mapping(source = "public", target = "public")
+    @Mapping(target = "users", ignore = true)
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
 
     @Mapping(source = "id", target = "id")

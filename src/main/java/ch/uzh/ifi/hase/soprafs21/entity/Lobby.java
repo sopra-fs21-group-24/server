@@ -1,4 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.*;
@@ -16,12 +20,11 @@ public class Lobby {
     @Column(nullable = false)
     private Long creator;
 
-    @Column(nullable = false, unique =  true)
+    @Column(nullable = true, unique =  true)
     private Long roomKey;
 
-
-    @ElementCollection
     @Column(nullable = false)
+    @ElementCollection
     private List<Long> users;
 
     @Column(nullable = false)

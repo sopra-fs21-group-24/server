@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,12 +40,17 @@ public class LobbyController {
 
     @GetMapping("/lobby/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Lobby getLeobbyWithId(@PathVariable("id") Long lobbyid){
+    public LobbyGetDTO getLeobbyWithId(@PathVariable("id") Long lobbyid) {
+        Lobby lobby = lobbyService.getLobbyWithId(lobbyid);
+        LobbyGetDTO lobbyDTO = DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
+        List<UserGetDTOWithoutToken> userlist = new ArrayList<>();
+        for (Long i : lobby.getUsers()) {
+            userlist.add(DTOMapper.INSTANCE.convertEntityToUserGetDTOWithoutToken(userService.getUserByUserId(i)));
 
-        return lobbyService.getLobbyWithId(lobbyid);
-
+        }
+        lobbyDTO.setUsers(userlist);
+        return lobbyDTO;
     }
-
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
     public List getAllLobbies(){
@@ -59,8 +66,8 @@ public class LobbyController {
     public LobbyGetDTO createLobby(@RequestBody LobbyPostDTO lobbyPostDTO) {
         Lobby lobby = DTOMapper.INSTANCE.convertLobbyPostDTOtoEntity(lobbyPostDTO);
         Lobby createdLobby = lobbyService.createLobby(lobby);
+        return getLeobbyWithId(createdLobby.getId());
 
-        return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(createdLobby);
     }
 
     @PostMapping("/lobby/{Lobbyid}/{Userid}")

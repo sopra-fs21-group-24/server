@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +46,11 @@ public class LobbyService {
         }
         users.add(creator.get().getId());
         newlobby.setUsers(users);
-        newlobby.setRoomKey(generateRoomKey(newlobby));
+        lobbyRepository.save(newlobby);
         lobbyRepository.flush();
-
+        Lobby createdlobby = lobbyRepository.findByCreator(newlobby.getCreator());
+        createdlobby.setRoomKey(generateRoomKey(createdlobby));
+        lobbyRepository.flush();
         log.debug("Created Information for Lobby: {}", newlobby);
         return newlobby;
 
