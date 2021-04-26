@@ -168,6 +168,10 @@ public class GameService {
         }
     }
 
+    public List<GameEntity> getAllGames(){
+        return gameRepository.findAll();
+    }
+
 
     public Question questionById(Long questionId) {
         Optional<Question> found = questionRepository.findById(questionId);

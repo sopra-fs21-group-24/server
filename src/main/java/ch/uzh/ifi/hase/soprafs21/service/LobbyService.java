@@ -47,6 +47,8 @@ public class LobbyService {
         }
 
         newlobby.addUser(creator.getId());
+        newlobby.setRoomKey(generateRoomKey(newlobby));
+
         lobbyRepository.save(newlobby);
         lobbyRepository.flush();
 

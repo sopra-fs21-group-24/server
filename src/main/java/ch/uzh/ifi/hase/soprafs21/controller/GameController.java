@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
-import ch.uzh.ifi.hase.soprafs21.entity.usermodes.SinglePlayer;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
@@ -75,21 +73,15 @@ public class GameController {
     @GetMapping("/games")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public GameGetDTO getAllGames(){
-        GameEntity game = new GameEntity();
-        game.setCreatorUserId(1L);
-        game.setUserMode(new SinglePlayer());
-        game.setGameMode(new Time());
+    public List<GameGetDTO> getAllGames(){
 
-        List<Long> a = new ArrayList<>();
-        a.add(1L);
-        a.add(2L);
-        a.add(3L);
+        List<GameGetDTO> allGames = new ArrayList<>();
 
-        game.setUserIds(a);
-        game.setLobbyId(1L);
-        
-        return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
+        for(GameEntity game : gameService.getAllGames()){
+            allGames.add(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
+        }
+
+        return allGames;
     }
 
     @PostMapping("/games")
