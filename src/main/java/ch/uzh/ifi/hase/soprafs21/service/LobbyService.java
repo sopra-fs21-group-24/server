@@ -87,8 +87,10 @@ public class LobbyService {
 
 
     public List<Lobby> getAllLobbies(){
+        if (lobbyRepository.findAllByIsPublicTrue().isEmpty()){throw new NotFoundException("No open lobbies");}
         return lobbyRepository.findAllByIsPublicTrue();
     }
+
     public Lobby getLobbyWithRoomKey(Long roomKey){
         if (lobbyRepository.findByRoomKey(roomKey) == null){throw new NotFoundException("Lobby does not exist!"); }
         return lobbyRepository.findByRoomKey(roomKey);
