@@ -1,26 +1,22 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User Controller
@@ -91,6 +87,17 @@ public class LobbyController {
     public LobbyGetDTO getLobbyWithRoomKey(@PathVariable("roomKey") Long roomKey) {
         Lobby lobby = lobbyService.getLobbyWithRoomKey(roomKey);
         return getLeobbyWithId(lobby.getId());
+    }
+
+    @PutMapping("/lobby/{lobbyId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void userExitLobby(
+            @PathVariable Long lobbyId,
+            @RequestBody LobbyPutDTO lobbyPutDTO) {
+
+        lobbyService.UserExitLobby(lobbyPutDTO.getUserId(),lobbyId);
+
     }
 
 

@@ -87,11 +87,35 @@ public class LobbyService {
 
 
     public List<Lobby> getAllLobbies(){
+        if (lobbyRepository.findAllByIsPublicTrue().isEmpty()){throw new NotFoundException("No open lobbies");}
         return lobbyRepository.findAllByIsPublicTrue();
     }
+
     public Lobby getLobbyWithRoomKey(Long roomKey){
         if (lobbyRepository.findByRoomKey(roomKey) == null){throw new NotFoundException("Lobby does not exist!"); }
         return lobbyRepository.findByRoomKey(roomKey);
 
     }
+
+    public void UserExitLobby(Long userId, Long lobbyId){
+        if (lobbyRepository.findByid(lobbyId) == null){throw new NotFoundException("Lobby does not exist!");}
+        if (!userRepository.findById(userId).get().getInLobby()){throw new NotFoundException("User is not in a lobby!"); }
+        if (!lobbyRepository.findByid(lobbyId).getUsers().contains(userId)){throw new NotFoundException("User si not in this lobby!");}
+        List<Long> newuserList = lobbyRepository.findByid(lobbyId).getUsers();
+        newuserList.remove(userId);
+        userRepository.findById(userId).get().setInLobby(false);
+        userRepository.flush();
+        lobbyRepository.findByid(lobbyId).setUsers(newuserList);
+        lobbyRepository.flush();
+    }
+
+    public void deleteLobby(Long lobbyId){
+        if (lobbyRepository.findByid(lobbyId) == null){throw new NotFoundException("Lobby does not exist!");}
+        for (Long id : lobbyRepository.findByid(lobbyId).getUsers()){
+            userRepository.findById(id).get().setInLobby(false);
+        }
+        lobbyRepository.delete(lobbyRepository.findByid(lobbyId));
+        lobbyRepository.flush();
+    }
+
 }
