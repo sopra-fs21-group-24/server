@@ -3,8 +3,6 @@ package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
 public class LobbyPostDTO {
 
-
-
     private String creator;
     private Boolean isPublic;
 
@@ -15,7 +13,6 @@ public class LobbyPostDTO {
     public void setCreator(String creator) {
         this.creator = creator;
     }
-
 
     public Boolean getPublic() {
         return isPublic;

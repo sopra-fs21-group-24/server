@@ -5,7 +5,6 @@ public class QuestionGetDTO {
     private Integer height;
     private Integer width;
 
-
     public Integer getHeight() {
         return height;
     }

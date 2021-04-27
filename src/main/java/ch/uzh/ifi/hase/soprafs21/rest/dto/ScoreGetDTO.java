@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.rest.dto;
 import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 
 public class ScoreGetDTO {
+
     private long userId;
     private long tempScore;
     private long totalScore;

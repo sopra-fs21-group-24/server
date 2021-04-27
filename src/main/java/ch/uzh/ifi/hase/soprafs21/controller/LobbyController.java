@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
+
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +13,6 @@ import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User Controller
