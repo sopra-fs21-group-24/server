@@ -3,17 +3,14 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
@@ -41,6 +38,19 @@ public class LobbyController {
 
         this.userService = userService;
     }
+
+
+
+    private User checkAuth(Map<String, String> header){
+        String token = header.get("token");
+        try {
+            return userService.getUserByToken(token);
+        }
+        catch (NotFoundException e) {
+            throw new UnauthorizedException(e.getMessage());
+        }
+    }
+
 
     @GetMapping("/lobby/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -79,14 +89,27 @@ public class LobbyController {
 
     }
 
-    @PostMapping("/lobby/{roomKey}/{Userid}")
+    @PostMapping("/lobby/{roomKey}/roomkey")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<String> joinLobby(@PathVariable long roomKey,@PathVariable long Userid) {
-        Lobby lobbyToJoin = lobbyService.getLobbyById(roomKey);
-        lobbyService.addUserToExistingLobby(userService.getUserByUserId(Userid),lobbyToJoin);
+    public ResponseEntity<String> joinLobby(@PathVariable long roomKey, @RequestHeader Map<String, String> header) {
+        User user = checkAuth(header);
+        Lobby lobbyToJoin = lobbyService.getLobbyByRoomkey(roomKey);
+        lobbyService.addUserToExistingLobby(user,lobbyToJoin);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/lobby/{lobbyId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> joinLobbyWithRoomId(@PathVariable long lobbyId,@RequestHeader Map<String, String> header) {
+        User user = checkAuth(header);
+        Lobby lobbyToJoin = lobbyService.getLobbyById(lobbyId);
+        lobbyService.addUserToExistingLobby(user,lobbyToJoin);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
     @GetMapping("/lobby/roomKey/{roomKey}")
     @ResponseStatus(HttpStatus.OK)
     public LobbyGetDTO getLobbyWithRoomKey(@PathVariable("roomKey") Long roomKey) {
@@ -99,9 +122,9 @@ public class LobbyController {
     @ResponseBody
     public void userExitLobby(
             @PathVariable Long lobbyId,
-            @RequestBody LobbyPutDTO lobbyPutDTO) {
-
-        lobbyService.userExitLobby(lobbyPutDTO.getUserId(),lobbyId);
+            @RequestHeader Map<String, String> header) {
+        User user = checkAuth(header);
+        lobbyService.userExitLobby(user.getId(),lobbyId);
 
     }
 

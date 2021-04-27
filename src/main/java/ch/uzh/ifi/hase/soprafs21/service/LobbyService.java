@@ -95,7 +95,6 @@ public class LobbyService {
 
 
     public List<Lobby> getAllLobbies(){
-        if (lobbyRepository.findAllByIsPublicTrue().isEmpty()){throw new NotFoundException("No open lobbies");}
         return lobbyRepository.findAllByIsPublicTrue();
     }
 
