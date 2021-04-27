@@ -61,6 +61,7 @@ public class LobbyController {
         for (Lobby i : lobbyService.getAllLobbies()) {
             LobbyGetDTOAllLobbies lobbyGetDTOAllLobbies = DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(i);
             lobbyGetDTOAllLobbies.setUsers(i.getUsers().size());
+            lobbyGetDTOAllLobbies.setUsername(userService.getUserByUserId(i.getCreator()).getUsername());
             finalLobbyList.add(lobbyGetDTOAllLobbies);
         }
         return finalLobbyList;
