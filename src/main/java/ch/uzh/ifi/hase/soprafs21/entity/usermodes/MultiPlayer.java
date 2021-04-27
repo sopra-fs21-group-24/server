@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
+import java.util.Arrays;
 import java.util.List;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
@@ -15,10 +16,13 @@ public class MultiPlayer extends UserMode {
     @Override
     public void init(GameEntity game, boolean publicStatus) {
         Lobby lobby = new Lobby();
-        lobby.setCreator(game.getCreatorUserId());
+        Long creator = game.getCreatorUserId();
+        lobby.setCreator(creator);
+        lobby.addUser(creator);
         lobby.setPublic(publicStatus);
         this.lobbyService.createLobby(lobby);
         game.setLobbyId(lobby.getId());
+        game.setUserIds(Arrays.asList(creator));
     }
 
     @Override

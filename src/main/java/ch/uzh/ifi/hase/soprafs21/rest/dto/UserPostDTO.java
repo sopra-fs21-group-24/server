@@ -4,14 +4,9 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
 public class UserPostDTO {
 
-    private String name;
-
     private String username;
-
     private String password;
-
     private String token;
-
     private UserStatus status;
 
     public UserStatus getUserStatus() {
@@ -20,14 +15,6 @@ public class UserPostDTO {
 
     public void setUserStatus(UserStatus status) {
         this.status = status;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getUsername() {
