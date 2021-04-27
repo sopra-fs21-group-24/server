@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -187,6 +188,26 @@ public class GameController {
         Score score = gameService.makeGuess(answer);
 
         return DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(score);
+    }
+
+    @GetMapping("/games/{gameId}/scores")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<ScoreGetDTO> gameScores(
+        @PathVariable Long gameId, 
+        @RequestHeader Map<String, String> header) 
+        throws NotFoundException, UnauthorizedException {
+
+        GameEntity game = gameService.gameById(gameId);
+        User user = checkAuth(header);
+        checkGameCreator(game, user);
+
+        List<ScoreGetDTO> scoresDTO = new ArrayList<>();
+        ListIterator<Score> scores = gameService.scoresByGame(game);
+        while(scores.hasNext()){
+           scoresDTO.add(DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(scores.next()));
+        }
+        return scoresDTO;
     }
 
     @GetMapping("/games/{gameId}/questions")

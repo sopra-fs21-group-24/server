@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
+import java.util.Map;
+
 // Contains no Secret Information
 
 public class UserGetDTO {
@@ -7,9 +9,7 @@ public class UserGetDTO {
     private Long id;
     private String username;
     private String token;
-    private Integer highClouds;
-    private Integer highPixel;
-    private Integer highTime;
+    private Map<String, Integer> highscores;
 
 
     public Long getId() { return id; }
@@ -24,15 +24,12 @@ public class UserGetDTO {
 
     public void setToken(String token){ this.token = token; }
 
-    public Integer getHighClouds() { return highClouds; }
+    public Map<String, Integer> getHighscores() {
+        return highscores;
+    }
 
-    public void setHighClouds(Integer highClouds) { this.highClouds = highClouds; }
+    public void setHighscores(Map<String, Integer> highscores) {
+        this.highscores = highscores;
+    }
 
-    public Integer getHighPixel() { return highPixel; }
-
-    public void setHighPixel(Integer highPixel) { this.highPixel = highPixel; }
-
-    public Integer getHighTime() { return highTime; }
-
-    public void setHighTime(Integer highTime) { this.highTime = highTime; }
 }

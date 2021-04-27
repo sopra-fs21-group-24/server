@@ -1,8 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -35,13 +39,8 @@ public class User implements Serializable {
     private String password;
 
     @Column(nullable = false)
-    private Integer highClouds = 0;
-
-    @Column(nullable = false)
-    private Integer highTime = 0;
-
-    @Column(nullable = false)
-    private Integer highPixel = 0;
+    @ElementCollection
+    private Map<String, Integer> highScores = Collections.synchronizedMap(new HashMap<>());
 
     @Column(nullable = false)
     private Boolean isInLobby  = false;
@@ -65,19 +64,21 @@ public class User implements Serializable {
 
     public void setToken(String token) { this.token = token; }
 
-    public Integer getHighClouds() { return highClouds; }
-
-    public void setHighClouds(Integer highClouds) { this.highClouds = highClouds; }
-
-    public Integer getHighTime() { return highTime; }
-
-    public void setHighTime(Integer highTime) { this.highTime = highTime; }
-
-    public Integer getHighPixel() { return highPixel; }
-
-    public void setHighPixel(Integer highPixel) { this.highPixel = highPixel; }
-
     public Boolean getInLobby() { return isInLobby; }
 
     public void setInLobby(Boolean inLobby) { isInLobby = inLobby; }
+
+    public Map<String, Integer> getHighScores() {
+        return highScores;
+    }
+
+    public void setHighScores(Map<String, Integer> highScores) {
+        this.highScores = highScores;
+    }
+
+    public void initHighScores(){
+        highScores.put("Time", 0);
+        highScores.put("Clouds", 0);
+        highScores.put("Pixelation", 0);
+    }
 }

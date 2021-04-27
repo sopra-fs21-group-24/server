@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -102,7 +104,7 @@ public class GameService {
         question.setZoomLevel(1);
         question.setCoordinate(new Coordinate(1.0, 2.0));
         questionRepository.saveAndFlush(question);
-        game.setQuestions(Arrays.asList(1L));
+        game.setQuestions(Arrays.asList(question.getQuestionId()));
 
         UserMode uMode = game.getUserMode();
         uMode.setScoreService(scoreService);
@@ -156,19 +158,18 @@ public class GameService {
         return true;
     }
 
-    public int exitGame(GameEntity game) {
+    public void exitGame(GameEntity game) {
         // TODO
         // new Highscore?
-        List<Long> userIds = game.getUserIds();
-        for(Long userId : userIds){
-            Score score = scoreService.findById(userId);
-            Long totalScore = score.getTotalScore();
-            User user = userService.getUserByUserId(userId);
             // TODO
             // hashtable für users
+        ListIterator<Score> scores = scoresByGame(game);
+        while(scores.hasNext()){
+            Score score = scores.next();
+            Long totalScore = score.getTotalScore();
+            
+            // check if new HighScore
         }
-
-        throw new UnsupportedOperationException();
     }
 
     public void moveLobbyUsers(GameEntity game){
@@ -208,6 +209,15 @@ public class GameService {
         }
 
         return gameLocal;
+    }
+    
+    public ListIterator<Score> scoresByGame(GameEntity game){
+        List<Long> userIds = game.getUserIds();
+        ArrayList<Score> scores = new ArrayList<>(); 
+        for(Long userId : userIds){
+            scores.add(scoreService.findById(userId));
+        }
+        return scores.listIterator();
     }
 
 

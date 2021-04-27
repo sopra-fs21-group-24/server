@@ -45,22 +45,17 @@ public interface DTOMapper {
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
-    @Mapping(source = "highPixel", target = "highPixel")
-    @Mapping(source = "highClouds", target = "highClouds")
-    @Mapping(source = "highTime", target = "highTime")
+    @Mapping(source = "highScores", target = "highscores")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
-    @Mapping(source = "highPixel", target = "highPixel")
-    @Mapping(source = "highClouds", target = "highClouds")
-    @Mapping(source = "highTime", target = "highTime")
+    @Mapping(source = "highScores", target = "highscores")
     UserGetDTOWithoutToken convertEntityToUserGetDTOWithoutToken(User user);
 
     @Mapping(source = "creator", target = "creator")
     @Mapping(source = "public", target = "public")
     Lobby convertLobbyPostDTOtoEntity(LobbyPostDTO lobbyPostDTO);
-
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "creator", target = "creator")
@@ -68,7 +63,6 @@ public interface DTOMapper {
     @Mapping(target = "users", ignore = true)
     @Mapping(source = "roomKey", target = "roomKey")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
-
 
     @Mapping(source = "id", target = "id")
     @Mapping(target = "username", ignore = true)
@@ -81,7 +75,6 @@ public interface DTOMapper {
     @Mapping(source = "gameMode", target = "gameMode")
     @Mapping(source = "score", target = "score")
     LeaderboardGetDTO convertEntityToLeaderboardGetDTO(Leaderboard leaderboard);
-
 
     @Mapping(source = "userId", target = "creatorUserId")
     GameEntity convertGamePostDTOCreateToGameEntity(GamePostDTOCreate gamePostDTOCreate);
@@ -97,8 +90,6 @@ public interface DTOMapper {
     @Mapping(source = "userIds", target = "players")
     @Mapping(source = "lobbyId", target = "lobbyId")
     GameGetDTO convertGameEntityToGameGetDTO(GameEntity gameEntity);
-
-
 
     @Mapping(source = "userId", target = "userId")
     @Mapping(source = "tempScore", target = "tempScore")

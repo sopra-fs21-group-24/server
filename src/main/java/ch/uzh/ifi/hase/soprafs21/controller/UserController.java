@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import java.util.Map;
 
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
@@ -56,6 +56,8 @@ public class UserController {
         ) {
 
         User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+        user.initHighScores();
+
         User createdUser = userService.createUser(user);
         User loggedInUser = userService.login(createdUser);
 
