@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -10,16 +11,6 @@ import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePutDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.ScoreGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 
 /**
  * DTOMapper
@@ -65,6 +56,14 @@ public interface DTOMapper {
     @Mapping(target = "users", ignore = true)
     @Mapping(source = "roomKey", target = "roomKey")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
+
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "creator", target = "creator")
+    @Mapping(source = "public", target = "public")
+    @Mapping(target = "users", ignore = true)
+    @Mapping(source = "roomKey", target = "roomKey")
+    LobbyGetDTOAllLobbies convertEntityToLobbyGetDTOAllLobbies(Lobby lobby);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "userName", target = "userName")
