@@ -53,9 +53,21 @@ public class LobbyController {
     }
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
-    public List getAllLobbies(){
+    public List<LobbyGetDTO> getAllLobbies(){
+        List<LobbyGetDTO> finalLobbyList = new ArrayList<>();
+        for (Lobby i : lobbyService.getAllLobbies()) {
+            LobbyGetDTO lobbyDTO = DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(i);
+            for (Long x : i.getUsers()){
+                List<UserGetDTOWithoutToken> userlist = new ArrayList<>();
+            userlist.add(DTOMapper.INSTANCE.convertEntityToUserGetDTOWithoutToken(userService.getUserByUserId(x)));
 
-        return lobbyService.getAllLobbies();
+            lobbyDTO.setUsers(userlist);
+            }
+            finalLobbyList.add(lobbyDTO);
+        }
+
+
+        return finalLobbyList;
 
     }
 
