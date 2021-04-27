@@ -106,7 +106,6 @@ public interface DTOMapper {
     @Mapping(source = "lastCoordinate", target = "lastCoordinate")
     ScoreGetDTO convertScoreEntityToScoreGetDTO(Score score);
 
-    @Mapping(source = "gameId", target = "gameId")
     @Mapping(source = "questionId", target = "questionId")
     @Mapping(source = "coordGuess", target = "coordGuess")
     @Mapping(source = "difficultyFactor", target = "difficultyFactor")

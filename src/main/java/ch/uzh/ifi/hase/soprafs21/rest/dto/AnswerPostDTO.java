@@ -4,7 +4,6 @@ import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 
 public class AnswerPostDTO{
 
-    private Long gameId;
     private Long questionId;
     private Coordinate coordGuess;
     private float difficultyFactor;
@@ -15,14 +14,6 @@ public class AnswerPostDTO{
 
     public void setQuestionId(Long questionId) {
         this.questionId = questionId;
-    }
-
-    public Long getGameId() {
-        return gameId;
-    }
-
-    public void setGameId(Long gameId) {
-        this.gameId = gameId;
     }
 
     public Coordinate getCoordGuess() {

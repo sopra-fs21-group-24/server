@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
@@ -93,7 +95,15 @@ public class GameService {
         // - evtl. lobby hier killen
         // - set questions?
 
-        GameEntity game = found.get();
+        GameEntity game = gameById(gameId);
+
+        // HardCoded Question
+        Question question = new Question();
+        question.setZoomLevel(1);
+        question.setCoordinate(new Coordinate(1.0, 2.0));
+        questionRepository.saveAndFlush(question);
+        game.setQuestions(Arrays.asList(1L));
+
         UserMode uMode = game.getUserMode();
         uMode.setScoreService(scoreService);
         uMode.start(game);
@@ -104,7 +114,7 @@ public class GameService {
         return game;
     }
 
-    public Long makeGuess(Answer answer) {
+    public Score makeGuess(Answer answer) {
         long currentTime = System.currentTimeMillis();
 
         GameEntity game = gameById(answer.getGameId());
@@ -121,7 +131,8 @@ public class GameService {
         Question question = questionById(answer.getQuestionId());
         answer.setCoordQuestion(question.getCoordinate());
 
-        // calculate time score
+        // TODO: calculate time score
+        answer.setTimeFactor(1.0f);
 
         // check for timelegitimacy
         if(!isTimeValid(game, currentTime)){
@@ -136,7 +147,7 @@ public class GameService {
         score.setTotalScore(score.getTotalScore() + tempScore);
         score.setLastCoordinate(answer.getCoordGuess());
 
-        return tempScore;
+        return score;
     }
 
 

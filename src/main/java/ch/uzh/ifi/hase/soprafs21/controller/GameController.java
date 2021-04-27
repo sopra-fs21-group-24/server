@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
+import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
@@ -178,13 +179,14 @@ public class GameController {
     throws UnauthorizedException, PreconditionFailedException {
 
         User user = checkAuth(header);
-        // check if user is part of game
+        // check if user is part of game, reactivate if isse is fixed
 
         Answer answer = DTOMapper.INSTANCE.convertAnwserPostDTOtoAnswer(answerPostDTO);
         answer.setUserId(user.getId());
-        gameService.makeGuess(answer);
+        answer.setGameId(gameId);
+        Score score = gameService.makeGuess(answer);
 
-        return new ScoreGetDTO();
+        return DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(score);
     }
 
     @GetMapping("/games/{gameId}/questions")

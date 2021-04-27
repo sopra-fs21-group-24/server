@@ -9,14 +9,6 @@ public class Answer {
     private float difficultyFactor;
     private float timeFactor;
 
-    public Answer(Long userId, Long gameId, Long questionId, Coordinate coordGuess, float difficultyFactor){
-        this.userId = userId;
-        this.questionId = questionId;
-        this.gameId = gameId;
-        this.coordGuess = coordGuess;
-        this.difficultyFactor = difficultyFactor;
-    }
-
     public Long getUserId() {
         return userId;
     }
@@ -29,12 +21,24 @@ public class Answer {
         return gameId;
     }
 
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
+    }
+
     public Long getQuestionId() {
         return questionId;
     }
 
+    public void setQuestionId(Long questionId) {
+        this.questionId = questionId;
+    }
+
     public Coordinate getCoordGuess() {
         return coordGuess;
+    }
+    
+    public void setCoordGuess(Coordinate coordGuess) {
+        this.coordGuess = coordGuess;
     }
 
     public Coordinate getCoordQuestion() {
@@ -47,6 +51,10 @@ public class Answer {
 
     public float getDifficultyFactor() {
         return difficultyFactor;
+    }
+
+    public void setDifficultyFactor(float difficultyFactor) {
+        this.difficultyFactor = difficultyFactor;
     }
 
     public float getTimeFactor() {
