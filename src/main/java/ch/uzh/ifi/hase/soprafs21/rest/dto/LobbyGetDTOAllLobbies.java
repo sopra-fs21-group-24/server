@@ -5,10 +5,10 @@ import java.util.List;
 public class LobbyGetDTOAllLobbies {
 
     private Long id;
-    private Long creator;
+    private String username;
     private Integer users;
     private Boolean isPublic;
-    private Long roomKey;
+
 
     public Long getId() {
         return id;
@@ -16,14 +16,6 @@ public class LobbyGetDTOAllLobbies {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getCreator() {
-        return creator;
-    }
-
-    public void setCreator(Long creator) {
-        this.creator = creator;
     }
 
     public Integer getUsers() {
@@ -42,8 +34,7 @@ public class LobbyGetDTOAllLobbies {
         isPublic = aPublic;
     }
 
-    public Long getRoomKey() { return roomKey; }
+    public String getUsername() { return username; }
 
-    public void setRoomKey(Long roomKey) { this.roomKey = roomKey; }
-
+    public void setUsername(String username) { this.username = username; }
 }
