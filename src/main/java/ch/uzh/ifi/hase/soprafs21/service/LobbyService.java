@@ -97,7 +97,7 @@ public class LobbyService {
 
     public void UserExitLobby(Long userId, Long lobbyId){
         if (lobbyRepository.findByid(lobbyId) == null){throw new NotFoundException("Lobby does not exist!");}
-        if (!userRepository.findById(userId).get().getInLobby()){throw new NotFoundException("User si not in a lobby!"); }
+        if (!userRepository.findById(userId).get().getInLobby()){throw new NotFoundException("User is not in a lobby!"); }
         if (!lobbyRepository.findByid(lobbyId).getUsers().contains(userId)){throw new NotFoundException("User si not in this lobby!");}
         List<Long> newuserList = lobbyRepository.findByid(lobbyId).getUsers();
         newuserList.remove(userId);
