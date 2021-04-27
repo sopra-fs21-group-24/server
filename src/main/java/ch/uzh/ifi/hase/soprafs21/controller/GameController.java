@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -24,11 +25,11 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.AnswerPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.ScoreGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
@@ -118,7 +119,7 @@ public class GameController {
         @RequestHeader Map<String, String> header) 
         throws UnauthorizedException, NotFoundException {
 
-        User user = checkAuth(header);
+        checkAuth(header);
         GameEntity game = gameService.gameById(gameId);
         // checkPartofGame, momentan abgeschaltet
 
@@ -171,12 +172,17 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ScoreGetDTO makeGuess(
-        @RequestBody UserPostDTO userPostDTO,
+        @PathVariable Long gameId,
+        @RequestBody AnswerPostDTO answerPostDTO,
         @RequestHeader Map<String, String> header) 
     throws UnauthorizedException, PreconditionFailedException {
-        checkAuth(header);
 
+        User user = checkAuth(header);
         // check if user is part of game
+
+        Answer answer = DTOMapper.INSTANCE.convertAnwserPostDTOtoAnswer(answerPostDTO);
+        answer.setUserId(user.getId());
+        gameService.makeGuess(answer);
 
         return new ScoreGetDTO();
     }

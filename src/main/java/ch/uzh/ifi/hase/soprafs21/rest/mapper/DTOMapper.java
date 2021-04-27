@@ -1,16 +1,28 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.AnswerPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePutDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.ScoreGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 
 /**
  * DTOMapper
@@ -93,6 +105,12 @@ public interface DTOMapper {
     @Mapping(source = "totalScore", target = "totalScore")
     @Mapping(source = "lastCoordinate", target = "lastCoordinate")
     ScoreGetDTO convertScoreEntityToScoreGetDTO(Score score);
+
+    @Mapping(source = "gameId", target = "gameId")
+    @Mapping(source = "questionId", target = "questionId")
+    @Mapping(source = "coordGuess", target = "coordGuess")
+    @Mapping(source = "difficultyFactor", target = "difficultyFactor")
+    Answer convertAnwserPostDTOtoAnswer(AnswerPostDTO answerPostDTO);
 
 
 

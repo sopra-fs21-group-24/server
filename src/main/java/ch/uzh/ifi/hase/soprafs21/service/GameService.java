@@ -107,28 +107,18 @@ public class GameService {
     public Long makeGuess(Answer answer) {
         long currentTime = System.currentTimeMillis();
 
-        Optional<GameEntity> found = gameRepository.findById(answer.getGameId());
-        if (found.isEmpty()) {
-            throw new NotFoundException("Game Entity is not found");
-        } 
-
-        GameEntity game = found.get();
+        GameEntity game = gameById(answer.getGameId());
 
         if (game.getRound() > 3) {
             throw new PreconditionFailedException("Rounds are exceeding max");
         }
             
-        Optional<Question> foundQuestion = questionRepository.findById(answer.getQuestionId());
-        if (foundQuestion.isEmpty()){
-            throw new PreconditionFailedException("Question with this questionId is not found");
-        } 
-        
         List<Long> questions = game.getQuestions();
         if(!questions.contains(answer.getQuestionId())){
             throw new PreconditionFailedException("Questionid is not part of the game questions");
         } 
 
-        Question question = foundQuestion.get();
+        Question question = questionById(answer.getQuestionId());
         answer.setCoordQuestion(question.getCoordinate());
 
         // calculate time score
@@ -163,6 +153,8 @@ public class GameService {
             Score score = scoreService.findById(userId);
             Long totalScore = score.getTotalScore();
             User user = userService.getUserByUserId(userId);
+            // TODO
+            // hashtable für users
         }
 
         throw new UnsupportedOperationException();
@@ -211,7 +203,7 @@ public class GameService {
     public Question questionById(Long questionId) {
         Optional<Question> found = questionRepository.findById(questionId);
         if (found.isEmpty()) {
-            throw new NotFoundException("");
+            throw new NotFoundException("Question with this questionId is not found");
         } else {
             return found.get();
         }
