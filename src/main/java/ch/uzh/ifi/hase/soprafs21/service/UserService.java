@@ -74,7 +74,7 @@ public class UserService {
         if (found.isEmpty()) {
           throw new NotFoundException("User with userId: '" + userId + "' not found");
       }
-        return found.orElseThrow();
+        return found.get();
     }
 
     public List<User> getUsers() {

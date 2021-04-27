@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
@@ -26,11 +25,13 @@ public class LobbyService {
 
     private final LobbyRepository lobbyRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, UserRepository userRepository) {
+    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, UserRepository userRepository, UserService userService) {
         this.lobbyRepository = lobbyRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public Lobby createLobby(Lobby newlobby){
@@ -49,34 +50,41 @@ public class LobbyService {
         newlobby.addUser(creator.getId());
         newlobby.setRoomKey(generateRoomKey(newlobby));
         creator.setInLobby(true);
-        userRepository.save(creator);
-        lobbyRepository.save(newlobby);
-        lobbyRepository.flush();
-        userRepository.flush();
+
+        userRepository.saveAndFlush(creator);
+        lobbyRepository.saveAndFlush(newlobby);
         log.debug("Created Information for Lobby: {}", newlobby);
         return newlobby;
     }
 
-    public Lobby getLobbyWithId(Long lobbyid) {
-        if (lobbyRepository.findByid(lobbyid) == null){throw new NotFoundException("No lobby found with id:"+lobbyid);}
-        return lobbyRepository.findByid(lobbyid);
-
+    public Lobby getLobbyById(Long lobbyid) {
+        Optional<Lobby> found = lobbyRepository.findById(lobbyid);
+        if(found.isEmpty()){
+            throw new NotFoundException("Lobby with this lobbyid: " + lobbyid + " not found");
+        }
+        return found.get();
     }
 
-    public void addUserToExistingLobby(User userToAdd, Lobby lobbyAddTo){
-        if(userToAdd.getInLobby()){throw new NotFoundException("User is already in Lobby");}
-        if (lobbyAddTo.getUsers().size() < 3){
-            List<Long> users = lobbyAddTo.getUsers();
-            users.add(userToAdd.getId());
-            userToAdd.setInLobby(true);
-            userRepository.save(userToAdd);
-            lobbyAddTo.setUsers(users);
-            lobbyRepository.save(lobbyAddTo);
-            lobbyRepository.flush();
-            userRepository.flush();
+    public Lobby getLobbyByRoomkey(Long roomkey) {
+        Optional<Lobby> found = lobbyRepository.findByRoomKey(roomkey);
+        if(found.isEmpty()){
+            throw new NotFoundException("Lobby with this roomkey: " + roomkey + " not found");
+        }
+        return found.get();
+    }
+
+    public void addUserToExistingLobby(User user, Lobby lobby){
+        if(user.getInLobby()){
+            throw new NotFoundException("User is already in Lobby");
+        }
+        if (lobby.getUsers().size() < 3){
+            lobby.addUser(user.getId());
+
+            userRepository.saveAndFlush(user);
+            lobbyRepository.saveAndFlush(lobby);
         }
         else {
-            throw  new NotCreatorException("To many users in the lobby!"); 
+            throw  new PreconditionFailedException("To many users in the lobby!"); 
         }
     }
 
@@ -91,30 +99,35 @@ public class LobbyService {
         return lobbyRepository.findAllByIsPublicTrue();
     }
 
-    public Lobby getLobbyWithRoomKey(Long roomKey){
-        if (lobbyRepository.findByRoomKey(roomKey) == null){throw new NotFoundException("Lobby does not exist!"); }
-        return lobbyRepository.findByRoomKey(roomKey);
+    public void userExitLobby(Long userId, Long lobbyId){
 
-    }
+        User user = userService.getUserByUserId(userId);
+        if (!user.getInLobby()){
+            throw new PreconditionFailedException("User is not in a lobby!"); 
+        }
+        
+        Lobby lobby = getLobbyById(lobbyId);
+        List<Long> lobbyUsers = lobby.getUsers();
 
-    public void UserExitLobby(Long userId, Long lobbyId){
-        if (lobbyRepository.findByid(lobbyId) == null){throw new NotFoundException("Lobby does not exist!");}
-        if (!userRepository.findById(userId).get().getInLobby()){throw new NotFoundException("User is not in a lobby!"); }
-        if (!lobbyRepository.findByid(lobbyId).getUsers().contains(userId)){throw new NotFoundException("User si not in this lobby!");}
-        List<Long> newuserList = lobbyRepository.findByid(lobbyId).getUsers();
-        newuserList.remove(userId);
-        userRepository.findById(userId).get().setInLobby(false);
+        if (!lobbyUsers.contains(userId)){
+            throw new PreconditionFailedException("User is not in this lobby!");
+        }
+
+        lobbyUsers.remove(userId);
+        lobby.setUsers(lobbyUsers);
+
+        user.setInLobby(false);
+
         userRepository.flush();
-        lobbyRepository.findByid(lobbyId).setUsers(newuserList);
         lobbyRepository.flush();
     }
 
     public void deleteLobby(Long lobbyId){
-        if (lobbyRepository.findByid(lobbyId) == null){throw new NotFoundException("Lobby does not exist!");}
-        for (Long id : lobbyRepository.findByid(lobbyId).getUsers()){
-            userRepository.findById(id).get().setInLobby(false);
+        Lobby lobby = getLobbyById(lobbyId);
+        for (Long userId : lobby.getUsers()){
+            userService.getUserByUserId(userId).setInLobby(false);
         }
-        lobbyRepository.delete(lobbyRepository.findByid(lobbyId));
+        lobbyRepository.delete(lobby);
         lobbyRepository.flush();
     }
 
