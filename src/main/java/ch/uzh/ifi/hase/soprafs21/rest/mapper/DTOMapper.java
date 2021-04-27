@@ -94,5 +94,8 @@ public interface DTOMapper {
     @Mapping(source = "totalScore", target = "totalScore")
     @Mapping(source = "lastCoordinate", target = "lastCoordinate")
     ScoreGetDTO convertScoreEntityToScoreGetDTO(Score score);
+
+
+
     
 }
