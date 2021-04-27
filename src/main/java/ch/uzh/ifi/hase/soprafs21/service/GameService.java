@@ -161,7 +161,7 @@ public class GameService {
 
     public void moveLobbyUsers(GameEntity game){
         if (game.getLobbyId() != null){
-            Lobby lobby = lobbyService.getLobbyWithId(game.getLobbyId());
+            Lobby lobby = lobbyService.getLobbyById(game.getLobbyId());
             game.setUserIds(lobby.getUsers());
         }
     }
@@ -180,7 +180,7 @@ public class GameService {
         String nameUserModePut = game.getUserMode().getName();
         String nameGameModeLocal= gameLocal.getGameMode().getName();
         String nameGameModePut= game.getGameMode().getName();
-        Lobby lobbyLocal = lobbyService.getLobbyWithId(gameLocal.getLobbyId());
+        Lobby lobbyLocal = lobbyService.getLobbyById(gameLocal.getLobbyId());
 
         // evt. wegnehmen
         if(!nameUserModeLocal.equals(nameUserModePut)){
