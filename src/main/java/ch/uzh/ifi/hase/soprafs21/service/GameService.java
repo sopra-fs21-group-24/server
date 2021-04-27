@@ -32,19 +32,22 @@ public class GameService {
     private final QuestionRepository questionRepository;
     private final ScoreService scoreService;
     private final LobbyService lobbyService;
+    private final UserService userService;
 
     @Autowired
     public GameService(@Qualifier("gameRepository") GameRepository gameRepository, 
     UserRepository userRepository, 
     QuestionRepository questionRepository, 
     ScoreService scoreService,
-    LobbyService lobbyService 
+    LobbyService lobbyService,
+    UserService userService
     ) {
         this.questionRepository = questionRepository;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.scoreService = scoreService;
         this.lobbyService = lobbyService;
+        this.userService = userService;
     }
 
     public GameEntity gameById(Long gameId) {
@@ -152,10 +155,16 @@ public class GameService {
         return true;
     }
 
-    public int exitGame() {
+    public int exitGame(GameEntity game) {
         // TODO
-        // exit Lobby
         // new Highscore?
+        List<Long> userIds = game.getUserIds();
+        for(Long userId : userIds){
+            Score score = scoreService.findById(userId);
+            Long totalScore = score.getTotalScore();
+            User user = userService.getUserByUserId(userId);
+        }
+
         throw new UnsupportedOperationException();
     }
 

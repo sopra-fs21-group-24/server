@@ -1,8 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
-import ch.uzh.ifi.hase.soprafs21.entity.Question;
-import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Base64;
+
 import org.aspectj.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +15,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Base64;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
+import ch.uzh.ifi.hase.soprafs21.entity.Question;
+import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 
 @Service
 @Transactional
@@ -34,7 +35,7 @@ public class QuestionService {
 
     public String getMapImage(int height, int width, Long questionId) throws MalformedURLException {
         Question questionn = new Question();
-        questionId = 1L;
+        Long qId = 1L;
         questionn.setCoordinate(new Coordinate( -73.935242, 40.730610));
 
         questionn.setZoomLevel(15);
@@ -42,7 +43,7 @@ public class QuestionService {
         questionn.setQuestionId(1L);
         questionRepository.save(questionn);
         questionRepository.flush();
-        Question question = questionRepository.findByQuestionId(questionId);
+        Question question = questionRepository.findByQuestionId(qId);
 
 
         try {

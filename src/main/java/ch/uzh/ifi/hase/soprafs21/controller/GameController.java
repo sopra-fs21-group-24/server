@@ -120,7 +120,7 @@ public class GameController {
 
         User user = checkAuth(header);
         GameEntity game = gameService.gameById(gameId);
-        checkPartofGame(game, user);
+        // checkPartofGame, momentan abgeschaltet
 
         return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
     }
