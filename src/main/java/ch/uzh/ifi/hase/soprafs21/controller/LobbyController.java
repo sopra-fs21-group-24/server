@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,9 +54,16 @@ public class LobbyController {
     }
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
-    public List getAllLobbies(){
+    public List<LobbyGetDTOAllLobbies> getAllLobbies(){
+        List<LobbyGetDTOAllLobbies> finalLobbyList = new ArrayList<>();
+        for (Lobby i : lobbyService.getAllLobbies()) {
+            LobbyGetDTOAllLobbies lobbyGetDTOAllLobbies = DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(i);
+            lobbyGetDTOAllLobbies.setUsers(i.getUsers().size());
+            finalLobbyList.add(lobbyGetDTOAllLobbies);
+        }
 
-        return lobbyService.getAllLobbies();
+
+        return finalLobbyList;
 
     }
 

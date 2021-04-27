@@ -48,10 +48,11 @@ public class LobbyService {
 
         newlobby.addUser(creator.getId());
         newlobby.setRoomKey(generateRoomKey(newlobby));
-
+        creator.setInLobby(true);
+        userRepository.save(creator);
         lobbyRepository.save(newlobby);
         lobbyRepository.flush();
-
+        userRepository.flush();
         log.debug("Created Information for Lobby: {}", newlobby);
         return newlobby;
     }
@@ -67,9 +68,12 @@ public class LobbyService {
         if (lobbyAddTo.getUsers().size() < 3){
             List<Long> users = lobbyAddTo.getUsers();
             users.add(userToAdd.getId());
+            userToAdd.setInLobby(true);
+            userRepository.save(userToAdd);
             lobbyAddTo.setUsers(users);
             lobbyRepository.save(lobbyAddTo);
             lobbyRepository.flush();
+            userRepository.flush();
         }
         else {
             throw  new NotCreatorException("To many users in the lobby!"); 

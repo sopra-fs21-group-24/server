@@ -11,7 +11,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 @Repository("lobbyRepository")
 public interface LobbyRepository extends JpaRepository<Lobby, Long> {
     Lobby findByid(Long lobbyid);
-    @Query("select r.id from Lobby r where r.isPublic = true")
+    @Query("select r from Lobby r where r.isPublic = true")
     List<Lobby> findAllByIsPublicTrue();
     Lobby findByRoomKey(Long roomKey);
     Lobby findByCreator(Long creator);
