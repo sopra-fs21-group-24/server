@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -159,17 +160,28 @@ public class GameService {
     }
 
     public void exitGame(GameEntity game) {
-        // TODO
-        // new Highscore?
-            // TODO
-            // hashtable für users
         ListIterator<Score> scores = scoresByGame(game);
+
         while(scores.hasNext()){
             Score score = scores.next();
+
             Long totalScore = score.getTotalScore();
+            User user = userService.getUserByUserId(score.getUserId());
+            Map<String, Integer> highScores = user.getHighScores();
+            String key = game.getGameMode().getName();
+
+            Integer highest = highScores.get(key);
+
+            if (totalScore > highest){
+                highScores.put(key, totalScore.intValue());
+                user.setHighScores(highScores);
+            }
             
-            // check if new HighScore
         }
+
+        // is this the right behavior?
+        gameRepository.delete(game);
+        gameRepository.flush();
     }
 
     public void moveLobbyUsers(GameEntity game){
