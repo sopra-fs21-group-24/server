@@ -54,7 +54,7 @@ public class LobbyController {
 
     @GetMapping("/lobby/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public LobbyGetDTO getLeobbyWithId(@PathVariable("id") Long lobbyid) {
+    public LobbyGetDTO getLobbyWithId(@PathVariable("id") Long lobbyid) {
         Lobby lobby = lobbyService.getLobbyById(lobbyid);
         LobbyGetDTO lobbyDTO = DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
         List<UserGetDTOWithoutToken> userlist = new ArrayList<>();
@@ -85,7 +85,7 @@ public class LobbyController {
     public LobbyGetDTO createLobby(@RequestBody LobbyPostDTO lobbyPostDTO) {
         Lobby lobby = DTOMapper.INSTANCE.convertLobbyPostDTOtoEntity(lobbyPostDTO);
         Lobby createdLobby = lobbyService.createLobby(lobby);
-        return getLeobbyWithId(createdLobby.getId());
+        return getLobbyWithId(createdLobby.getId());
 
     }
 
@@ -114,7 +114,7 @@ public class LobbyController {
     @ResponseStatus(HttpStatus.OK)
     public LobbyGetDTO getLobbyWithRoomKey(@PathVariable("roomKey") Long roomKey) {
         Lobby lobby = lobbyService.getLobbyByRoomkey(roomKey);
-        return getLeobbyWithId(lobby.getId());
+        return getLobbyWithId(lobby.getId());
     }
 
     @PutMapping("/lobby/{lobbyId}")
