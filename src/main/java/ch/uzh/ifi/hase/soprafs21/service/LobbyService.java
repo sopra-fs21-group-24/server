@@ -79,7 +79,7 @@ public class LobbyService {
         }
         if (lobby.getUsers().size() < 3){
             lobby.addUser(user.getId());
-
+            user.setInLobby(true);
             userRepository.saveAndFlush(user);
             lobbyRepository.saveAndFlush(lobby);
         }
