@@ -5,7 +5,7 @@ public class LobbyGetDTOAllLobbies {
     private Long id;
     private String username;
     private Integer users;
-    private Boolean isPublic;
+    private Boolean publicStatus;
 
 
     public Long getId() {
@@ -24,12 +24,12 @@ public class LobbyGetDTOAllLobbies {
         this.users = users;
     }
 
-    public Boolean getPublic() {
-        return isPublic;
+    public Boolean getPublicStatus() {
+        return publicStatus;
     }
 
-    public void setPublic(Boolean aPublic) {
-        isPublic = aPublic;
+    public void setPublicStatus(Boolean publicStatus) {
+        this.publicStatus = publicStatus;
     }
 
     public String getUsername() { return username; }

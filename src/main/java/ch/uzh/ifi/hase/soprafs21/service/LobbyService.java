@@ -43,7 +43,7 @@ public class LobbyService {
 
         User creator = foundCreator.get();
 
-        if(creator.getInLobby()){
+        if(creator.getInLobby().booleanValue()){
             throw new PreconditionFailedException("User is already in another Lobby");
         }
 
@@ -74,7 +74,7 @@ public class LobbyService {
     }
 
     public void addUserToExistingLobby(User user, Lobby lobby){
-        if(user.getInLobby()){
+        if(user.getInLobby().booleanValue()){
             throw new NotFoundException("User is already in Lobby");
         }
         if (lobby.getUsers().size() < 3){
@@ -95,13 +95,17 @@ public class LobbyService {
 
 
     public List<Lobby> getAllLobbies(){
-        return lobbyRepository.findAllByIsPublicTrue();
+        List<Lobby> lobbies = lobbyRepository.findAllByPublicStatusTrue();
+        if (lobbies.isEmpty()){
+            throw new NotFoundException("No open lobbies");
+        }
+        return lobbies;
     }
 
     public void userExitLobby(Long userId, Long lobbyId){
 
         User user = userService.getUserByUserId(userId);
-        if (!user.getInLobby()){
+        if (!user.getInLobby().booleanValue()){
             throw new PreconditionFailedException("User is not in a lobby!"); 
         }
         

@@ -54,13 +54,13 @@ public interface DTOMapper {
     UserGetDTOWithoutToken convertEntityToUserGetDTOWithoutToken(User user);
 
     @Mapping(source = "creator", target = "creator")
-    @Mapping(source = "public", target = "public")
+    @Mapping(source = "isPublic", target = "publicStatus")
     Lobby convertLobbyPostDTOtoEntity(LobbyPostDTO lobbyPostDTO);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "gameId", target = "gameId")
     @Mapping(source = "creator", target = "creator")
-    @Mapping(source = "public", target = "public")
+    @Mapping(source = "publicStatus", target = "publicStatus")
     @Mapping(target = "users", ignore = true)
     @Mapping(source = "roomKey", target = "roomKey")
     @Mapping(target = "gamemode", ignore = true)
@@ -68,7 +68,7 @@ public interface DTOMapper {
 
     @Mapping(source = "id", target = "id")
     @Mapping(target = "username", ignore = true)
-    @Mapping(source = "public", target = "public")
+    @Mapping(source = "publicStatus", target = "publicStatus")
     @Mapping(target = "users", ignore = true)
     LobbyGetDTOAllLobbies convertEntityToLobbyGetDTOAllLobbies(Lobby lobby);
 

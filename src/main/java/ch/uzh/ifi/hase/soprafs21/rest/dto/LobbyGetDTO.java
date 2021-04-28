@@ -4,12 +4,13 @@ import java.util.List;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 
 
+
 public class LobbyGetDTO {
     private Long id;
     private Long gameId;
     private Long creator;
     private Long roomKey;
-    private Boolean isPublic;
+    private Boolean publicStatus;
     private GameMode gamemode;
     private List<UserGetDTOWithoutToken> users;
 
@@ -37,14 +38,6 @@ public class LobbyGetDTO {
         this.users = users;
     }
 
-    public Boolean getPublic() {
-        return isPublic;
-    }
-
-    public void setPublic(Boolean aPublic) {
-        isPublic = aPublic;
-    }
-
     public Long getGameId() {
         return gameId;
     }
@@ -68,4 +61,13 @@ public class LobbyGetDTO {
     public void setRoomKey(Long roomKey) { 
         this.roomKey = roomKey; 
     }
+
+    public Boolean getPublicStatus() {
+        return publicStatus;
+    }
+
+    public void setPublicStatus(Boolean publicStatus) {
+        this.publicStatus = publicStatus;
+    }
+
 }

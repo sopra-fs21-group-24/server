@@ -79,12 +79,12 @@ public class GameService {
         }
         existsGameByCreatorUserId(userId);
 
+        GameEntity game = gameRepository.save(gameRaw);
+
         UserMode uMode = gameRaw.getUserMode();
         uMode.setLobbyService(lobbyService);
         uMode.init(gameRaw, publicStatus);
 
-        GameEntity game = gameRepository.save(gameRaw);
-        gameRepository.flush();
         return game;
     }
 
@@ -231,8 +231,8 @@ public class GameService {
             gameLocal.setGameMode(game.getGameMode());
         }
 
-        if(!lobbyLocal.getPublic().equals(publicStatus)){
-            lobbyLocal.setPublic(publicStatus);
+        if(!lobbyLocal.getPublicStatus().equals(publicStatus)){
+            lobbyLocal.setPublicStatus(publicStatus);
         }
 
         return gameLocal;
