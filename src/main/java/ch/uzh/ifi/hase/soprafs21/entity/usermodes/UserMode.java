@@ -35,9 +35,14 @@ public abstract class UserMode implements Serializable {
     public void checkTimeValid(GameEntity game, long currentTime) {
         if (currentTime < this.roundStart || currentTime > (this.roundStart + game.getRoundDuration() * 1000)){
             throw new PreconditionFailedException("Request outside of round timeframe");
-        }
+        } 
     }
 
+    public float calculateTimeFactor(Long currentTime, int roundDuration){
+        return ((currentTime - roundStart) / (float)roundDuration);
+    }
+
+    public abstract void nextRoundPrep(GameEntity game, long currentTime);
     public abstract String getName();
     public abstract void setName(String name);
 

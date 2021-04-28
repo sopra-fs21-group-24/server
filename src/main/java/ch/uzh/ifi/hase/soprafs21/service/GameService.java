@@ -106,6 +106,7 @@ public class GameService {
         question.setCoordinate(new Coordinate(1.0, 2.0));
         questionRepository.saveAndFlush(question);
         game.setQuestions(Arrays.asList(question.getQuestionId()));
+
         game.setCurrentTime();
         game.setRound(game.getRound() + 1);
 
@@ -122,45 +123,56 @@ public class GameService {
 
         GameEntity game = gameById(answer.getGameId());
 
+        // sanity check
         if (game.getRound() > 3) {
             throw new PreconditionFailedException("Rounds are exceeding max");
         }
+
+        Long answerQuestionId = answer.getQuestionId();
             
+        // anwserQuestion in questions of game
         List<Long> questions = game.getQuestions();
-        if(!questions.contains(answer.getQuestionId())){
+        if(!questions.contains(answerQuestionId)){
             throw new PreconditionFailedException("Questionid is not part of the game questions");
         } 
 
+        // question matching round
+        if(!questions.get(game.getRound()).equals(answerQuestionId)){
+            throw new PreconditionFailedException("Answer is not for the right Question");
+        }
+
+        // set soulution in anwser
         Question question = questionById(answer.getQuestionId());
         answer.setCoordQuestion(question.getCoordinate());
 
-
+        // timeFactor
         UserMode uMode = game.getUserMode();
-        // Time related in UserMode
-        // TODO 
-        // calculate time score
-        answer.setTimeFactor(1.0f);
+        float timeFactor = uMode.calculateTimeFactor(currentTime, game.getRoundDuration());
+        answer.setTimeFactor(timeFactor);
 
-        // check for timelegitimacy, update Round
-        checkTimeValid(game, currentTime);
 
+        // score calculation
         GameMode gMode = game.getGameMode();
         Long tempScore = gMode.calculateScore(answer);
 
+        // save in Score
         Score score = scoreService.findById(answer.getUserId());
         score.setTempScore(tempScore);
         score.setTotalScore(score.getTotalScore() + tempScore);
         score.setLastCoordinate(answer.getCoordGuess());
+        
+        // gameContiune
+        if (game.getRound() == 3){
+            exitGame(game);
+        } else {
+            uMode.nextRoundPrep(game, currentTime);
+        }
+
 
         return score;
     }
 
 
-    private void checkTimeValid(GameEntity game, long currentTime) {
-        // TODO
-        // ändern, errors sollen hier gethrowt werden
-        // throw new PreconditionFailedException("Request outside of round timeframe");
-    }
 
     public void exitGame(GameEntity game) {
         ListIterator<Score> scores = scoresByGame(game);

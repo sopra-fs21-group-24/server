@@ -160,6 +160,10 @@ public class GameEntity implements Serializable {
         this.round = round;
     }
 
+    public void incrementRound(){
+        this.round += 1;
+    }
+
     public Long getCreatorUserId() {
         return creatorUserId;
     }

@@ -41,6 +41,15 @@ public class MultiPlayer extends UserMode {
             scoreService.save(score);
         }
     }  
+
+    public void nextRoundPrep(GameEntity game, long currentTime) {
+        if (this.playersFinished == 2){
+            roundStart = currentTime + (game.getBreakDuration() * 1000);
+            this.playersFinished = 0;
+        } else {
+            this.playersFinished++; 
+        }
+    }
     
     @Override
     public void setName(String name) {
