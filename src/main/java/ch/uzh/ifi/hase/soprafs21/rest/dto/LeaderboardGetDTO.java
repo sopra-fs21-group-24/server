@@ -4,25 +4,17 @@ import ch.uzh.ifi.hase.soprafs21.entity.gameModeEnum;
 
 public class LeaderboardGetDTO {
 
-    private long id;
-    private String userName;
+    private String username;
     private gameModeEnum gameMode;
     private int score;
 
-    public long getId() {
-        return id;
+
+    public String getUsername() {
+        return username;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public gameModeEnum getGameMode() {

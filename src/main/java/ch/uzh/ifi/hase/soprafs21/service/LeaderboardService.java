@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +32,12 @@ public class LeaderboardService {
     public LeaderboardService(@Qualifier("leaderboardRepository") LeaderboardRepository leaderboardRepository) {
         this.leaderboardRepository = leaderboardRepository;
     }
-    public ArrayList<Leaderboard> getScoresForGameMode(gameModeEnum gameMode){
-
-        System.out.println(leaderboardRepository.findTop5ByGameMode(gameMode));
-        return (ArrayList<Leaderboard>) leaderboardRepository.findTop5ByGameMode(gameMode);
+    public ArrayList<LeaderboardGetDTO> getScoresForGameMode(gameModeEnum gameMode){
+        ArrayList<LeaderboardGetDTO> finalList = new ArrayList<>();
+        for (Leaderboard l :leaderboardRepository.findTop5ByGameMode(gameMode)){
+            finalList.add(DTOMapper.INSTANCE.convertEntityToLeaderboardGetDTO(l));
+        }
+        return finalList;
 
     }
 

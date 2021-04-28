@@ -1,11 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.gameModeEnum;
 import ch.uzh.ifi.hase.soprafs21.service.LeaderboardService;
 
@@ -28,7 +28,7 @@ public class LeaderboardController {
     // Getting a leaderboard by Gamemode
     @GetMapping("/leaderboard/{GameMode}")
     @ResponseStatus(HttpStatus.OK)
-    public ArrayList<Leaderboard> getLeaderboardByGameMode(@PathVariable("GameMode") gameModeEnum gameMode){
+    public ArrayList<LeaderboardGetDTO> getLeaderboardByGameMode(@PathVariable("GameMode") gameModeEnum gameMode){
         return leaderboardService.getScoresForGameMode(gameMode);
 
     }
