@@ -134,13 +134,12 @@ public class GameService {
         Question question = questionById(answer.getQuestionId());
         answer.setCoordQuestion(question.getCoordinate());
 
-        // TODO: calculate time score
+        // TODO 
+        // calculate time score
         answer.setTimeFactor(1.0f);
 
         // check for timelegitimacy
-        if(!isTimeValid(game, currentTime)){
-            throw new PreconditionFailedException("Request outside of round timeframe");
-        }
+        checkTimeValid(game, currentTime);
 
         GameMode gMode = game.getGameMode();
         Long tempScore = gMode.calculateScore(answer);
@@ -154,9 +153,10 @@ public class GameService {
     }
 
 
-    private boolean isTimeValid(GameEntity game, long currentTime) {
+    private void checkTimeValid(GameEntity game, long currentTime) {
         // TODO
-        return true;
+        // ändern, errors sollen hier gethrowt werden
+        // PreconditionFailedException("Request outside of round timeframe");
     }
 
     public void exitGame(GameEntity game) {
