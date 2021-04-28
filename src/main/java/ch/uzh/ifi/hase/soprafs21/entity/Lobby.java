@@ -21,6 +21,9 @@ public class Lobby {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = true, unique =  true)
+    private Long gameId;
+
     @Column(nullable = false)
     private Long creator;
 
@@ -56,16 +59,13 @@ public class Lobby {
         this.users.add(userId);
     }
 
-
     public void setId(Long id) {
         this.id = id;
     }
 
-
     public Long getId() {
         return id;
     }
-
 
     public Boolean getPublic() {
         return isPublic;
@@ -83,4 +83,11 @@ public class Lobby {
         this.roomKey = roomKey;
     }
 
+    public Long getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
+    }
 }

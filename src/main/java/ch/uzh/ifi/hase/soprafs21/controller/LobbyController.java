@@ -5,20 +5,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
@@ -32,11 +41,12 @@ public class LobbyController {
 
     private final LobbyService lobbyService;
     private final UserService userService;
+    private final GameService gameService;
 
-    LobbyController(LobbyService lobbyService, UserService userService) {
+    LobbyController(LobbyService lobbyService, UserService userService, GameService gameService) {
         this.lobbyService = lobbyService;
-
         this.userService = userService;
+        this.gameService = gameService;
     }
 
 
@@ -56,12 +66,16 @@ public class LobbyController {
     @ResponseStatus(HttpStatus.OK)
     public LobbyGetDTO getLeobbyWithId(@PathVariable("id") Long lobbyid) {
         Lobby lobby = lobbyService.getLobbyById(lobbyid);
+        GameEntity game = gameService.gameById(lobby.getGameId());
+
         LobbyGetDTO lobbyDTO = DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
         List<UserGetDTOWithoutToken> userlist = new ArrayList<>();
         for (Long i : lobby.getUsers()) {
             userlist.add(DTOMapper.INSTANCE.convertEntityToUserGetDTOWithoutToken(userService.getUserByUserId(i)));
 
         }
+
+        lobbyDTO.setGamemode(game.getGameMode());
         lobbyDTO.setUsers(userlist);
         return lobbyDTO;
     }

@@ -1,13 +1,17 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 import java.util.List;
 
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
+
 
 public class LobbyGetDTO {
     private Long id;
+    private Long gameId;
     private Long creator;
-    private List<UserGetDTOWithoutToken> users;
-    private Boolean isPublic;
     private Long roomKey;
+    private Boolean isPublic;
+    private GameMode gamemode;
+    private List<UserGetDTOWithoutToken> users;
 
     public Long getId() {
         return id;
@@ -41,7 +45,27 @@ public class LobbyGetDTO {
         isPublic = aPublic;
     }
 
-    public Long getRoomKey() { return roomKey; }
+    public Long getGameId() {
+        return gameId;
+    }
 
-    public void setRoomKey(Long roomKey) { this.roomKey = roomKey; }
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
+    }
+
+    public GameMode getGamemode() {
+        return gamemode;
+    }
+
+    public void setGamemode(GameMode gamemode) {
+        this.gamemode = gamemode;
+    }
+
+    public Long getRoomKey() { 
+        return roomKey; 
+    }
+
+    public void setRoomKey(Long roomKey) { 
+        this.roomKey = roomKey; 
+    }
 }
