@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs21.service.ScoreService;
 
@@ -19,6 +20,7 @@ public abstract class UserMode implements Serializable {
 
     protected transient LobbyService lobbyService;
     protected transient ScoreService scoreService;
+    protected transient Long roundStart;
 
     @Id
     @GeneratedValue
@@ -27,7 +29,13 @@ public abstract class UserMode implements Serializable {
     public abstract void init(GameEntity game, boolean publicStatus);
 
     public void start(GameEntity game){
-        throw new UnsupportedOperationException();
+        this.roundStart = game.getGameStartTime();
+    }
+
+    public void checkTimeValid(GameEntity game, long currentTime) {
+        if (currentTime < this.roundStart || currentTime > (this.roundStart + game.getRoundDuration() * 1000)){
+            throw new PreconditionFailedException("Request outside of round timeframe");
+        }
     }
 
     public abstract String getName();
@@ -39,5 +47,13 @@ public abstract class UserMode implements Serializable {
 
     public void setScoreService(ScoreService scoreService) {
         this.scoreService = scoreService;
+    }
+
+    public void setRoundStart(Long roundStart) {
+        this.roundStart = roundStart;
+    }
+
+    public Long getRoundStart() {
+        return roundStart;
     }
 }

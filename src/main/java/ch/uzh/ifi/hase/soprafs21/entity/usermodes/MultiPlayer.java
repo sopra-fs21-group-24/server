@@ -12,6 +12,7 @@ public class MultiPlayer extends UserMode {
     private static final long serialVersionUID = 1L;
 
     private String name = "MultiPlayer";
+    private int playersFinished = 0;
 
     @Override
     public void init(GameEntity game, boolean publicStatus) {
@@ -26,6 +27,9 @@ public class MultiPlayer extends UserMode {
 
     @Override
     public void start(GameEntity game) {
+        // set roundStart time 
+        super.start(game);
+        
         List<Long> users = game.getUserIds();
         if (users.size() < 2) {
             throw new PreconditionFailedException("User is starting the game prematurly");
@@ -46,5 +50,13 @@ public class MultiPlayer extends UserMode {
     @Override
     public String getName() {
         return name;
+    }
+
+    public int getPlayersFinished() {
+        return playersFinished;
+    }
+
+    public void setPlayersFinished(int playersFinished) {
+        this.playersFinished = playersFinished;
     }
 }

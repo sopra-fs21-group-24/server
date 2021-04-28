@@ -49,10 +49,16 @@ public class GameEntity implements Serializable {
     private GameMode gameMode;
 
     @Column(nullable = true)
-    private Long gameTime;
+    private Long gameStartTime;
 
     @Column(nullable = true)
     private Long lobbyId;
+
+    @Column(nullable = true)
+    private transient int roundDuration = 30;
+
+    @Column(nullable = true)
+    private transient int breakDuration = 5;
 
     @Column(nullable = false)
     @ElementCollection
@@ -66,8 +72,12 @@ public class GameEntity implements Serializable {
         return userMode;
     }
 
+    public Long getGameStartTime() {
+        return gameStartTime;
+    }
+
     public void setCurrentTime() {
-        this.gameTime = System.currentTimeMillis();
+        this.gameStartTime = System.currentTimeMillis();
     }
 
     public void setQuestions(List<Long> questions) {
@@ -168,6 +178,22 @@ public class GameEntity implements Serializable {
 
     public void setLobbyId(Long lobbyId) {
         this.lobbyId = lobbyId;
+    }
+
+    public int getRoundDuration() {
+        return roundDuration;
+    }
+
+    public void setRoundDuration(int roundDuration) {
+        this.roundDuration = roundDuration;
+    }
+
+    public int getBreakDuration() {
+        return breakDuration;
+    }
+
+    public void setBreakDuration(int breakDuration) {
+        this.breakDuration = breakDuration;
     }
 
 }

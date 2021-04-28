@@ -106,13 +106,13 @@ public class GameService {
         question.setCoordinate(new Coordinate(1.0, 2.0));
         questionRepository.saveAndFlush(question);
         game.setQuestions(Arrays.asList(question.getQuestionId()));
+        game.setCurrentTime();
+        game.setRound(game.getRound() + 1);
+
 
         UserMode uMode = game.getUserMode();
         uMode.setScoreService(scoreService);
         uMode.start(game);
-
-        game.setCurrentTime();
-        game.setRound(game.getRound() + 1);
 
         return game;
     }
@@ -134,11 +134,14 @@ public class GameService {
         Question question = questionById(answer.getQuestionId());
         answer.setCoordQuestion(question.getCoordinate());
 
+
+        UserMode uMode = game.getUserMode();
+        // Time related in UserMode
         // TODO 
         // calculate time score
         answer.setTimeFactor(1.0f);
 
-        // check for timelegitimacy
+        // check for timelegitimacy, update Round
         checkTimeValid(game, currentTime);
 
         GameMode gMode = game.getGameMode();
@@ -156,7 +159,7 @@ public class GameService {
     private void checkTimeValid(GameEntity game, long currentTime) {
         // TODO
         // ändern, errors sollen hier gethrowt werden
-        // PreconditionFailedException("Request outside of round timeframe");
+        // throw new PreconditionFailedException("Request outside of round timeframe");
     }
 
     public void exitGame(GameEntity game) {

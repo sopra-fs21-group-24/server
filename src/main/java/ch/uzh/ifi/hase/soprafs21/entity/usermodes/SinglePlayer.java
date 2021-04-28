@@ -21,6 +21,9 @@ public class SinglePlayer extends UserMode {
 
     @Override
     public void start(GameEntity game) {
+        // set roundStart time 
+        super.start(game);
+
         List<Long> users = game.getUserIds();
         if (users.size() != 1) {
             throw new PreconditionFailedException("Single: Number of Users playing incorrect");
