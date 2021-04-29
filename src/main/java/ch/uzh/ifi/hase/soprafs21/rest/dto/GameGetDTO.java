@@ -6,7 +6,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
 
 public class GameGetDTO {
-    private String gameId;
+    private Long gameId;
     private Long creatorId;
     private Long lobbyId;
     private int round;
@@ -15,12 +15,11 @@ public class GameGetDTO {
     private Set<Long> players;
 
 
-
-    public String getGameId() {
+    public Long getGameId() {
         return gameId;
     }
 
-    public void setGameId(String gameId) {
+    public void setGameId(Long gameId) {
         this.gameId = gameId;
     }
 
