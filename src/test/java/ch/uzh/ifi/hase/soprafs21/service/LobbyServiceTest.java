@@ -11,8 +11,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 public class LobbyServiceTest {
 
@@ -30,6 +35,8 @@ public class LobbyServiceTest {
 
         private Lobby testlobby;
         private User testUser;
+        private User testUser2;
+
 
         @BeforeEach
         public void setup() {
@@ -39,15 +46,20 @@ public class LobbyServiceTest {
             testUser = new User();
             testUser.setPassword("123");
             testUser.setUsername("testUsername");
+            testUser2 = new User();
+            testUser2.setPassword("123");
+            testUser2.setUsername("testUsername");
 
             testlobby = new Lobby();
             testlobby.setCreator(1L);
             testlobby.setPublic(true);
+            testlobby.setGameId(3L);
 
 
             // when -> any object is being save in the userRepository -> return the dummy testUser
-            Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser);
-            Mockito.when(lobbyRepository.save(Mockito.any())).thenReturn(testlobby);
+            when(userRepository.save(Mockito.any())).thenReturn(testUser);
+            when(lobbyRepository.saveAndFlush(Mockito.any())).thenReturn(testlobby);
+            when(userRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testUser));
 
         }
 
@@ -56,18 +68,45 @@ public class LobbyServiceTest {
 
 
         userService.createUser(testUser);
-        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
+
 
         Lobby createdLobby = lobbyService.createLobby(testlobby);
 
         // then
-        Mockito.verify(lobbyRepository, Mockito.times(1)).save(Mockito.any());
+        Mockito.verify(lobbyRepository, Mockito.times(1)).saveAndFlush(Mockito.any());
+        Mockito.verify(userRepository, Mockito.times(1)).saveAndFlush(Mockito.any());
 
-        //assertEquals(testlobby.getUsers(), createdLobby.getUsers());
+        assertEquals(testlobby.getUsers(), createdLobby.getUsers());
         assertEquals(testlobby.getCreator(), createdLobby.getCreator());
-        assertNotNull(createdLobby.getId());
+        assertEquals(true, testUser.getInLobby());
+        assertEquals(true, testUser.getInLobby());
         assertEquals(testlobby.getPublic(), createdLobby.getPublic());
 
 
         }
+
+    @Test
+    public void adduserToExistingLobby() {
+
+
+        userService.createUser(testUser);
+        userService.createUser(testUser2);
+
+
+        Lobby createdLobby = lobbyService.createLobby(testlobby);
+        lobbyService.addUserToExistingLobby(testUser2,createdLobby);
+
+        // then
+        Mockito.verify(lobbyRepository, Mockito.times(1)).saveAndFlush(Mockito.any());
+        Mockito.verify(lobbyService, Mockito.times(1)).addUserToExistingLobby(Mockito.any());
+        Mockito.verify(userRepository, Mockito.times(1)).saveAndFlush(Mockito.any());
+
+        assertEquals(testlobby.getUsers(), createdLobby.getUsers());
+        assertEquals(testlobby.getCreator(), createdLobby.getCreator());
+        assertEquals(true, testUser.getInLobby());
+        assertEquals(true, testUser2.getInLobby());
+        assertEquals(testlobby.getPublic(), createdLobby.getPublic());
+
+
+    }
 }
