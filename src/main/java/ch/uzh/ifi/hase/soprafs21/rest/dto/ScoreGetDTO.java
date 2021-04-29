@@ -8,6 +8,7 @@ public class ScoreGetDTO {
     private long tempScore;
     private long totalScore;
     private Coordinate lastCoordinate;
+    private Coordinate solutionCoordinate;
 
 
     public long getUserId() { return userId; }
@@ -25,4 +26,12 @@ public class ScoreGetDTO {
     public Coordinate getLastCoordinate() { return lastCoordinate; }
 
     public void setLastCoordinate(Coordinate lastCoordinate) { this.lastCoordinate = lastCoordinate; }
+
+    public Coordinate getSolutionCoordinate() {
+        return solutionCoordinate;
+    }
+
+    public void setSolutionCoordinate(Coordinate solutionCoordinate) {
+        this.solutionCoordinate = solutionCoordinate;
+    }
 }

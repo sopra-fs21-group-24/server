@@ -186,8 +186,11 @@ public class GameController {
         answer.setUserId(user.getId());
         answer.setGameId(gameId);
         Score score = gameService.makeGuess(answer);
+        
+        ScoreGetDTO scoreDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(score);
+        scoreDTO.setSolutionCoordinate(answer.getCoordQuestion());
 
-        return DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(score);
+        return scoreDTO;
     }
 
     @GetMapping("/games/{gameId}/scores")
