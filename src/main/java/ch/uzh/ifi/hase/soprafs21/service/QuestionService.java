@@ -9,13 +9,11 @@ import java.util.Base64;
 
 import org.aspectj.util.FileUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 
@@ -23,7 +21,7 @@ import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 @Transactional
 public class QuestionService {
 
-    private final Logger log = LoggerFactory.getLogger(LobbyService.class);
+    private final Logger log = LoggerFactory.getLogger(QuestionService.class);
 
     private final QuestionRepository questionRepository;
 
@@ -33,19 +31,7 @@ public class QuestionService {
 
     }
 
-    public String getMapImage(int height, int width, Long questionId) throws MalformedURLException {
-        Question questionn = new Question();
-        Long qId = 1L;
-        questionn.setCoordinate(new Coordinate( -73.935242, 40.730610));
-
-        questionn.setZoomLevel(15);
-
-        questionn.setQuestionId(1L);
-        questionRepository.save(questionn);
-        questionRepository.flush();
-        Question question = questionRepository.findByQuestionId(qId);
-
-
+    public String getMapImage(int height, int width, Question question) throws MalformedURLException {
         try {
             String apikey = "AIzaSyCbLudPiesxon89uVFg9qloApgl_8BXviY";
             String url = "https://maps.googleapis.com/maps/api/staticmap?center="+question.getCoordinate().getLat()+","+question.getCoordinate().getLon()+"&zoom="+ question.getZoomLevel() +
