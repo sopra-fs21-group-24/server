@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -100,12 +99,19 @@ public class GameService {
 
         GameEntity game = gameById(gameId);
 
+        // lobbyService.deleteLobby(game.getLobbyId());
+
         // HardCoded Question
-        Question question = new Question();
-        question.setZoomLevel(1);
-        question.setCoordinate(new Coordinate(1.0, 2.0));
-        questionRepository.saveAndFlush(question);
-        game.setQuestions(Arrays.asList(question.getQuestionId()));
+        List<Long> questions = new ArrayList<>();
+        for (int i = 0; i < 3; i++){
+            Question question = new Question();
+            question.setZoomLevel(1);
+            question.setCoordinate(new Coordinate(1.0, 2.0));
+            Long q1 = questionRepository.saveAndFlush(question).getQuestionId();
+            questions.add(q1);
+        }
+
+        game.setQuestions(questions);
 
         game.setCurrentTime();
         game.setRound(game.getRound() + 1);
