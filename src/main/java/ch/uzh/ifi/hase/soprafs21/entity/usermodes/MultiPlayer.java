@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class MultiPlayer extends UserMode {
         lobby.setCreator(creator);
         lobby.setPublicStatus(publicStatus);
         lobby.setGameId(game.getGameId());
-        this.lobbyService.createLobby(lobby);
+        lobby = lobbyService.createLobby(lobby);
         game.setLobbyId(lobby.getId());
         game.setUserIds(Arrays.asList(creator));
     }
@@ -30,11 +31,15 @@ public class MultiPlayer extends UserMode {
     public void start(GameEntity game) {
         // set roundStart time 
         super.start(game);
+
+        Lobby lobby = lobbyService.getLobbyById(game.getLobbyId());
+        List<Long> users = new ArrayList<>(lobby.getUsers());
         
-        List<Long> users = game.getUserIds();
         if (users.size() < 2) {
             throw new PreconditionFailedException("User is starting the game prematurly");
         }
+
+        game.setUserIds(users);
 
         for (Long user : users) {
             Score score = new Score();
@@ -46,6 +51,7 @@ public class MultiPlayer extends UserMode {
     public void nextRoundPrep(GameEntity game, long currentTime) {
         if (this.playersFinished == 2){
             game.setRoundStart(currentTime + (game.getBreakDuration() * 1000));
+            game.setRound(game.getRound() + 1);
             this.playersFinished = 0;
         } else {
             this.playersFinished++; 

@@ -94,11 +94,11 @@ public class GameService {
         } 
 
         // TODO
-        // - evtl. lobby hier killen
         // - set questions?
 
         GameEntity game = gameById(gameId);
 
+        // killt lobby
         // lobbyService.deleteLobby(game.getLobbyId());
 
         // HardCoded Question
@@ -118,6 +118,7 @@ public class GameService {
 
 
         UserMode uMode = game.getUserMode();
+        uMode.setLobbyService(lobbyService);
         uMode.setScoreService(scoreService);
         uMode.start(game);
 
@@ -169,12 +170,12 @@ public class GameService {
         score.setLastCoordinate(answer.getCoordGuess());
         
         // gameContiune
-        if (game.getRound() == 3){
-            exitGame(game);
-        } else {
-            uMode.nextRoundPrep(game, currentTime);
-        }
+        uMode.nextRoundPrep(game, currentTime);
 
+        // exit, round einmal zuviel incremented in nextRoundPrep
+        if (game.getRound() == 4){
+            exitGame(game);
+        }
 
         return score;
     }
