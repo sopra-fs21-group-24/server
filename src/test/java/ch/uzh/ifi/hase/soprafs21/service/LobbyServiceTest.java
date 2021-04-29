@@ -1,9 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
-import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,13 +11,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
+import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
 public class LobbyServiceTest {
 
@@ -52,7 +50,7 @@ public class LobbyServiceTest {
 
             testlobby = new Lobby();
             testlobby.setCreator(1L);
-            testlobby.setPublic(true);
+            testlobby.setPublicStatus(true);
             testlobby.setGameId(3L);
 
 
@@ -80,7 +78,7 @@ public class LobbyServiceTest {
         assertEquals(testlobby.getCreator(), createdLobby.getCreator());
         assertEquals(true, testUser.getInLobby());
         assertEquals(true, testUser.getInLobby());
-        assertEquals(testlobby.getPublic(), createdLobby.getPublic());
+        assertEquals(testlobby.getPublicStatus(), createdLobby.getPublicStatus());
 
 
         }
@@ -105,7 +103,7 @@ public class LobbyServiceTest {
         assertEquals(testlobby.getCreator(), createdLobby.getCreator());
         assertEquals(true, testUser.getInLobby());
         assertEquals(true, testUser2.getInLobby());
-        assertEquals(testlobby.getPublic(), createdLobby.getPublic());
+        assertEquals(testlobby.getPublicStatus(), createdLobby.getPublicStatus());
 
 
     }
