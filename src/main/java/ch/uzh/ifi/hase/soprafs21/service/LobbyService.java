@@ -77,7 +77,7 @@ public class LobbyService {
         if(user.getInLobby().booleanValue()){
             throw new NotFoundException("User is already in Lobby");
         }
-        if (lobby.getUsers().size() < 3){
+        if (lobby.getUsers().size() <= 3){
             lobby.addUser(user.getId());
             user.setInLobby(true);
             userRepository.saveAndFlush(user);
@@ -96,9 +96,7 @@ public class LobbyService {
 
     public List<Lobby> getAllLobbies(){
         List<Lobby> lobbies = lobbyRepository.findAllByPublicStatusTrue();
-        if (lobbies.isEmpty()){
-            throw new NotFoundException("No open lobbies");
-        }
+
         return lobbies;
     }
 
