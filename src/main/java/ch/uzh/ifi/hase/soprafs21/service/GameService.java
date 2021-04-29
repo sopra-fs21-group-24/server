@@ -137,9 +137,9 @@ public class GameService {
         } 
 
         // question matching round
-        if(!questions.get(game.getRound()).equals(answerQuestionId)){
+/*         if(!questions.get(game.getRound()-1).equals(answerQuestionId)){
             throw new PreconditionFailedException("Answer is not for the right Question");
-        }
+        } */
 
         // set soulution in anwser
         Question question = questionById(answer.getQuestionId());
@@ -147,7 +147,8 @@ public class GameService {
 
         // timeFactor
         UserMode uMode = game.getUserMode();
-        float timeFactor = uMode.calculateTimeFactor(currentTime, game.getRoundDuration());
+        float timeFactor = uMode.calculateTimeFactor(game, currentTime);
+        // float timeFactor = 1; // remove just debug
         answer.setTimeFactor(timeFactor);
 
 

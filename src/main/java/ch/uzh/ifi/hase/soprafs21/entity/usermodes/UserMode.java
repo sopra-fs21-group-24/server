@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -20,26 +21,28 @@ public abstract class UserMode implements Serializable {
 
     protected transient LobbyService lobbyService;
     protected transient ScoreService scoreService;
-    protected transient Long roundStart;
 
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private Long uModeId;
+
 
     public abstract void init(GameEntity game, boolean publicStatus);
 
     public void start(GameEntity game){
-        this.roundStart = game.getGameStartTime();
+        game.setRoundStart(game.getGameStartTime());
     }
 
     public void checkTimeValid(GameEntity game, long currentTime) {
-        if (currentTime < this.roundStart || currentTime > (this.roundStart + game.getRoundDuration() * 1000)){
+        Long roundStart = game.getRoundStart();
+        if (currentTime < roundStart || currentTime > (roundStart + game.getRoundDuration() * 1000)){
             throw new PreconditionFailedException("Request outside of round timeframe");
         } 
     }
 
-    public float calculateTimeFactor(Long currentTime, int roundDuration){
-        return ((currentTime - roundStart) / (float)roundDuration);
+    public float calculateTimeFactor(GameEntity game, Long currentTime){
+        return 1.0f - ((currentTime - game.getRoundStart()) / ((float)game.getRoundDuration()*1000));
     }
 
     public abstract void nextRoundPrep(GameEntity game, long currentTime);
@@ -52,13 +55,5 @@ public abstract class UserMode implements Serializable {
 
     public void setScoreService(ScoreService scoreService) {
         this.scoreService = scoreService;
-    }
-
-    public void setRoundStart(Long roundStart) {
-        this.roundStart = roundStart;
-    }
-
-    public Long getRoundStart() {
-        return roundStart;
     }
 }

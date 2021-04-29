@@ -52,6 +52,9 @@ public class GameEntity implements Serializable {
     private Long gameStartTime;
 
     @Column(nullable = true)
+    private Long roundStart;
+
+    @Column(nullable = true)
     private Long lobbyId;
 
     @Column(nullable = true)
@@ -200,4 +203,11 @@ public class GameEntity implements Serializable {
         this.breakDuration = breakDuration;
     }
 
+    public Long getRoundStart() {
+        return roundStart;
+    }
+
+    public void setRoundStart(Long roundStart) {
+        this.roundStart = roundStart;
+    }
 }
