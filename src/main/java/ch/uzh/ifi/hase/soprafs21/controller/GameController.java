@@ -207,8 +207,8 @@ public class GameController {
         throws NotFoundException, UnauthorizedException {
 
         GameEntity game = gameService.gameById(gameId);
-        User user = checkAuth(header);
-        checkGameCreator(game, user);
+        //User user = checkAuth(header);
+        //checkGameCreator(game, user);
 
         List<ScoreGetDTO> scoresDTO = new ArrayList<>();
         ListIterator<Score> scores = gameService.scoresByGame(game);
