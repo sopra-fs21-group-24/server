@@ -148,12 +148,15 @@ public class GameService {
             throw new PreconditionFailedException("Questionid is not part of the game questions");
         } 
 
-        // check if already answered
-
         // question matching round
-/*         if(!questions.get(game.getRound()-1).equals(answerQuestionId)){
+        if(!questions.get(game.getRound()-1).equals(answerQuestionId)){
             throw new PreconditionFailedException("Answer is not for the right Question");
-        } */
+        }
+        
+        // check if already answered
+        if (game.getUsersAnswered().contains(answer.getUserId())){
+            throw new PreconditionFailedException("User has already answered this question");
+        }
 
         // set soulution in anwser
         Question question = questionById(answer.getQuestionId());
@@ -170,6 +173,9 @@ public class GameService {
         GameMode gMode = game.getGameMode();
         Long tempScore = gMode.calculateScore(answer);
 
+        // user answered
+        game.addUserAnswered(answer.getUserId());
+
         // save in Score
         Score score = scoreService.findById(answer.getUserId());
         score.setTempScore(tempScore);
@@ -181,7 +187,7 @@ public class GameService {
 
         // exit, round einmal zuviel incremented in nextRoundPrep
         if (game.getRound() == 4){
-            // exitGame(game);
+            // exit here
         }
 
         return score;

@@ -231,8 +231,13 @@ public class GameController {
         checkPartofGame(game, user);
 
         // hacking
+        Coordinate solution;
         List<Long> questions = game.getQuestions();
-        Coordinate solution = gameService.questionById(questions.get(game.getRound()-1)).getCoordinate();
+        if (game.getRound() < 4){
+            solution = gameService.questionById(questions.get(game.getRound()-1)).getCoordinate();
+        } else {
+            solution = gameService.questionById(questions.get(2)).getCoordinate();
+        }
 
         List<ScoreGetDTO> scoresDTO = new ArrayList<>();
         ListIterator<Score> scores = gameService.scoresByGame(game);

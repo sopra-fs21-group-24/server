@@ -56,7 +56,9 @@ public class MultiPlayer extends UserMode {
         if (this.playersFinished == threshold){
             game.setRoundStart(currentTime + (game.getBreakDuration() * 1000));
             game.setRound(game.getRound() + 1);
+            game.setUsersAnswered(Arrays.asList());
             this.playersFinished = 0;
+
         } else {
             this.playersFinished++; 
         }
