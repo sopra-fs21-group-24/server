@@ -7,6 +7,7 @@ public class ScoreGetDTO {
     private long userId;
     private long tempScore;
     private long totalScore;
+    private String username;
     private Coordinate lastCoordinate;
     private Coordinate solutionCoordinate;
 
@@ -33,5 +34,13 @@ public class ScoreGetDTO {
 
     public void setSolutionCoordinate(Coordinate solutionCoordinate) {
         this.solutionCoordinate = solutionCoordinate;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

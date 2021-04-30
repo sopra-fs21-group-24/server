@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
@@ -79,7 +80,7 @@ public class GameController {
 
     private void checkGameCreator(GameEntity game, User user){
        if (!user.getId().equals(game.getCreatorUserId())) {
-            throw new NotCreatorException("User starting the game is not the game-creator");
+            throw new NotCreatorException("User is not the game-creator");
         } 
     }
 
@@ -212,6 +213,7 @@ public class GameController {
         
         ScoreGetDTO scoreDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(score);
         scoreDTO.setSolutionCoordinate(answer.getCoordQuestion());
+        scoreDTO.setUsername(user.getUsername());
 
         return scoreDTO;
     }
@@ -226,22 +228,31 @@ public class GameController {
 
         GameEntity game = gameService.gameById(gameId);
         User user = checkAuth(header);
-        checkGameCreator(game, user);
+        checkPartofGame(game, user);
+
+        // hacking
+        List<Long> questions = game.getQuestions();
+        Coordinate solution = gameService.questionById(questions.get(game.getRound()-1)).getCoordinate();
 
         List<ScoreGetDTO> scoresDTO = new ArrayList<>();
         ListIterator<Score> scores = gameService.scoresByGame(game);
         while(scores.hasNext()){
-           scoresDTO.add(DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(scores.next()));
+            ScoreGetDTO scoreGetDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(scores.next());
+            User scoreUser = userService.getUserByUserId(scoreGetDTO.getUserId());
+            scoreGetDTO.setSolutionCoordinate(solution);
+            scoreGetDTO.setUsername(scoreUser.getUsername());
+            scoresDTO.add(scoreGetDTO);
+            // lösung mitschicken?
         }
+
         return scoresDTO;
     }
 
     @GetMapping("/games/{gameId}/questions")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<Long> gameQuestions(
-        @PathVariable Long gameId, 
-        @RequestHeader Map<String, String> header) throws NotFoundException, UnauthorizedException {
+    public List<Long> gameQuestions(@PathVariable Long gameId, @RequestHeader Map<String, String> header)
+            throws NotFoundException, UnauthorizedException {
         GameEntity game = gameService.gameById(gameId);
         User user = checkAuth(header);
         checkPartofGame(game, user);
@@ -253,12 +264,9 @@ public class GameController {
     @PostMapping("/games/{gameId}/questions/{questionId}") // evtl überflüsssig
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public String gameQuestionsSpecific(
-        @PathVariable Long gameId,
-        @PathVariable Long questionId,
-        @RequestBody QuestionGetDTO qDTO,
-        @RequestHeader Map<String, String> header) 
-        throws NotFoundException, UnauthorizedException, PreconditionFailedException, MalformedURLException{
+    public String gameQuestionsSpecific(@PathVariable Long gameId, @PathVariable Long questionId,
+            @RequestBody QuestionGetDTO qDTO, @RequestHeader Map<String, String> header)
+            throws NotFoundException, UnauthorizedException, PreconditionFailedException, MalformedURLException {
 
         GameEntity game = gameService.gameById(gameId);
         // User user = checkAuth(header);
@@ -266,10 +274,10 @@ public class GameController {
 
         List<Long> questions = game.getQuestions();
 
-        if (!questions.contains(questionId)){
+        if (!questions.contains(questionId)) {
             throw new PreconditionFailedException("Question with this id is not part of the game");
         }
-        
+
         Question question = gameService.questionById(questionId);
 
         return questionService.getMapImage(qDTO.getHeight(), qDTO.getWidth(), question);
