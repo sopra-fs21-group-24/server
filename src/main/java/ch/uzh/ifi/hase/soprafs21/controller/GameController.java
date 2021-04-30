@@ -152,6 +152,24 @@ public class GameController {
             throw new PreconditionFailedException("userId is in a wrong format");
         }
     }
+    
+    @GetMapping("/games/{gameId}/exit")
+    public void exitGame(
+        @PathVariable Long gameId, 
+        @RequestHeader Map<String, String> header) 
+        throws PreconditionFailedException, NotCreatorException, NotFoundException {
+
+        GameEntity game = gameService.gameById(gameId);
+        User user= checkAuth(header);
+        checkPartofGame(game, user);
+
+       if (!user.getId().equals(game.getCreatorUserId())) {
+            gameService.exitGame(game);
+        } else {
+            gameService.exitGameUser(game);
+            
+        } 
+    }
 
     @PutMapping("/games/{gameId}")
     @ResponseStatus(HttpStatus.OK)
