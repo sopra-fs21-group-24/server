@@ -38,6 +38,16 @@ public class ScoreService {
         }
     }
 
+    public void delete(Score score){
+        try {
+            scoreRepository.delete(score);
+            scoreRepository.flush();
+        }
+        catch (IllegalArgumentException e){
+            throw new PreconditionFailedException("[ScoreService] The given score is null");
+        }
+    }
+
     public Score findById(Long userId){
         Optional<Score> foundScore = scoreRepository.findById(userId);
         if (foundScore.isEmpty()){

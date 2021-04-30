@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -21,6 +20,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
+import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
@@ -95,26 +95,38 @@ public class GameService {
         } 
 
         // TODO
-        // - evtl. lobby hier killen
         // - set questions?
 
         GameEntity game = gameById(gameId);
 
+        ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+        coordinates.add(new Coordinate(8.5500,47.3667));
+        coordinates.add(new Coordinate(-73.935242,40.730610));
+        coordinates.add(new Coordinate(-123.116226,49.246292));
         // HardCoded Question
-        Question question = new Question();
-        question.setZoomLevel(1);
-        question.setCoordinate(new Coordinate(1.0, 2.0));
-        questionRepository.saveAndFlush(question);
-        game.setQuestions(Arrays.asList(question.getQuestionId()));
+        List<Long> questions = new ArrayList<>();
+        for (int i = 0; i < 3; i++){
+            Question question = new Question();
+            question.setZoomLevel(12);
+            question.setCoordinate(coordinates.get(i));
+            Long q1 = questionRepository.saveAndFlush(question).getQuestionId();
+            questions.add(q1);
+        }
+
+        game.setQuestions(questions);
 
         game.setCurrentTime();
         game.setRound(game.getRound() + 1);
 
 
         UserMode uMode = game.getUserMode();
+        uMode.setLobbyService(lobbyService);
         uMode.setScoreService(scoreService);
         uMode.start(game);
 
+        // killt lobby
+        lobbyService.deleteLobby(game.getLobbyId());
+        
         return game;
     }
 
@@ -137,8 +149,13 @@ public class GameService {
         } 
 
         // question matching round
-        if(!questions.get(game.getRound()).equals(answerQuestionId)){
+        if(!questions.get(game.getRound()-1).equals(answerQuestionId)){
             throw new PreconditionFailedException("Answer is not for the right Question");
+        }
+        
+        // check if already answered
+        if (game.getUsersAnswered().contains(answer.getUserId())){
+            throw new PreconditionFailedException("User has already answered this question");
         }
 
         // set soulution in anwser
@@ -147,13 +164,17 @@ public class GameService {
 
         // timeFactor
         UserMode uMode = game.getUserMode();
-        float timeFactor = uMode.calculateTimeFactor(currentTime, game.getRoundDuration());
+        float timeFactor = uMode.calculateTimeFactor(game, currentTime);
+        // float timeFactor = 1; // remove just debug
         answer.setTimeFactor(timeFactor);
 
 
         // score calculation
         GameMode gMode = game.getGameMode();
         Long tempScore = gMode.calculateScore(answer);
+
+        // user answered
+        game.addUserAnswered(answer.getUserId());
 
         // save in Score
         Score score = scoreService.findById(answer.getUserId());
@@ -162,12 +183,12 @@ public class GameService {
         score.setLastCoordinate(answer.getCoordGuess());
         
         // gameContiune
-        if (game.getRound() == 3){
-            exitGame(game);
-        } else {
-            uMode.nextRoundPrep(game, currentTime);
-        }
+        uMode.nextRoundPrep(game, currentTime);
 
+        // exit, round einmal zuviel incremented in nextRoundPrep
+        if (game.getRound() == 4){
+            // exit here
+        }
 
         return score;
     }
@@ -194,9 +215,30 @@ public class GameService {
             
         }
 
-        // is this the right behavior?
         gameRepository.delete(game);
         gameRepository.flush();
+    }
+
+    public void exitGameUser(GameEntity game, User user){
+
+        Long userId = user.getId();
+
+        // delete Score
+        Score score = scoreService.findById(userId);
+        scoreService.delete(score);
+
+        // remove user
+        List<Long> users = game.getUserIds();
+        users.remove(userId);
+        game.setUserIds(users);
+
+        if(users.size() == 1){
+            exitGame(game);
+        }
+
+        MultiPlayer uMode = (MultiPlayer)game.getUserMode();
+        uMode.adjustThreshold(game, user);
+
     }
 
     public void moveLobbyUsers(GameEntity game){

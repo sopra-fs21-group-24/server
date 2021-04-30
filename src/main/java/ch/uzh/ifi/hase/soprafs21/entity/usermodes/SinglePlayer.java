@@ -38,7 +38,8 @@ public class SinglePlayer extends UserMode {
 
     @Override
     public void nextRoundPrep(GameEntity game, long currentTime){
-        this.roundStart = currentTime + (game.getBreakDuration() * 1000);
+        game.setRound(game.getRound() + 1);
+        game.setRoundStart(currentTime + (game.getBreakDuration() * 1000)) ;
     }
 
     @Override

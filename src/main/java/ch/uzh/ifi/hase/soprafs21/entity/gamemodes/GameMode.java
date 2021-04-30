@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 
 @JsonDeserialize()
 @Entity
@@ -30,10 +31,10 @@ public abstract class GameMode implements Serializable {
         Coordinate coordQuestion = answer.getCoordQuestion();
 
         if (difficultyFactor < 0 || difficultyFactor > 1){
-            throw new NumberFormatException("DifficultyFactor is not in range 0 - 1");
+            throw new PreconditionFailedException("DifficultyFactor is not in range 0 - 1");
         }
-        else if (timeFactor < 0 || timeFactor > 1){
-            throw new NumberFormatException("timeFactor is not in range 0 - 1");
+        else if (timeFactor < 0.0f || timeFactor > 1.0f){
+            throw new PreconditionFailedException("timeFactor: " + timeFactor + " is not in range 0 - 1");
         }
         // normalized to distance india - chile 
         double distanceFactor = 1 - (haversineDistance(coordGuess, coordQuestion)/16000);

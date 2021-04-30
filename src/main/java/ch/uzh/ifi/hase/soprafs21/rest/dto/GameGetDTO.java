@@ -10,6 +10,7 @@ public class GameGetDTO {
     private Long creatorId;
     private Long lobbyId;
     private int round;
+    private Long gameStartTime; // entfernen nur debug
     private UserMode userMode;
     private GameMode gameMode;
     private Set<Long> players;
@@ -69,5 +70,13 @@ public class GameGetDTO {
 
     public void setLobbyId(Long lobbyId) {
         this.lobbyId = lobbyId;
+    }
+
+    public Long getGameStartTime() {
+        return gameStartTime;
+    }
+
+    public void setGameStartTime(Long gameStartTime) {
+        this.gameStartTime = gameStartTime;
     }
 }

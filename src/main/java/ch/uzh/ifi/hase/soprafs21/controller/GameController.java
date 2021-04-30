@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
@@ -31,9 +33,11 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.AnswerPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePutDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.QuestionGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.ScoreGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
+import ch.uzh.ifi.hase.soprafs21.service.QuestionService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
 
@@ -49,10 +53,12 @@ public class GameController {
 
     private final GameService gameService;
     private final UserService userService;
+    private final QuestionService questionService;
 
-    GameController(GameService gameService, UserService userService) {
+    GameController(GameService gameService, UserService userService, QuestionService questionService) {
         this.gameService = gameService;
         this.userService = userService;
+        this.questionService = questionService;
     }
 
     private User checkAuth(Map<String, String> header){
@@ -74,7 +80,7 @@ public class GameController {
 
     private void checkGameCreator(GameEntity game, User user){
        if (!user.getId().equals(game.getCreatorUserId())) {
-            throw new NotCreatorException("User starting the game is not the game-creator");
+            throw new NotCreatorException("User is not the game-creator");
         } 
     }
 
@@ -147,6 +153,24 @@ public class GameController {
             throw new PreconditionFailedException("userId is in a wrong format");
         }
     }
+    
+    @GetMapping("/games/{gameId}/exit")
+    public void exitGame(
+        @PathVariable Long gameId, 
+        @RequestHeader Map<String, String> header) 
+        throws PreconditionFailedException, NotCreatorException, NotFoundException {
+
+        GameEntity game = gameService.gameById(gameId);
+        User user= checkAuth(header);
+        checkPartofGame(game, user);
+
+       if (!user.getId().equals(game.getCreatorUserId())) {
+            gameService.exitGame(game);
+        } else {
+            gameService.exitGameUser(game, user);
+            
+        } 
+    }
 
     @PutMapping("/games/{gameId}")
     @ResponseStatus(HttpStatus.OK)
@@ -186,8 +210,12 @@ public class GameController {
         answer.setUserId(user.getId());
         answer.setGameId(gameId);
         Score score = gameService.makeGuess(answer);
+        
+        ScoreGetDTO scoreDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(score);
+        scoreDTO.setSolutionCoordinate(answer.getCoordQuestion());
+        scoreDTO.setUsername(user.getUsername());
 
-        return DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(score);
+        return scoreDTO;
     }
 
     @GetMapping("/games/{gameId}/scores")
@@ -200,22 +228,36 @@ public class GameController {
 
         GameEntity game = gameService.gameById(gameId);
         User user = checkAuth(header);
-        checkGameCreator(game, user);
+        checkPartofGame(game, user);
+
+        // hacking
+        Coordinate solution;
+        List<Long> questions = game.getQuestions();
+        if (game.getRound() < 4){
+            solution = gameService.questionById(questions.get(game.getRound()-1)).getCoordinate();
+        } else {
+            solution = gameService.questionById(questions.get(2)).getCoordinate();
+        }
 
         List<ScoreGetDTO> scoresDTO = new ArrayList<>();
         ListIterator<Score> scores = gameService.scoresByGame(game);
         while(scores.hasNext()){
-           scoresDTO.add(DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(scores.next()));
+            ScoreGetDTO scoreGetDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(scores.next());
+            User scoreUser = userService.getUserByUserId(scoreGetDTO.getUserId());
+            scoreGetDTO.setSolutionCoordinate(solution);
+            scoreGetDTO.setUsername(scoreUser.getUsername());
+            scoresDTO.add(scoreGetDTO);
+            // lösung mitschicken?
         }
+
         return scoresDTO;
     }
 
     @GetMapping("/games/{gameId}/questions")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<Long> gameQuestions(
-        @PathVariable Long gameId, 
-        @RequestHeader Map<String, String> header) throws NotFoundException, UnauthorizedException {
+    public List<Long> gameQuestions(@PathVariable Long gameId, @RequestHeader Map<String, String> header)
+            throws NotFoundException, UnauthorizedException {
         GameEntity game = gameService.gameById(gameId);
         User user = checkAuth(header);
         checkPartofGame(game, user);
@@ -224,24 +266,25 @@ public class GameController {
         return game.getQuestions();
     }
 
-    @GetMapping("/games/{gameId}/questions/{questionId}") // evtl überflüsssig
+    @PostMapping("/games/{gameId}/questions/{questionId}") // evtl überflüsssig
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Question gameQuestionsSpecific(
-        @PathVariable Long gameId,
-        @PathVariable Long questionId,
-        @RequestHeader Map<String, String> header) throws NotFoundException, UnauthorizedException, PreconditionFailedException {
+    public String gameQuestionsSpecific(@PathVariable Long gameId, @PathVariable Long questionId,
+            @RequestBody QuestionGetDTO qDTO, @RequestHeader Map<String, String> header)
+            throws NotFoundException, UnauthorizedException, PreconditionFailedException, MalformedURLException {
 
         GameEntity game = gameService.gameById(gameId);
-        User user = checkAuth(header);
-        checkPartofGame(game, user);
+        // User user = checkAuth(header);
+        // checkPartofGame(game, user);
 
         List<Long> questions = game.getQuestions();
 
-        if (!questions.contains(questionId)){
+        if (!questions.contains(questionId)) {
             throw new PreconditionFailedException("Question with this id is not part of the game");
         }
 
-        return gameService.questionById(questionId);
+        Question question = gameService.questionById(questionId);
+
+        return questionService.getMapImage(qDTO.getHeight(), qDTO.getWidth(), question);
     }
 }
