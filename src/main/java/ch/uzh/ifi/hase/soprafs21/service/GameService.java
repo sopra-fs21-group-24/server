@@ -99,8 +99,6 @@ public class GameService {
 
         GameEntity game = gameById(gameId);
 
-        // killt lobby
-        // lobbyService.deleteLobby(game.getLobbyId());
         ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
         coordinates.add(new Coordinate(8.5500,47.3667));
         coordinates.add(new Coordinate(-73.935242,40.730610));
@@ -125,6 +123,9 @@ public class GameService {
         uMode.setLobbyService(lobbyService);
         uMode.setScoreService(scoreService);
         uMode.start(game);
+
+        // killt lobby
+        lobbyService.deleteLobby(game.getLobbyId());
         
         return game;
     }
