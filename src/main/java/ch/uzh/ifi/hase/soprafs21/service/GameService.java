@@ -20,6 +20,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
+import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
@@ -121,7 +122,7 @@ public class GameService {
         uMode.setLobbyService(lobbyService);
         uMode.setScoreService(scoreService);
         uMode.start(game);
-
+        
         return game;
     }
 
@@ -142,6 +143,8 @@ public class GameService {
         if(!questions.contains(answerQuestionId)){
             throw new PreconditionFailedException("Questionid is not part of the game questions");
         } 
+
+        // check if already answered
 
         // question matching round
 /*         if(!questions.get(game.getRound()-1).equals(answerQuestionId)){
@@ -174,7 +177,7 @@ public class GameService {
 
         // exit, round einmal zuviel incremented in nextRoundPrep
         if (game.getRound() == 4){
-            exitGame(game);
+            // exitGame(game);
         }
 
         return score;
@@ -202,9 +205,30 @@ public class GameService {
             
         }
 
-        // is this the right behavior?
         gameRepository.delete(game);
         gameRepository.flush();
+    }
+
+    public void exitGameUser(GameEntity game, User user){
+
+        Long userId = user.getId();
+
+        // delete Score
+        Score score = scoreService.findById(userId);
+        scoreService.delete(score);
+
+        // remove user
+        List<Long> users = game.getUserIds();
+        users.remove(userId);
+        game.setUserIds(users);
+
+        if(users.size() == 1){
+            exitGame(game);
+        }
+
+        MultiPlayer uMode = (MultiPlayer)game.getUserMode();
+        uMode.adjustThreshold(game, user);
+
     }
 
     public void moveLobbyUsers(GameEntity game){

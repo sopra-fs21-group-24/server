@@ -62,6 +62,13 @@ public class GameEntity implements Serializable {
 
     @Column(nullable = true)
     private transient int breakDuration = 0; // nur zum debuggen anstatt 5
+    
+    @Column(nullable = true)
+    @ElementCollection
+    private List<Long> usersAnswered;
+
+    @Column(nullable = true)
+    private int threshold;
 
     @Column(nullable = false)
     @ElementCollection
@@ -103,6 +110,29 @@ public class GameEntity implements Serializable {
         return serialVersionUID;
     }
 
+    public void setUsersAnswered(List<Long> usersAnswered) {
+        this.usersAnswered = usersAnswered;
+    }
+
+    public List<Long> getUsersAnswered() {
+        return usersAnswered;
+    }
+
+    public void addUserAnswered(Long userId){
+        usersAnswered.add(userId);
+    }
+
+    public void removeUserAnswered(Long userId){
+        usersAnswered.remove(userId);
+    }
+
+    public int getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(int threshold) {
+        this.threshold = threshold;
+    }
 
     public void setGameMode(GameMode gameMode){
         this.gameMode = gameMode;

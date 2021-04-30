@@ -7,6 +7,7 @@ import java.util.List;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 
 public class MultiPlayer extends UserMode {
@@ -40,6 +41,7 @@ public class MultiPlayer extends UserMode {
         }
 
         game.setUserIds(users);
+        game.setThreshold(users.size()-1);
 
         for (Long user : users) {
             Score score = new Score();
@@ -49,13 +51,25 @@ public class MultiPlayer extends UserMode {
     }  
 
     public void nextRoundPrep(GameEntity game, long currentTime) {
-        if (this.playersFinished == 2){
+        int threshold = game.getThreshold();
+
+        if (this.playersFinished == threshold){
             game.setRoundStart(currentTime + (game.getBreakDuration() * 1000));
             game.setRound(game.getRound() + 1);
             this.playersFinished = 0;
         } else {
             this.playersFinished++; 
         }
+    }
+
+    public void adjustThreshold(GameEntity game, User user){
+        int threshold = game.getThreshold();
+
+        if (game.getUsersAnswered().contains(user.getId())){
+            this.playersFinished--;
+        } 
+
+        game.setThreshold(threshold - 1);
     }
     
     @Override

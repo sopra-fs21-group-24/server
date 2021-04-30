@@ -166,7 +166,7 @@ public class GameController {
        if (!user.getId().equals(game.getCreatorUserId())) {
             gameService.exitGame(game);
         } else {
-            gameService.exitGameUser(game);
+            gameService.exitGameUser(game, user);
             
         } 
     }
