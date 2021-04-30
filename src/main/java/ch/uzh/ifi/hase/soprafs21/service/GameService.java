@@ -100,13 +100,16 @@ public class GameService {
 
         // killt lobby
         // lobbyService.deleteLobby(game.getLobbyId());
-
+        ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+        coordinates.add(new Coordinate(8.5500,47.3667));
+        coordinates.add(new Coordinate(-73.935242,40.730610));
+        coordinates.add(new Coordinate(-123.116226,49.246292));
         // HardCoded Question
         List<Long> questions = new ArrayList<>();
         for (int i = 0; i < 3; i++){
             Question question = new Question();
-            question.setZoomLevel(1);
-            question.setCoordinate(new Coordinate(1.0, 2.0));
+            question.setZoomLevel(12);
+            question.setCoordinate(coordinates.get(i));
             Long q1 = questionRepository.saveAndFlush(question).getQuestionId();
             questions.add(q1);
         }
