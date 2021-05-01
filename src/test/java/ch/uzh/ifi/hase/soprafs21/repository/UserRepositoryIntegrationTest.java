@@ -1,9 +1,14 @@
 package ch.uzh.ifi.hase.soprafs21.repository;
 
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 public class UserRepositoryIntegrationTest {
@@ -15,27 +20,72 @@ public class UserRepositoryIntegrationTest {
     private UserRepository userRepository;
 
     @Test
-    public void findByName_success() {
-        return;
-        /*
+    public void findByUserName_success() {
         // given
         User user = new User();
-        user.setName("Firstname Lastname");
+
         user.setUsername("firstname@lastname");
-        user.setStatus(UserStatus.OFFLINE);
+        user.setPassword("mapassword");
+        user.setToken("1");
+        entityManager.persist(user);
+        entityManager.flush();
+        // when
+        User found = userRepository.findByUsername(user.getUsername());
+        // then
+        assertNotNull(found.getId());
+        assertEquals(found.getUsername(), user.getUsername());
+        assertEquals(found.getToken(), user.getToken());
+    }
+
+    @Test
+    public void findByUserName_failure() {
+        // given
+        User user = new User();
+
+        user.setUsername("firstname@lastname");
+        user.setPassword("mapassword");
         user.setToken("1");
 
         entityManager.persist(user);
         entityManager.flush();
-
         // when
-        User found = userRepository.findByName(user.getName()); // entfernen nicht mehr relevant
-
+        User found = userRepository.findByUsername("ThisUserNameDoesn'tExist");
         // then
-        assertNotNull(found.getId());
-        assertEquals(found.getName(), user.getName()); // entfernen nicht mehr relevant
-        assertEquals(found.getUsername(), user.getUsername());
-        assertEquals(found.getToken(), user.getToken());
-        assertEquals(found.getStatus(), user.getStatus());*/
+        assertNull(found);
+    }
+
+    @Test
+    public void findByToken_success() {
+        // given
+        User user = new User();
+
+        user.setUsername("firstname@lastname");
+        user.setPassword("mapassword");
+        user.setToken("1");
+        entityManager.persist(user);
+        entityManager.flush();
+        // when
+        Optional<User> found = userRepository.findByToken(user.getToken());
+        // then
+        assertNotNull(found);
+        User foundUser = found.get();
+        assertEquals(foundUser.getUsername(), user.getUsername());
+        assertEquals(foundUser.getToken(), user.getToken());
+    }
+
+    @Test
+    public void findByToken_failure() {
+        // given
+        User user = new User();
+
+        user.setUsername("firstname@lastname");
+        user.setPassword("mapassword");
+        user.setToken("1");
+        entityManager.persist(user);
+        entityManager.flush();
+        // when
+        Optional<User> found = userRepository.findByToken("Non existing Token");
+        // then
+        assertEquals(found.isEmpty(), true);
     }
 }
