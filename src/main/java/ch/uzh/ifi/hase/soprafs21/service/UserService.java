@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,10 +37,21 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public User checkAuth(Map<String, String> header){
+        try {
+            String token = header.get("token");
+            return getUserByToken(token);
+        }
+        catch (NotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public User login(User unauthorizedUser){
         User foundUser = userRepository.findByUsername(unauthorizedUser.getUsername());
         if (foundUser == null){
-            throw new NotFoundException("user with userId: '" + unauthorizedUser.getUsername() + "' was not found!");
+            throw new NotFoundException("user with username: '" + unauthorizedUser.getUsername() + "' was not found!");
         }
 
         // Ensure Password Match
