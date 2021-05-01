@@ -1,25 +1,48 @@
 package ch.uzh.ifi.hase.soprafs21.repository;
 
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
+import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
-public class UserRepositoryIntegrationTest {
+public class QuestionRepositoryIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;
 
     @Autowired
-    private UserRepository userRepository;
+    private QuestionRepository questionRepository;
 
     @Test
+    public void findQuestionById_success(){
+        //given
+        Question question = new Question();
+        question.setCoordinate(new Coordinate(1.0,2.0));
+        //question.setQuestionId(1L);
+        question.setZoomLevel(12);
+        entityManager.persist(question);
+        entityManager.flush();
+
+        // when
+       Question found = questionRepository.findByQuestionId(question.getQuestionId());
+
+        //then
+        assertNotNull(found);
+        Question foundQuestion = found;
+        assertEquals(foundQuestion.getQuestionId(), question.getQuestionId());
+        assertEquals(foundQuestion.getCoordinate(), question.getCoordinate());
+        assertEquals(foundQuestion.getZoomLevel(), question.getZoomLevel());
+
+    }
+
+
+   /* @Test
     public void findByUserName_success() {
         // given
         User user = new User();
@@ -87,5 +110,5 @@ public class UserRepositoryIntegrationTest {
         Optional<User> found = userRepository.findByToken("Non existing Token");
         // then
         assertEquals(found.isEmpty(), true);
-    }
+    }*/
 }

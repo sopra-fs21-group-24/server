@@ -13,4 +13,5 @@ public interface GameRepository extends JpaRepository<GameEntity, Long> {
     Optional<GameEntity> findById(Long id);
     Optional<GameEntity> findByCreatorUserId(Long id);
     List<GameEntity> findAll();
+    List<GameEntity> findByRoundEquals(int round);
 }

@@ -1,25 +1,19 @@
 package ch.uzh.ifi.hase.soprafs21.repository;
 
-import ch.uzh.ifi.hase.soprafs21.entity.User;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 @DataJpaTest
-public class UserRepositoryIntegrationTest {
+public class LeaderboardRepositoryIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;
 
     @Autowired
-    private UserRepository userRepository;
+    private LeaderboardRepository leaderboardRepository;
 
-    @Test
+   /* @Test
     public void findByUserName_success() {
         // given
         User user = new User();
@@ -87,5 +81,5 @@ public class UserRepositoryIntegrationTest {
         Optional<User> found = userRepository.findByToken("Non existing Token");
         // then
         assertEquals(found.isEmpty(), true);
-    }
+    }*/
 }
