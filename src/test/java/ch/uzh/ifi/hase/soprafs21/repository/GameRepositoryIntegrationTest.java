@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,39 +70,108 @@ public class GameRepositoryIntegrationTest {
         // then
         assertEquals(found.isEmpty(), true);
     }
-  /*
-    @Test
-    public void findByToken_success() {
-        // given
-        User user = new User();
 
-        user.setUsername("firstname@lastname");
-        user.setPassword("mapassword");
-        user.setToken("1");
-        entityManager.persist(user);
+    @Test
+    public void findByCreatorId_success() {
+        // given
+        GameEntity game = new GameEntity();
+        game.setGameMode(new Time());
+        //game.setGameId(1L);
+        game.setGameMode(new Time());
+        game.setUserMode(new MultiPlayer());
+        game.setCreatorUserId(1l);
+        game.setBreakDuration(5);
+        game.setLobbyId(5L);
+
+
+        entityManager.persist(game);
         entityManager.flush();
         // when
-        Optional<User> found = userRepository.findByToken(user.getToken());
+        Optional<GameEntity> found = gameRepository.findByCreatorUserId(game.getCreatorUserId());
         // then
         assertNotNull(found);
-        User foundUser = found.get();
-        assertEquals(foundUser.getUsername(), user.getUsername());
-        assertEquals(foundUser.getToken(), user.getToken());
+
+        GameEntity foundGameEntity = found.get();
+        assertEquals(foundGameEntity.getGameMode(), game.getGameMode());
+        assertEquals(foundGameEntity.getGameId(), game.getGameId());
+        assertEquals(foundGameEntity.getLobbyId(), game.getLobbyId());
     }
 
     @Test
-    public void findByToken_failure() {
+    public void findByCreatorId_failure() {
         // given
-        User user = new User();
+        GameEntity game = new GameEntity();
 
-        user.setUsername("firstname@lastname");
-        user.setPassword("mapassword");
-        user.setToken("1");
-        entityManager.persist(user);
+        game.setGameMode(new Time());
+        //game.setGameId(1L);
+        game.setGameMode(new Time());
+        game.setUserMode(new MultiPlayer());
+        game.setCreatorUserId(1l);
+        game.setBreakDuration(5);
+        game.setLobbyId(5L);
+
+
+        entityManager.persist(game);
         entityManager.flush();
         // when
-        Optional<User> found = userRepository.findByToken("Non existing Token");
+        Optional<GameEntity> found = gameRepository.findByCreatorUserId(game.getCreatorUserId() -1);
         // then
         assertEquals(found.isEmpty(), true);
-    }*/
+    }
+
+    @Test
+    public void findByRoundEquals_success() {
+        // given
+        GameEntity game = new GameEntity();
+        game.setGameMode(new Time());
+        //game.setGameId(1L);
+        game.setGameMode(new Time());
+        game.setUserMode(new MultiPlayer());
+        game.setCreatorUserId(1l);
+        game.setRound(2);
+        game.setBreakDuration(5);
+        game.setLobbyId(5L);
+
+
+        entityManager.persist(game);
+        entityManager.flush();
+        // when
+        List<GameEntity> found = gameRepository.findByRoundEquals(game.getRound());
+        // then
+        found.forEach(l->{
+            assertEquals(l.getRound(),game.getRound());
+        });
+    }
+
+    @Test
+    public void findAll_success() {
+        // given
+        GameEntity game = new GameEntity();
+        game.setGameMode(new Time());
+        //game.setGameId(1L);
+        game.setGameMode(new Time());
+        game.setUserMode(new MultiPlayer());
+        game.setCreatorUserId(1l);
+        game.setRound(2);
+        game.setBreakDuration(5);
+        game.setLobbyId(5L);
+
+
+        entityManager.persistAndFlush(game);
+
+
+        GameEntity game2 = new GameEntity();
+        game2.setGameMode(new Time());
+        game2.setUserMode(new MultiPlayer());
+        game2.setCreatorUserId(4l);
+        game2.setRound(3);
+        game2.setBreakDuration(5);
+        game2.setLobbyId(5L);
+
+        entityManager.persistAndFlush(game2);
+        // when
+        List<GameEntity> found = gameRepository.findAll();
+        // then
+        assertEquals(found.size(),2);
+    }
 }
