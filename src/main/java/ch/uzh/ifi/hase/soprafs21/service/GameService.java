@@ -89,17 +89,12 @@ public class GameService {
     }
 
     public GameEntity startGame(Long gameId) {
-        Optional<GameEntity> found = gameRepository.findById(gameId);
-        if (found.isEmpty()) {
-            throw new NotFoundException("Game Entity is not found, to start the game");
-        } 
-
         // TODO
         // - set questions?
 
         GameEntity game = gameById(gameId);
 
-        ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+        ArrayList<Coordinate> coordinates = new ArrayList<>();
         coordinates.add(new Coordinate(8.5500,47.3667));
         coordinates.add(new Coordinate(-73.935242,40.730610));
         coordinates.add(new Coordinate(-123.116226,49.246292));
@@ -124,9 +119,6 @@ public class GameService {
         uMode.setScoreService(scoreService);
         uMode.start(game);
 
-        // killt lobby
-        lobbyService.deleteLobby(game.getLobbyId());
-        
         return game;
     }
 
