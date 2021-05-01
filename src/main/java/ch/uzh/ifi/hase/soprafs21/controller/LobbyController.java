@@ -51,17 +51,6 @@ public class LobbyController {
 
 
 
-    private User checkAuth(Map<String, String> header){
-        String token = header.get("token");
-        try {
-            return userService.getUserByToken(token);
-        }
-        catch (NotFoundException e) {
-            throw new UnauthorizedException(e.getMessage());
-        }
-    }
-
-
     @GetMapping("/lobby/{id}")
     @ResponseStatus(HttpStatus.OK)
     public LobbyGetDTO getLeobbyWithId(@PathVariable("id") Long lobbyid) {
@@ -81,7 +70,7 @@ public class LobbyController {
     }
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
-    public List<LobbyGetDTOAllLobbies> getAllLobbies(){
+    public List<LobbyGetDTOAllLobbies> getAllLobbies() {
         List<LobbyGetDTOAllLobbies> finalLobbyList = new ArrayList<>();
         for (Lobby i : lobbyService.getAllLobbies()) {
             LobbyGetDTOAllLobbies lobbyGetDTOAllLobbies = DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(i);
@@ -107,7 +96,7 @@ public class LobbyController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<String> joinLobby(@PathVariable long roomKey, @RequestHeader Map<String, String> header) {
-        User user = checkAuth(header);
+        User user = lobbyService.checkAuth(header);
         Lobby lobbyToJoin = lobbyService.getLobbyByRoomkey(roomKey);
         lobbyService.addUserToExistingLobby(user,lobbyToJoin);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -117,7 +106,7 @@ public class LobbyController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<String> joinLobbyWithRoomId(@PathVariable long lobbyId,@RequestHeader Map<String, String> header) {
-        User user = checkAuth(header);
+        User user = lobbyService.checkAuth(header);
         Lobby lobbyToJoin = lobbyService.getLobbyById(lobbyId);
         lobbyService.addUserToExistingLobby(user,lobbyToJoin);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -137,7 +126,7 @@ public class LobbyController {
     public void userExitLobby(
             @PathVariable Long lobbyId,
             @RequestHeader Map<String, String> header) {
-        User user = checkAuth(header);
+        User user = lobbyService.checkAuth(header);
         lobbyService.userExitLobby(user.getId(),lobbyId);
 
     }
