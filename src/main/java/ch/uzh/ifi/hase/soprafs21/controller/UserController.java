@@ -37,16 +37,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    private User checkAuth(Map<String, String> header){
-        try {
-            String token = header.get("token");
-            return userService.getUserByToken(token);
-        }
-        catch (NotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -86,7 +76,7 @@ public class UserController {
         @RequestHeader Map<String, String> header
         ) {
        
-        User userFromToken = checkAuth(header);
+        User userFromToken = userService.checkAuth(header);
         if(userFromToken == null){
             return ResponseEntity.status(403).body(null);
         }
@@ -115,7 +105,7 @@ public class UserController {
         @RequestHeader Map<String, String> header
         ){
         
-        User userFromToken = checkAuth(header);
+        User userFromToken = userService.checkAuth(header);
         if(userFromToken == null){
             return ResponseEntity.status(403).body(null);
         }
