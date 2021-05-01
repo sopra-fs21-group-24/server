@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -32,6 +33,17 @@ public class LobbyService {
         this.lobbyRepository = lobbyRepository;
         this.userRepository = userRepository;
         this.userService = userService;
+    }
+
+    public User checkAuth(Map<String, String> header){
+        try {
+            String token = header.get("token");
+            return userService.getUserByToken(token);
+        }
+        catch (NotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Lobby createLobby(Lobby newlobby){

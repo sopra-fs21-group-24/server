@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UserAlreadyExistsException;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
@@ -43,14 +45,12 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
 
-
     @MockBean
     private UserService userService;
 
 
-
     @Test
-    public void registerSuccessfulTest() throws Exception {
+    public void registerSuccessful() throws Exception {
 
         User user = new User();
         user.setId(1L);
@@ -74,13 +74,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void registerFailedTest() throws Exception {
-
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("Ben");
-        user.setPassword("1234");
-        user.setToken("1");
+    public void registerFailed() throws Exception {
 
         UserPostDTO userPostDTO = new UserPostDTO();
         userPostDTO.setUsername("Ben");
@@ -101,7 +95,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void loginSuccessfulTest() throws Exception {
+    public void loginSuccessful() throws Exception {
 
         User user = new User();
         Map<String, Integer> highscores = new HashMap<String, Integer>();
@@ -134,18 +128,8 @@ public class UserControllerTest {
     }
 
     @Test
-    public void loginFailedTest() throws Exception {
+    public void loginFailed() throws Exception {
 
-        User user = new User();
-        Map<String, Integer> highscores = new HashMap<String, Integer>();
-        highscores.put("Time", 4000);
-        highscores.put("Pixelation", 2000);
-        highscores.put("Clouds", 1000);
-        user.setId(1L);
-        user.setUsername("Ben");
-        user.setPassword("1234");
-        user.setToken("1");
-        user.setHighScores(highscores);
 
         UserPostDTO userPostDTO = new UserPostDTO();
         userPostDTO.setUsername("Ben");
@@ -166,7 +150,7 @@ public class UserControllerTest {
 
 
     @Test
-    public void getUserByIdSuccessfulTest() throws Exception {
+    public void getUserByIdSuccessful() throws Exception {
 
         User user = new User();
         Map<String, Integer> highscores = new HashMap<String, Integer>();
@@ -194,17 +178,6 @@ public class UserControllerTest {
 
     @Test
     public void getUserByIdFailedTest() throws Exception {
-
-        User user = new User();
-        Map<String, Integer> highscores = new HashMap<String, Integer>();
-        highscores.put("Time", 4000);
-        highscores.put("Pixelation", 2000);
-        highscores.put("Clouds", 1000);
-        user.setId(1L);
-        user.setUsername("Ben");
-        user.setPassword("1234");
-        user.setToken("1");
-        user.setHighScores(highscores);
 
         given(userService.getUserByUserId(Mockito.any())).willThrow(new NotFoundException("User with userId: 1 not found"));
 
@@ -251,21 +224,68 @@ public class UserControllerTest {
 
     }
 
-    // TODO
+    @Test
+    public void updateUserSuccessful () throws Exception {
+
+
+//        Map<String, Integer> highscores = new HashMap<String, Integer>();
+//        highscores.put("Time", 4000);
+//        highscores.put("Pixelation", 2000);
+//        highscores.put("Clouds", 1000);
+//
+//        User user = new User();
+//        user.setId(1L);
+//        user.setUsername("Ben");
+//        user.setPassword("1234");
+//        user.setToken("1");
+//        user.setHighScores(highscores);
+//
+//        UserPostDTO userPostDTO = new UserPostDTO();
+//        userPostDTO.setUsername("Max");
+//        userPostDTO.setPassword("password");
+//
+//        when(userService.updateUser(user.getId(), user)).thenReturn(user);
+//
+//        MockHttpServletRequestBuilder putRequest = put("/users/1")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(asJsonString(userPostDTO))
+//                .header("token", "1");
+//
+//        mockMvc.perform(putRequest)
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id", is(1)))
+//                .andExpect(jsonPath("$.username", is("Max")))
+//                .andExpect(jsonPath("$.token", is(user.getToken())))
+//                .andExpect(jsonPath("$.highscores", is(user.getHighScores())));
+    }
+
     @Test
     public void updateUserFailedTest() throws Exception {
 
+//        UserPostDTO userPostDTO = new UserPostDTO();
+//        userPostDTO.setUsername("Max");
+//        userPostDTO.setPassword("password");
+//
+//        when(userService.updateUser(Mockito.any(), Mockito.any())).thenThrow(new NotCreatorException("You're trying to update an user other than yourself!"));
+//
+//        MockHttpServletRequestBuilder putRequest = put("/users/1")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(asJsonString(userPostDTO))
+//                .header("token", "1");
+//
+//        mockMvc.perform(putRequest)
+//                .andExpect(status().isUnauthorized())
+//                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotCreatorException))
+//                .andExpect(result -> assertEquals("You're trying to update an user other than yourself!", result.getResolvedException().getMessage()));
 
     }
 
-    private String asJsonString(final Object object) {
-        try {
-            return new ObjectMapper().writeValueAsString(object);
-        }
-        catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The request body could not be created.%s", e.toString()));
+        private String asJsonString (final Object object){
+            try {
+                return new ObjectMapper().writeValueAsString(object);
+            }
+            catch (JsonProcessingException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The request body could not be created.%s", e.toString()));
+            }
         }
     }
-
-
-}
