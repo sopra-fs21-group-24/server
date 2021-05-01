@@ -63,10 +63,33 @@ public class GameService {
         return found.get();
     }
 
+    public void closeLooseEnds(){
+        List<GameEntity> endedGames = gameRepository.findByRoundEquals(4);
+        Long currentTime = System.currentTimeMillis();
+        for(GameEntity game : endedGames){
+            if ((game.getRoundStart() - currentTime) > 5 * 1000){
+                exitGame(game);
+            }
+        }
+
+
+    }
+
     public boolean existsGameByCreatorUserId(Long gameId) {
+        // TODO
+        // remove this closeLooseEnds 
+        // remove check for ended games
+        closeLooseEnds();
+
         Optional<GameEntity> found = gameRepository.findByCreatorUserId(gameId);
         if(found.isPresent()){
-            throw new PreconditionFailedException("User has already created a game");
+            // remove this - leave if present -> preconditionError
+            GameEntity game = found.get();
+            if (game.getRound() == 4){
+                exitGame(game);
+            } else {
+                throw new PreconditionFailedException("User has already created a game");
+            }
         } 
         return false;
     }
