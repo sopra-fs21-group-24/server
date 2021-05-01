@@ -48,6 +48,10 @@ public class MultiPlayer extends UserMode {
             score.setUserId(user);
             scoreService.save(score);
         }
+
+        // killt lobby
+        lobbyService.deleteLobby(game.getLobbyId());
+        
     }  
 
     public void nextRoundPrep(GameEntity game, long currentTime) {

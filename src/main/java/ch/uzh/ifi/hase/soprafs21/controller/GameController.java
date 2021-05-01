@@ -144,14 +144,9 @@ public class GameController {
         User user= checkAuth(header);
         checkGameCreator(game, user);
 
+        gameService.startGame(gameId);
 
-        try {
-            gameService.startGame(gameId);
-            return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
-        }
-        catch (NumberFormatException e){
-            throw new PreconditionFailedException("userId is in a wrong format");
-        }
+        return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
     }
     
     @GetMapping("/games/{gameId}/exit")
