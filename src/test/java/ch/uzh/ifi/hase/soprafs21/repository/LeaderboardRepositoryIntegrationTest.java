@@ -1,8 +1,15 @@
 package ch.uzh.ifi.hase.soprafs21.repository;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
+import ch.uzh.ifi.hase.soprafs21.entity.gameModeEnum;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 public class LeaderboardRepositoryIntegrationTest {
@@ -13,73 +20,56 @@ public class LeaderboardRepositoryIntegrationTest {
     @Autowired
     private LeaderboardRepository leaderboardRepository;
 
-   /* @Test
-    public void findByUserName_success() {
-        // given
-        User user = new User();
-
-        user.setUsername("firstname@lastname");
-        user.setPassword("mapassword");
-        user.setToken("1");
-        entityManager.persist(user);
-        entityManager.flush();
-        // when
-        User found = userRepository.findByUsername(user.getUsername());
-        // then
-        assertNotNull(found.getId());
-        assertEquals(found.getUsername(), user.getUsername());
-        assertEquals(found.getToken(), user.getToken());
-    }
-
     @Test
-    public void findByUserName_failure() {
+    public void findAll_success() {
         // given
-        User user = new User();
+        Leaderboard leaderboard = new Leaderboard();
+        leaderboard.setId(1);
+        leaderboard.setGameMode(gameModeEnum.CLOUDS);
+        leaderboard.setScore(1000);
+        leaderboard.setUsername("user1");
+        entityManager.persistAndFlush(leaderboard);
 
-        user.setUsername("firstname@lastname");
-        user.setPassword("mapassword");
-        user.setToken("1");
+        Leaderboard leaderboard2 = new Leaderboard();
+        leaderboard2.setId(2);
+        leaderboard2.setGameMode(gameModeEnum.CLOUDS);
+        leaderboard2.setScore(1001);
+        leaderboard2.setUsername("user2");
+        entityManager.persistAndFlush(leaderboard2);
 
-        entityManager.persist(user);
-        entityManager.flush();
+        Leaderboard leaderboard3 = new Leaderboard();
+        leaderboard3.setId(3);
+        leaderboard3.setGameMode(gameModeEnum.CLOUDS);
+        leaderboard3.setScore(1001);
+        leaderboard3.setUsername("user3");
+        entityManager.persistAndFlush(leaderboard3);
+
+        Leaderboard leaderboard4 = new Leaderboard();
+        leaderboard4.setId(4);
+        leaderboard4.setGameMode(gameModeEnum.CLOUDS);
+        leaderboard4.setScore(1002);
+        leaderboard4.setUsername("user4");
+        entityManager.persistAndFlush(leaderboard4);
+
+        Leaderboard leaderboard5 = new Leaderboard();
+        leaderboard5.setId(5);
+        leaderboard5.setGameMode(gameModeEnum.CLOUDS);
+        leaderboard5.setScore(1003);
+        leaderboard5.setUsername("user5");
+        entityManager.persistAndFlush(leaderboard5);
+
+        Leaderboard leaderboard6 = new Leaderboard();
+        leaderboard6.setId(6);
+        leaderboard6.setGameMode(gameModeEnum.TIME);
+        leaderboard6.setScore(1004);
+        leaderboard6.setUsername("user6");
+        entityManager.persistAndFlush(leaderboard6);
         // when
-        User found = userRepository.findByUsername("ThisUserNameDoesn'tExist");
+        List<Leaderboard> found = leaderboardRepository.findTop5ByGameMode(gameModeEnum.CLOUDS);
         // then
-        assertNull(found);
+        assertEquals(found.size(),5);
+        found.forEach(l->{
+            assertEquals(true, l.getGameMode() == gameModeEnum.CLOUDS);
+        });
     }
-
-    @Test
-    public void findByToken_success() {
-        // given
-        User user = new User();
-
-        user.setUsername("firstname@lastname");
-        user.setPassword("mapassword");
-        user.setToken("1");
-        entityManager.persist(user);
-        entityManager.flush();
-        // when
-        Optional<User> found = userRepository.findByToken(user.getToken());
-        // then
-        assertNotNull(found);
-        User foundUser = found.get();
-        assertEquals(foundUser.getUsername(), user.getUsername());
-        assertEquals(foundUser.getToken(), user.getToken());
-    }
-
-    @Test
-    public void findByToken_failure() {
-        // given
-        User user = new User();
-
-        user.setUsername("firstname@lastname");
-        user.setPassword("mapassword");
-        user.setToken("1");
-        entityManager.persist(user);
-        entityManager.flush();
-        // when
-        Optional<User> found = userRepository.findByToken("Non existing Token");
-        // then
-        assertEquals(found.isEmpty(), true);
-    }*/
 }
