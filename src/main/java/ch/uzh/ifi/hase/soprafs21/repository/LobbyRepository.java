@@ -1,12 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+import java.util.List;
+import java.util.Optional;
 
 @Repository("lobbyRepository")
 public interface LobbyRepository extends JpaRepository<Lobby, Long> {

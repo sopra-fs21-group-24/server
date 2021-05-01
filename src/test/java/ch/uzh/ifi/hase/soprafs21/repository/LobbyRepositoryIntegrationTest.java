@@ -1,8 +1,16 @@
 package ch.uzh.ifi.hase.soprafs21.repository;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 public class LobbyRepositoryIntegrationTest {
@@ -13,73 +21,82 @@ public class LobbyRepositoryIntegrationTest {
     @Autowired
     private LobbyRepository lobbyRepository;
 
-   /* @Test
-    public void findByUserName_success() {
-        // given
-        User user = new User();
-
-        user.setUsername("firstname@lastname");
-        user.setPassword("mapassword");
-        user.setToken("1");
-        entityManager.persist(user);
-        entityManager.flush();
-        // when
-        User found = userRepository.findByUsername(user.getUsername());
-        // then
-        assertNotNull(found.getId());
-        assertEquals(found.getUsername(), user.getUsername());
-        assertEquals(found.getToken(), user.getToken());
-    }
-
     @Test
-    public void findByUserName_failure() {
-        // given
-        User user = new User();
-
-        user.setUsername("firstname@lastname");
-        user.setPassword("mapassword");
-        user.setToken("1");
-
-        entityManager.persist(user);
+    public void findLobbyByRoomKey_success(){
+        //given
+        Lobby lobby = new Lobby();
+        lobby.setGameId(1L);
+        lobby.setCreator(1L);
+        //lobby.setId(1L);
+        lobby.setPublicStatus(true);
+        lobby.setRoomKey(2999L);
+        entityManager.persist(lobby);
         entityManager.flush();
-        // when
-        User found = userRepository.findByUsername("ThisUserNameDoesn'tExist");
-        // then
-        assertNull(found);
-    }
 
-    @Test
-    public void findByToken_success() {
-        // given
-        User user = new User();
-
-        user.setUsername("firstname@lastname");
-        user.setPassword("mapassword");
-        user.setToken("1");
-        entityManager.persist(user);
-        entityManager.flush();
         // when
-        Optional<User> found = userRepository.findByToken(user.getToken());
-        // then
+        Optional<Lobby> found = lobbyRepository.findByRoomKey(lobby.getRoomKey());
+
+        //then
         assertNotNull(found);
-        User foundUser = found.get();
-        assertEquals(foundUser.getUsername(), user.getUsername());
-        assertEquals(foundUser.getToken(), user.getToken());
+        Lobby foundLobby = found.get();
+        assertEquals(foundLobby.getCreator(), lobby.getCreator());
+        assertEquals(foundLobby.getGameId(), lobby.getGameId());
+        assertEquals(foundLobby.getId(), lobby.getId());
+        assertEquals(foundLobby.getRoomKey(), lobby.getRoomKey());
+        //assertEquals(foundLobby.getPublicStatus(), lobby.getPublicStatus());
+        //assertEquals(foundLobby.getUsers(), lobby.getUsers());
+
+    }
+    @Test
+    public void findLobbyByRoomKey_failure(){
+        //given
+        Lobby lobby = new Lobby();
+        lobby.setGameId(1L);
+        lobby.setCreator(1L);
+        //lobby.setId(1L);
+        lobby.setPublicStatus(true);
+        lobby.setRoomKey(2999L);
+        entityManager.persist(lobby);
+        entityManager.flush();
+
+        // when
+        Optional<Lobby> found = lobbyRepository.findByRoomKey(lobby.getRoomKey() + 1);
+
+        //then
+        assertEquals(found.isEmpty(), true);
+
     }
 
     @Test
-    public void findByToken_failure() {
-        // given
-        User user = new User();
+    public void findOnlyPublicLobbies_success(){
+        //given
+        Lobby lobby = new Lobby();
+        lobby.setGameId(1L);
+        lobby.setCreator(1L);
+        //lobby.setId(1L);
+        lobby.setPublicStatus(false);
+        lobby.setRoomKey(2999L);
+        entityManager.persist(lobby);
 
-        user.setUsername("firstname@lastname");
-        user.setPassword("mapassword");
-        user.setToken("1");
-        entityManager.persist(user);
-        entityManager.flush();
+
+       /* Lobby lobby2 = new Lobby();
+        lobby2.setGameId(1L);
+        lobby2.setCreator(1L);
+        //lobby.setId(1L);
+        lobby2.setPublicStatus(true);
+        lobby2.setRoomKey(2999L);
+        entityManager.persist(lobby2);
+        entityManager.flush();*/
+
         // when
-        Optional<User> found = userRepository.findByToken("Non existing Token");
-        // then
-        assertEquals(found.isEmpty(), true);
-    }*/
+        List<Lobby> found = lobbyRepository.findAllByPublicStatusTrue();
+
+        //then
+        found.forEach(l->{
+            assertEquals(l.getPublicStatus(),true);
+        });
+
+    }
+
+
 }
