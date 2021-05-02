@@ -136,7 +136,7 @@ public class GameController {
         User user = gameService.checkAuth(header);
         gameService.checkPartofGame(game, user);
 
-        if (!user.getId().equals(game.getCreatorUserId())) {
+        if (user.getId().equals(game.getCreatorUserId())) {
             gameService.exitGame(game);
         }
         else {
