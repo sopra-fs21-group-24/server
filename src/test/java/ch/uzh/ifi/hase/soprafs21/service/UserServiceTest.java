@@ -62,7 +62,6 @@ public class UserServiceTest {
 
     @Test
     public void createUser_duplicateInputs_throwsException() {
-
         // given -> a first user has already been created
         userService.createUser(testUser);
 
@@ -72,7 +71,6 @@ public class UserServiceTest {
 
         // then -> attempt to create second user with same user -> check that an error is thrown
         assertThrows(UserAlreadyExistsException.class, () -> userService.createUser(testUser));
-
     }
 
     @Test
@@ -96,7 +94,6 @@ public class UserServiceTest {
         assertEquals(authenticatedUser.getToken(), createdUser.getToken());
         assertEquals(authenticatedUser.getPassword(), createdUser.getPassword());
         assertNotNull(authenticatedUser.getToken());
-
     }
 
     @Test
@@ -111,7 +108,6 @@ public class UserServiceTest {
 
         // then -> attempt to create second user with same user -> check that an error is thrown
         assertThrows(NotFoundException.class, () -> userService.getUserByToken(createdUser.getToken()));
-
     }
     @Test
     public void getUserByToken_failure() {
@@ -125,7 +121,6 @@ public class UserServiceTest {
 
         // then -> attempt to create second user with same user -> check that an error is thrown
         assertThrows(NotFoundException.class, () -> userService.getUserByToken("invalid Token"));
-
     }
 
     @Test
@@ -140,7 +135,6 @@ public class UserServiceTest {
 
         // then -> attempt to create second user with same user -> check that an error is thrown
         assertThrows(NotFoundException.class, () -> userService.getUserByUserId(createdUser.getId()));
-
     }
     @Test
     public void getUserById_failure() {
@@ -154,7 +148,6 @@ public class UserServiceTest {
 
         // then -> attempt to create second user with same user -> check that an error is thrown
         assertThrows(NotFoundException.class, () -> userService.getUserByUserId(3000L));
-
     }
 
     @Test
@@ -169,7 +162,6 @@ public class UserServiceTest {
         //when
         Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(createdUser);
         System.out.println(createdUser.getPassword());
-
 
         // then -> attempt to create second user with same user -> check that an error is thrown
         assertThrows(NotCreatorException.class, () -> userService.login(changedPassWordUser));
@@ -196,8 +188,6 @@ public class UserServiceTest {
         System.out.println(authenticatedUser.getToken());
         System.out.println(createdUser.getToken());
         assertFalse(authenticatedUser.getToken().equals(oldToken));
-
-
     }
 
 
