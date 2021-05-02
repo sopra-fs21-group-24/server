@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
@@ -127,7 +125,7 @@ public class LobbyController {
             @PathVariable Long lobbyId,
             @RequestHeader Map<String, String> header) {
         User user = lobbyService.checkAuth(header);
-        lobbyService.userExitLobby(user.getId(),lobbyId);
+        lobbyService.userExitLobby(user,lobbyId);
 
     }
 

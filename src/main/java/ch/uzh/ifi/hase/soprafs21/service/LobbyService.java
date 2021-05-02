@@ -108,14 +108,12 @@ public class LobbyService {
 
 
     public List<Lobby> getAllLobbies(){
-        List<Lobby> lobbies = lobbyRepository.findAllByPublicStatusTrue();
-
-        return lobbies;
+        return lobbyRepository.findAllByPublicStatusTrue();
     }
 
-    public void userExitLobby(Long userId, Long lobbyId){
+    public void userExitLobby(User user, Long lobbyId){
+        Long userId = user.getId();
 
-        User user = userService.getUserByUserId(userId);
         if (!user.getInLobby().booleanValue()){
             throw new PreconditionFailedException("User is not in a lobby!"); 
         }
