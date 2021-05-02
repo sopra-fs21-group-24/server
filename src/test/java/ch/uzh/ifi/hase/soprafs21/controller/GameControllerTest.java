@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.QuestionGetDTO;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
@@ -96,6 +97,33 @@ public class GameControllerTest {
 
     @Test
     public void createGameSuccess() throws Exception {
+
+
+        GameEntity game = new GameEntity();
+        game.setGameId(1L);
+        game.setGameMode(new Pixelation());
+
+        User user = new User();
+
+
+        given(gameService.checkAuth(Mockito.any())).willReturn(user);
+        given(gameService.createGame(Mockito.any(), Mockito.anyBoolean())).willReturn(game);
+        given(gameService.gameById(Mockito.any())).willReturn(game);
+
+        GamePostDTOCreate gamepostdo = new GamePostDTOCreate();
+        gamepostdo.setPublicStatus(true);
+        gamepostdo.setGamemode("Pixelation");
+        gamepostdo.setUserId(1L);
+        gamepostdo.setUsermode("Singleplayer");
+
+        MockHttpServletRequestBuilder postRequest = post("/games")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(gamepostdo))
+                .header("token","1");
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.gameId", is(1)));
 
     }
 
