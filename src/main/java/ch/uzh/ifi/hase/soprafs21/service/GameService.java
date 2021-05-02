@@ -28,6 +28,12 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -325,7 +331,6 @@ public class GameService {
         }
         return scores.listIterator();
     }
-
 
     public Question questionById(Long questionId) {
         Optional<Question> found = questionRepository.findById(questionId);
