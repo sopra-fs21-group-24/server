@@ -128,9 +128,93 @@ public class GameControllerTest {
     }
 
     @Test
-    public void createGameFailed() throws Exception {
+    public void createGameFailedUnauthorizedException() throws Exception {
+
+        GameEntity game = new GameEntity();
+        game.setGameId(1L);
+        game.setGameMode(new Pixelation());
+
+
+
+        given(gameService.checkAuth(Mockito.any())).willThrow(new UnauthorizedException("Not Authorized"));
+
+
+        GamePostDTOCreate gamepostdo = new GamePostDTOCreate();
+        gamepostdo.setPublicStatus(true);
+        gamepostdo.setGamemode("Pixelation");
+        gamepostdo.setUserId(1L);
+        gamepostdo.setUsermode("Singleplayer");
+
+        MockHttpServletRequestBuilder postRequest = post("/games")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(gamepostdo))
+                .header("token","1");
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isUnauthorized())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnauthorizedException));
 
     }
+
+    @Test
+    public void createGameFailedNotFoundException() throws Exception {
+
+        GameEntity game = new GameEntity();
+        game.setGameId(1L);
+        game.setGameMode(new Pixelation());
+
+
+
+        given(gameService.createGame(Mockito.any(), Mockito.anyBoolean())).willThrow(new NotFoundException("Not found"));
+
+
+        GamePostDTOCreate gamepostdo = new GamePostDTOCreate();
+        gamepostdo.setPublicStatus(true);
+        gamepostdo.setGamemode("Pixelation");
+        gamepostdo.setUserId(1L);
+        gamepostdo.setUsermode("Singleplayer");
+
+        MockHttpServletRequestBuilder postRequest = post("/games")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(gamepostdo))
+                .header("token","1");
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException));
+
+    }
+
+    @Test
+    public void createGameFailedPreconditionFailedException() throws Exception {
+
+        GameEntity game = new GameEntity();
+        game.setGameId(1L);
+        game.setGameMode(new Pixelation());
+
+
+
+        given(gameService.createGame(Mockito.any(), Mockito.anyBoolean())).willThrow(new PreconditionFailedException("Precondition failed"));
+
+
+        GamePostDTOCreate gamepostdo = new GamePostDTOCreate();
+        gamepostdo.setPublicStatus(true);
+        gamepostdo.setGamemode("Pixelation");
+        gamepostdo.setUserId(1L);
+        gamepostdo.setUsermode("Singleplayer");
+
+        MockHttpServletRequestBuilder postRequest = post("/games")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(gamepostdo))
+                .header("token","1");
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isPreconditionFailed())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof PreconditionFailedException));
+
+    }
+
+
 
     @Test
     public void getGameSuccess() throws Exception {
