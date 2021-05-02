@@ -3,6 +3,8 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Pixelation;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
@@ -59,12 +61,38 @@ public class GameControllerTest {
     @Test
     public void getAllGamesSuccess() throws Exception {
 
-    }
+        GameEntity game = new GameEntity();
+        game.setGameId(1L);
+        game.setGameMode(new Pixelation());
 
-    @Test
-    public void getAllGamesFailed() throws Exception {
+        GameEntity game2 = new GameEntity();
+        game2.setGameId(2L);
+        game2.setGameMode(new Pixelation());
+        List<GameEntity> gamelist = new ArrayList<>();
+        gamelist.add((game));
+        gamelist.add((game2));
+
+        given(gameService.getAllGames()).willReturn(gamelist);
+
+        given(gameService.gameById(Mockito.any())).willReturn(game,game2);
+
+
+        MockHttpServletRequestBuilder getRequest = get("/games")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        for (int i=0; i< gamelist.size();i++ ){
+            String s = String.valueOf(i);
+
+            mockMvc.perform(getRequest)
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath(String.format("$[%s].gameId",s), is(i+1)))
+                    .andExpect(jsonPath(String.format("$[%s].gameMode.name",s), is("Pixelation"))) ;
+        }
+
+
 
     }
+    
 
     @Test
     public void createGameSuccess() throws Exception {
