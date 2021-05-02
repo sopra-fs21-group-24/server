@@ -178,14 +178,13 @@ public class GameService {
         answer.setCoordQuestion(question.getCoordinate());
 
         // timeFactor
-        UserMode uMode = game.getUserMode();
-        float timeFactor = uMode.calculateTimeFactor(game, currentTime);
-        // float timeFactor = 1; // remove just debug
+        GameMode gMode = game.getGameMode();
+        float timeFactor = gMode.calculateTimeFactor(game, currentTime);
+
         answer.setTimeFactor(timeFactor);
 
 
         // score calculation
-        GameMode gMode = game.getGameMode();
         Long tempScore = gMode.calculateScore(answer);
 
         // user answered
@@ -198,6 +197,7 @@ public class GameService {
         score.setLastCoordinate(answer.getCoordGuess());
         
         // gameContiune
+        UserMode uMode = game.getUserMode();
         uMode.nextRoundPrep(game, currentTime);
 
         // exit, round einmal zuviel incremented in nextRoundPrep
