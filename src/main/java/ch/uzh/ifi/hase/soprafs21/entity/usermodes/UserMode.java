@@ -41,10 +41,6 @@ public abstract class UserMode implements Serializable {
         } 
     }
 
-    public float calculateTimeFactor(GameEntity game, Long currentTime){
-        return 1.0f - ((currentTime - game.getRoundStart()) / ((float)game.getRoundDuration()*1000*2));
-    }
-
     public abstract void nextRoundPrep(GameEntity game, long currentTime);
     public abstract String getName();
     public abstract void setName(String name);

@@ -9,6 +9,7 @@ import javax.persistence.Table;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 
 @Entity
@@ -39,6 +40,10 @@ public abstract class GameMode implements Serializable {
 
         return Math.round(scoreFactor * 500);
     } 
+
+    public float calculateTimeFactor(GameEntity game, Long currentTime){
+        return 1.0f - ((currentTime - game.getRoundStart()) / ((float)game.getRoundDuration()*1000*3));
+    }
 
     public double haversineDistance(Coordinate coordGuess, Coordinate coordQuestion){
         // degrees to radians.

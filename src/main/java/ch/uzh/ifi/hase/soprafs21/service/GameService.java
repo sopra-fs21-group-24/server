@@ -1,6 +1,25 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import ch.uzh.ifi.hase.soprafs21.entity.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.transaction.Transactional;
+
+import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import ch.uzh.ifi.hase.soprafs21.entity.Answer;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+import ch.uzh.ifi.hase.soprafs21.entity.Question;
+import ch.uzh.ifi.hase.soprafs21.entity.Score;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
@@ -28,12 +47,12 @@ public class GameService {
     private final UserService userService;
 
     @Autowired
-    public GameService(@Qualifier("gameRepository") GameRepository gameRepository, 
-    UserRepository userRepository, 
-    QuestionRepository questionRepository, 
-    ScoreService scoreService,
-    LobbyService lobbyService,
-    UserService userService
+    public GameService(@Qualifier("gameRepository") GameRepository gameRepository,
+                       UserRepository userRepository,
+                       QuestionRepository questionRepository,
+                       ScoreService scoreService,
+                       LobbyService lobbyService,
+                       UserService userService
     ) {
         this.questionRepository = questionRepository;
         this.gameRepository = gameRepository;
@@ -43,19 +62,40 @@ public class GameService {
         this.userService = userService;
     }
 
+    public User checkAuth(Map<String, String> header) {
+        String token = header.get("token");
+        try {
+            return userService.getUserByToken(token);
+        }
+        catch (NotFoundException e) {
+            throw new UnauthorizedException(e.getMessage());
+        }
+    }
+
+    public void checkPartofGame(GameEntity game, User user) {
+        if (!game.getUserIds().contains(user.getId())) {
+            throw new UnauthorizedException("Non player is trying to acess an only-player component");
+        }
+
+    }
+
     public GameEntity gameById(Long gameId) {
         Optional<GameEntity> found = gameRepository.findById(gameId);
-        if(found.isEmpty()){
+        if (found.isEmpty()) {
             throw new NotFoundException("Game with this gameId does not exist");
         }
         return found.get();
     }
 
-    public void closeLooseEnds(){
+    public List<Long> getQuestionsOfGame(GameEntity game) {
+        return game.getQuestions();
+    }
+
+    public void closeLooseEnds() {
         List<GameEntity> endedGames = gameRepository.findByRoundEquals(4);
         Long currentTime = System.currentTimeMillis();
-        for(GameEntity game : endedGames){
-            if ((game.getRoundStart() - currentTime) > 5 * 1000){
+        for (GameEntity game : endedGames) {
+            if ((game.getRoundStart() - currentTime) > 5 * 1000) {
                 exitGame(game);
             }
         }
@@ -70,15 +110,16 @@ public class GameService {
         closeLooseEnds();
 
         Optional<GameEntity> found = gameRepository.findByCreatorUserId(gameId);
-        if(found.isPresent()){
+        if (found.isPresent()) {
             // remove this - leave if present -> preconditionError
             GameEntity game = found.get();
-            if (game.getRound() == 4){
+            if (game.getRound() == 4) {
                 exitGame(game);
-            } else {
+            }
+            else {
                 throw new PreconditionFailedException("User has already created a game");
             }
-        } 
+        }
         return false;
     }
 
@@ -106,12 +147,12 @@ public class GameService {
         GameEntity game = gameById(gameId);
 
         ArrayList<Coordinate> coordinates = new ArrayList<>();
-        coordinates.add(new Coordinate(8.5500,47.3667));
-        coordinates.add(new Coordinate(-73.935242,40.730610));
-        coordinates.add(new Coordinate(-123.116226,49.246292));
+        coordinates.add(new Coordinate(8.5500, 47.3667));
+        coordinates.add(new Coordinate(-73.935242, 40.730610));
+        coordinates.add(new Coordinate(-123.116226, 49.246292));
         // HardCoded Question
         List<Long> questions = new ArrayList<>();
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < 3; i++) {
             Question question = new Question();
             question.setZoomLevel(12);
             question.setCoordinate(coordinates.get(i));
@@ -144,20 +185,20 @@ public class GameService {
         }
 
         Long answerQuestionId = answer.getQuestionId();
-            
+
         // anwserQuestion in questions of game
         List<Long> questions = game.getQuestions();
-        if(!questions.contains(answerQuestionId)){
+        if (!questions.contains(answerQuestionId)) {
             throw new PreconditionFailedException("Questionid is not part of the game questions");
-        } 
+        }
 
         // question matching round
-        if(!questions.get(game.getRound()-1).equals(answerQuestionId)){
+        if (!questions.get(game.getRound() - 1).equals(answerQuestionId)) {
             throw new PreconditionFailedException("Answer is not for the right Question");
         }
-        
+
         // check if already answered
-        if (game.getUsersAnswered().contains(answer.getUserId())){
+        if (game.getUsersAnswered().contains(answer.getUserId())) {
             throw new PreconditionFailedException("User has already answered this question");
         }
 
@@ -166,14 +207,13 @@ public class GameService {
         answer.setCoordQuestion(question.getCoordinate());
 
         // timeFactor
-        UserMode uMode = game.getUserMode();
-        float timeFactor = uMode.calculateTimeFactor(game, currentTime);
-        // float timeFactor = 1; // remove just debug
+        GameMode gMode = game.getGameMode();
+        float timeFactor = gMode.calculateTimeFactor(game, currentTime);
+
         answer.setTimeFactor(timeFactor);
 
 
         // score calculation
-        GameMode gMode = game.getGameMode();
         Long tempScore = gMode.calculateScore(answer);
 
         // user answered
@@ -184,12 +224,13 @@ public class GameService {
         score.setTempScore(tempScore);
         score.setTotalScore(score.getTotalScore() + tempScore);
         score.setLastCoordinate(answer.getCoordGuess());
-        
+
         // gameContiune
+        UserMode uMode = game.getUserMode();
         uMode.nextRoundPrep(game, currentTime);
 
         // exit, round einmal zuviel incremented in nextRoundPrep
-        if (game.getRound() == 4){
+        if (game.getRound() == 4) {
             // exit here
         }
 
@@ -197,11 +238,10 @@ public class GameService {
     }
 
 
-
     public void exitGame(GameEntity game) {
         ListIterator<Score> scores = scoresByGame(game);
 
-        while(scores.hasNext()){
+        while (scores.hasNext()) {
             Score score = scores.next();
 
             Long totalScore = score.getTotalScore();
@@ -211,18 +251,18 @@ public class GameService {
 
             Integer highest = highScores.get(key);
 
-            if (totalScore > highest){
+            if (totalScore > highest) {
                 highScores.put(key, totalScore.intValue());
                 user.setHighScores(highScores);
             }
-            
+
         }
 
         gameRepository.delete(game);
         gameRepository.flush();
     }
 
-    public void exitGameUser(GameEntity game, User user){
+    public void exitGameUser(GameEntity game, User user) {
 
         Long userId = user.getId();
 
@@ -235,58 +275,58 @@ public class GameService {
         users.remove(userId);
         game.setUserIds(users);
 
-        if(users.size() == 1){
+        if (users.size() == 1) {
             exitGame(game);
         }
 
-        MultiPlayer uMode = (MultiPlayer)game.getUserMode();
+        MultiPlayer uMode = (MultiPlayer) game.getUserMode();
         uMode.adjustThreshold(game, user);
 
     }
 
-    public void moveLobbyUsers(GameEntity game){
-        if (game.getLobbyId() != null){
+    public void moveLobbyUsers(GameEntity game) {
+        if (game.getLobbyId() != null) {
             Lobby lobby = lobbyService.getLobbyById(game.getLobbyId());
             game.setUserIds(lobby.getUsers());
         }
     }
 
-    public List<GameEntity> getAllGames(){
+    public List<GameEntity> getAllGames() {
         return gameRepository.findAll();
     }
 
-    public GameEntity update(GameEntity game, Boolean publicStatus){
+    public GameEntity update(GameEntity game, Boolean publicStatus) {
         GameEntity gameLocal = gameById(game.getGameId());
-        if(gameLocal.getRound() != 0){
+        if (gameLocal.getRound() != 0) {
             throw new PreconditionFailedException("Game has already started, Can not change running game");
-        } 
+        }
 
         String nameUserModeLocal = gameLocal.getUserMode().getName();
         String nameUserModePut = game.getUserMode().getName();
-        String nameGameModeLocal= gameLocal.getGameMode().getName();
-        String nameGameModePut= game.getGameMode().getName();
+        String nameGameModeLocal = gameLocal.getGameMode().getName();
+        String nameGameModePut = game.getGameMode().getName();
         Lobby lobbyLocal = lobbyService.getLobbyById(gameLocal.getLobbyId());
 
         // evt. wegnehmen
-        if(!nameUserModeLocal.equals(nameUserModePut)){
+        if (!nameUserModeLocal.equals(nameUserModePut)) {
             gameLocal.setUserMode(game.getUserMode());
         }
 
-        if(!nameGameModeLocal.equals(nameGameModePut)){
+        if (!nameGameModeLocal.equals(nameGameModePut)) {
             gameLocal.setGameMode(game.getGameMode());
         }
 
-        if(!lobbyLocal.getPublicStatus().equals(publicStatus)){
+        if (!lobbyLocal.getPublicStatus().equals(publicStatus)) {
             lobbyLocal.setPublicStatus(publicStatus);
         }
 
         return gameLocal;
     }
-    
-    public ListIterator<Score> scoresByGame(GameEntity game){
+
+    public ListIterator<Score> scoresByGame(GameEntity game) {
         List<Long> userIds = game.getUserIds();
-        ArrayList<Score> scores = new ArrayList<>(); 
-        for(Long userId : userIds){
+        ArrayList<Score> scores = new ArrayList<>();
+        for (Long userId : userIds) {
             scores.add(scoreService.findById(userId));
         }
         return scores.listIterator();
@@ -296,7 +336,8 @@ public class GameService {
         Optional<Question> found = questionRepository.findById(questionId);
         if (found.isEmpty()) {
             throw new NotFoundException("Question with this questionId is not found");
-        } else {
+        }
+        else {
             return found.get();
         }
     }
