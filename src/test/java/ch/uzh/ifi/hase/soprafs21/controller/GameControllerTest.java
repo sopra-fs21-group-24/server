@@ -347,7 +347,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void exitGameFailedUnauthorizedException() throws Exception {
+    public void exitGameFailedByCheckAuth() throws Exception {
 
         GameEntity game = new GameEntity();
         game.setGameId(1L);
@@ -357,35 +357,8 @@ public class GameControllerTest {
         User user = new User();
         user.setId(3L);
 
-        doThrow(new PreconditionFailedException("Precondition Failed")).when(gameService).exitGame(Mockito.any());
-        given(gameService.checkAuth(Mockito.any())).willReturn(user);
-        given(gameService.gameById(Mockito.any())).willReturn(game);
-
-
-        MockHttpServletRequestBuilder getRequest = get("/games/1/exit")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("token","1");
-
-        mockMvc.perform(getRequest)
-                .andExpect(status().isPreconditionFailed())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof PreconditionFailedException));
-
-    }
-
-    @Test
-    public void exitGameFailedNotCreatorException() throws Exception {
-
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setCreatorUserId(2L);
-        game.setGameMode(new Pixelation());
-
-        User user = new User();
-        user.setId(3L);
-
-        doThrow(new NotCreatorException("Precondition Failed")).when(gameService).exitGame(Mockito.any());
-        given(gameService.checkAuth(Mockito.any())).willReturn(user);
-        given(gameService.gameById(Mockito.any())).willReturn(game);
+        when(gameService.gameById(Mockito.any())).thenReturn(game);
+        when(gameService.checkAuth(Mockito.any())).thenThrow(new UnauthorizedException("Not authorized"));
 
 
         MockHttpServletRequestBuilder getRequest = get("/games/1/exit")
@@ -394,13 +367,14 @@ public class GameControllerTest {
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isUnauthorized())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotCreatorException));
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnauthorizedException));
 
     }
 
 
+
     @Test
-    public void exitGameFailedNotFoundException() throws Exception {
+    public void exitGameFailedByCheckPartOfGame() throws Exception {
 
         GameEntity game = new GameEntity();
         game.setGameId(1L);
@@ -410,9 +384,10 @@ public class GameControllerTest {
         User user = new User();
         user.setId(3L);
 
-        doThrow(new NotFoundException("Precondition Failed")).when(gameService).exitGame(Mockito.any());
+
         given(gameService.checkAuth(Mockito.any())).willReturn(user);
         given(gameService.gameById(Mockito.any())).willReturn(game);
+        doThrow(new UnauthorizedException("Precondition Failed")).when(gameService).checkPartofGame(Mockito.any(), Mockito.any());
 
 
         MockHttpServletRequestBuilder getRequest = get("/games/1/exit")
@@ -420,8 +395,8 @@ public class GameControllerTest {
                 .header("token","1");
 
         mockMvc.perform(getRequest)
-                .andExpect(status().isNotFound())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException));
+                .andExpect(status().isUnauthorized())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnauthorizedException));
 
     }
 
