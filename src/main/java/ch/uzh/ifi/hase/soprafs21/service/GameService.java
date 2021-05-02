@@ -1,24 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.transaction.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-
-import ch.uzh.ifi.hase.soprafs21.entity.Answer;
-import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
-import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.Question;
-import ch.uzh.ifi.hase.soprafs21.entity.Score;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
@@ -27,6 +9,12 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -303,7 +291,6 @@ public class GameService {
         }
         return scores.listIterator();
     }
-
 
     public Question questionById(Long questionId) {
         Optional<Question> found = questionRepository.findById(questionId);
