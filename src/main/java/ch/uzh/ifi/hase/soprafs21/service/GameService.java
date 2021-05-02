@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
-import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -23,8 +22,10 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
@@ -70,8 +71,14 @@ public class GameService {
         if (!game.getUserIds().contains(user.getId())) {
             throw new UnauthorizedException("Non player is trying to acess an only-player component");
         }
-
     }
+
+    public void checkGameCreator(GameEntity game, User user) {
+        if (!user.getId().equals(game.getCreatorUserId())) {
+            throw new NotCreatorException("User is not the game-creator");
+        }
+    }
+
 
     public GameEntity gameById(Long gameId) {
         Optional<GameEntity> found = gameRepository.findById(gameId);

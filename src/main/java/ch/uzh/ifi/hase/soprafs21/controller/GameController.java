@@ -61,12 +61,6 @@ public class GameController {
         this.questionService = questionService;
     }
 
-    private void checkGameCreator(GameEntity game, User user) {
-        if (!user.getId().equals(game.getCreatorUserId())) {
-            throw new NotCreatorException("User is not the game-creator");
-        }
-    }
-
     // evtl implementieren fürs debugging
     @GetMapping("/games")
     @ResponseStatus(HttpStatus.OK)
@@ -125,7 +119,7 @@ public class GameController {
 
         GameEntity game = gameService.gameById(gameId);
         User user = gameService.checkAuth(header);
-        checkGameCreator(game, user);
+        gameService.checkGameCreator(game, user);
 
         gameService.startGame(gameId);
 
@@ -163,7 +157,7 @@ public class GameController {
         GameEntity game = DTOMapper.INSTANCE.convertGamePutDTOToGameEntity(gamePutDTO);
 
         User user = gameService.checkAuth(header);
-        checkGameCreator(game, user);
+        gameService.checkGameCreator(game, user);
 
         game.setGameId(gameId);
         game.setGameModeFromName(gamePutDTO.getGamemode());
@@ -227,7 +221,6 @@ public class GameController {
             scoreGetDTO.setSolutionCoordinate(solution);
             scoreGetDTO.setUsername(scoreUser.getUsername());
             scoresDTO.add(scoreGetDTO);
-            // lösung mitschicken?
         }
 
         return scoresDTO;
@@ -243,11 +236,10 @@ public class GameController {
         gameService.checkPartofGame(game, user);
 
         // evtl dto creaierten
-        // return game.getQuestions();
         return gameService.getQuestionsOfGame(game);
     }
 
-    @PostMapping("/games/{gameId}/questions/{questionId}") // evtl überflüsssig
+    @PostMapping("/games/{gameId}/questions/{questionId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String getGameQuestionsSpecific(@PathVariable Long gameId, @PathVariable Long questionId,
@@ -255,18 +247,12 @@ public class GameController {
             throws NotFoundException, UnauthorizedException, PreconditionFailedException, MalformedURLException {
 
         GameEntity game = gameService.gameById(gameId);
-        // User user = checkAuth(header);
-        // checkPartofGame(game, user);
+        // checkAuth
+        // checkPartofGame
 
         List<Long> questions = game.getQuestions();
 
-//        if (!questions.contains(questionId)) {
-//            throw new PreconditionFailedException("Question with this id is not part of the game");
-//        }
-
-        // Moved the if statement above to the QuestionService to be able to mock it in the GameControllerTest
         questionService.checkQuestionIdInQuestions(questions, questionId);
-
         Question question = gameService.questionById(questionId);
 
         return questionService.getMapImage(qDTO.getHeight(), qDTO.getWidth(), question);
