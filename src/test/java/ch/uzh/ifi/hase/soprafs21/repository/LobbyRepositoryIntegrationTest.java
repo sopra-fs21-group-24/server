@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -111,7 +110,7 @@ public class LobbyRepositoryIntegrationTest {
         assertEquals(found.isEmpty(), true);
 
     }
-
+/*
     @Test
     public void findOnlyPublicLobbies_success(){
         //given
@@ -137,7 +136,7 @@ public class LobbyRepositoryIntegrationTest {
             assertEquals(l.getPublicStatus(),true);
         });
 
-    }
+    }*/
 
 
 }
