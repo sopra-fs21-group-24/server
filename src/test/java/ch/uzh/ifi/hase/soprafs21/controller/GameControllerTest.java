@@ -159,12 +159,6 @@ public class GameControllerTest {
     @Test
     public void createGameFailedNotFoundException() throws Exception {
 
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setGameMode(new Pixelation());
-
-
-
         given(gameService.createGame(Mockito.any(), Mockito.anyBoolean())).willThrow(new NotFoundException("Not found"));
 
 
@@ -187,12 +181,6 @@ public class GameControllerTest {
 
     @Test
     public void createGameFailedPreconditionFailedException() throws Exception {
-
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setGameMode(new Pixelation());
-
-
 
         given(gameService.createGame(Mockito.any(), Mockito.anyBoolean())).willThrow(new PreconditionFailedException("Precondition failed"));
 
@@ -219,15 +207,69 @@ public class GameControllerTest {
     @Test
     public void getGameSuccess() throws Exception {
 
+        GameEntity game = new GameEntity();
+        game.setGameId(1L);
+        game.setGameMode(new Pixelation());
+
+
+
+        given(gameService.gameById(Mockito.any())).willReturn(game);
+
+
+        MockHttpServletRequestBuilder getRequest = get("/games/1")
+                .contentType(MediaType.APPLICATION_JSON);
+
+
+
+            mockMvc.perform(getRequest)
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.gameId", is(1)))
+                    .andExpect(jsonPath("$.gameMode.name", is("Pixelation"))) ;
+
     }
 
     @Test
-    public void getGameFailed() throws Exception {
+    public void getGameFailedNotFoundException() throws Exception {
+
+        given(gameService.gameById(Mockito.any())).willThrow(new NotFoundException("Not found"));
+
+        MockHttpServletRequestBuilder getRequest = get("/games/1")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException));
 
     }
 
     @Test
     public void startGameSuccess() throws Exception {
+
+        GameEntity game = new GameEntity();
+        game.setGameId(1L);
+        game.setGameMode(new Pixelation());
+
+        User user = new User();
+
+
+        given(gameService.checkAuth(Mockito.any())).willReturn(user);
+        given(gameService.startGame(Mockito.any())).willReturn(game);
+        given(gameService.gameById(Mockito.any())).willReturn(game);
+
+        GamePostDTOCreate gamepostdo = new GamePostDTOCreate();
+        gamepostdo.setPublicStatus(true);
+        gamepostdo.setGamemode("Pixelation");
+        gamepostdo.setUserId(1L);
+        gamepostdo.setUsermode("Singleplayer");
+
+        MockHttpServletRequestBuilder getRequest = get("/games/1/start")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("token","1");
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gameId", is(1)))
+                .andExpect(jsonPath("$.gameMode.name", is("Pixelation")));
 
     }
 
