@@ -1,13 +1,17 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.exceptions.UserAlreadyExistsException;
+import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test class for the UserResource REST resource.
@@ -32,43 +36,70 @@ public class UserServiceIntegrationTest {
 
     @Test
     public void createUser_validInputs_success() {
-        return;
-        // given
-       /* assertNull(userRepository.findByUsername("testUsername"));
+
+       assertNull(userRepository.findByUsername("testUsername"));
 
         User testUser = new User();
-        testUser.setName("testName");
+        testUser.setPassword("password");
         testUser.setUsername("testUsername");
+        testUser.setInLobby(true);
 
         // when
         User createdUser = userService.createUser(testUser);
 
         // then
         assertEquals(testUser.getId(), createdUser.getId());
-        assertEquals(testUser.getName(), createdUser.getName()); // entfernen nicht mehr relevant
+        assertEquals(testUser.getPassword(), createdUser.getPassword());
         assertEquals(testUser.getUsername(), createdUser.getUsername());
+        assertEquals(testUser.getInLobby(), createdUser.getInLobby());
         assertNotNull(createdUser.getToken());
-        assertEquals(UserStatus.OFFLINE, createdUser.getStatus());*/
     }
 
     @Test
     public void createUser_duplicateUsername_throwsException() {
-        return;
-        /*assertNull(userRepository.findByUsername("testUsername"));
+
+        assertNull(userRepository.findByUsername("testUsername"));
 
         User testUser = new User();
-        testUser.setName("testName");
+        testUser.setPassword("password");
         testUser.setUsername("testUsername");
+        testUser.setInLobby(true);
+
         User createdUser = userService.createUser(testUser);
 
         // attempt to create second user with same username
         User testUser2 = new User();
 
-        // change the name but forget about the username
-        testUser2.setName("testName2");
+        // change the password but forget about the username
+        testUser2.setPassword("passwordNew");
         testUser2.setUsername("testUsername");
 
         // check that an error is thrown
-        assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser2));*/
+        assertThrows(UserAlreadyExistsException.class, () -> userService.createUser(testUser2));
+    }
+
+    @Test
+    public void updateUserName_throwsException() {
+
+        assertNull(userRepository.findByUsername("testUsername"));
+
+        User testUser = new User();
+        testUser.setPassword("password");
+        testUser.setUsername("testUsername");
+        testUser.setInLobby(true);
+
+        User createdUser = userService.createUser(testUser);
+
+        // attempt to create second user with same username
+        User testUser2 = new User();
+
+        testUser2.setPassword("passwordNew");
+        testUser2.setUsername("testUsername2");
+
+        User createdUser2 = userService.createUser(testUser2);
+        //Chose an already used username
+        createdUser2.setUsername("testUsername");
+        // check that an error is thrown
+        assertThrows(DataIntegrityViolationException.class, () -> userService.updateUser(testUser2.getId(), testUser2));
     }
 }

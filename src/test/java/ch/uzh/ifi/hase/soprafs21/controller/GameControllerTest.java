@@ -157,6 +157,7 @@ public class GameControllerTest {
     @Test
     public void getGameScoresSuccess() throws Exception {
 
+
     }
 
     @Test
@@ -179,7 +180,6 @@ public class GameControllerTest {
         when(gameService.getQuestionsOfGame(Mockito.any())).thenReturn(questions);
 
 
-
         MockHttpServletRequestBuilder getRequest = get("/games/25/questions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("token", "1");
@@ -191,7 +191,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void getGameQuestionsFailed() throws Exception {
+    public void getGameQuestionsFailedByCheckPartOfGame() throws Exception {
 
         GameEntity game = new GameEntity();
 
@@ -209,6 +209,45 @@ public class GameControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnauthorizedException))
                 .andExpect(result -> assertEquals("Non player is trying to acess an only-player component", result.getResolvedException().getMessage()));
+
+    }
+
+    @Test
+    public void getGameQuestionsFailedByCheckAuth() throws Exception {
+
+        GameEntity game = new GameEntity();
+
+
+        when(gameService.gameById(Mockito.any())).thenReturn(game);
+        when(gameService.checkAuth(Mockito.any())).thenThrow(new UnauthorizedException("Not Authorized"));
+
+        MockHttpServletRequestBuilder getRequest = get("/games/25/questions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("token", "1");
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isUnauthorized())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnauthorizedException))
+                .andExpect(result -> assertEquals("Not Authorized", result.getResolvedException().getMessage()));
+
+    }
+
+    @Test
+    public void getGameQuestionsFailedByGameById() throws Exception {
+
+        GameEntity game = new GameEntity();
+
+
+        when(gameService.gameById(Mockito.any())).thenThrow(new NotFoundException("Game with this gameId does not exist"));
+
+        MockHttpServletRequestBuilder getRequest = get("/games/25/questions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("token", "1");
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException))
+                .andExpect(result -> assertEquals("Game with this gameId does not exist", result.getResolvedException().getMessage()));
 
     }
 
@@ -244,7 +283,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void getGameQuestionsSpecificFailed() throws Exception {
+    public void getGameQuestionsSpecificFailedByQuestionById() throws Exception {
 
         GameEntity game = new GameEntity();
 
@@ -265,6 +304,51 @@ public class GameControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException))
                 .andExpect(result -> assertEquals("Question with this questionId is not found", result.getResolvedException().getMessage()));
+
+    }
+
+    @Test
+    public void getGameQuestionsSpecificFailedByCheckQuestionIdInQuestions() throws Exception {
+
+        GameEntity game = new GameEntity();
+
+        QuestionGetDTO questionGetDTO = new QuestionGetDTO();
+        questionGetDTO.setHeight(500);
+        questionGetDTO.setWidth(500);
+
+        when(gameService.gameById(Mockito.any())).thenReturn(game);
+        doThrow(new PreconditionFailedException("Question with this id is not part of the game")).when(questionService).checkQuestionIdInQuestions(Mockito.any(), Mockito.any());
+
+        MockHttpServletRequestBuilder putRequest = post("/games/25/questions/50")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(questionGetDTO))
+                .header("token", "1");
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isPreconditionFailed())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof PreconditionFailedException))
+                .andExpect(result -> assertEquals("Question with this id is not part of the game", result.getResolvedException().getMessage()));
+
+    }
+
+    @Test
+    public void getGameQuestionsSpecificFailedByGameById() throws Exception {
+
+        QuestionGetDTO questionGetDTO = new QuestionGetDTO();
+        questionGetDTO.setHeight(500);
+        questionGetDTO.setWidth(500);
+
+        when(gameService.gameById(Mockito.any())).thenThrow(new NotFoundException("Game with this gameId does not exist"));
+
+        MockHttpServletRequestBuilder putRequest = post("/games/25/questions/50")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(questionGetDTO))
+                .header("token", "1");
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException))
+                .andExpect(result -> assertEquals("Game with this gameId does not exist", result.getResolvedException().getMessage()));
 
     }
 
