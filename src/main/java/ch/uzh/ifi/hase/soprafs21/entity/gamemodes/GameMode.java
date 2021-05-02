@@ -7,13 +7,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 
-@JsonDeserialize()
 @Entity
 @Table(name = "GAMEMODE")
 public abstract class GameMode implements Serializable {
