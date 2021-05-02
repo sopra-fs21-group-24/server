@@ -90,7 +90,7 @@ public class LobbyService {
             throw new NotFoundException("User is already in Lobby");
         }
         if (lobby == null){throw new NotFoundException("Lobby does not exist");}
-        if (lobby.getUsers().size() <= 3){
+        if (lobby.getUsers().size() < 3){
             lobby.addUser(user.getId());
             user.setInLobby(true);
             userRepository.saveAndFlush(user);

@@ -55,15 +55,16 @@ public class LobbyServiceTest {
         testUser = new User();
         testUser.setPassword("123");
         testUser.setUsername("testUsername");
+        testUser.setId(1L);
         testUser.setInLobby(false);
         testUser2 = new User();
         testUser2.setPassword("123");
+        testUser2.setId(5L);
         testUser2.setUsername("testUsername");
         testUser2.setInLobby(false);
 
         testlobby = new Lobby();
         testlobby.setCreator(1L);
-        testlobby.addUser(testUser.getId());
         testlobby.setId(4L);
         testlobby.setPublicStatus(true);
         testlobby.setGameId(3L);
@@ -141,13 +142,14 @@ public class LobbyServiceTest {
         Lobby createdLobby = lobbyService.createLobby(testlobby);
         lobbyService.addUserToExistingLobby(testUser2, createdLobby);
 
-        // then
+        // then verify the repositorys
         Mockito.verify(lobbyRepository, Mockito.times(2)).saveAndFlush(Mockito.any());
-        //Mockito.verify(lobbyService, Mockito.times(1)).addUserToExistingLobby(testUser2,createdLobby);
         Mockito.verify(userRepository, Mockito.times(2)).saveAndFlush(Mockito.any());
 
+        //Check with assertions
         assertEquals(testlobby.getUsers(), createdLobby.getUsers());
         assertEquals(testlobby.getCreator(), createdLobby.getCreator());
+        //Are both users set to inLobby == true?
         assertEquals(true, testUser.getInLobby());
         assertEquals(true, testUser2.getInLobby());
         assertEquals(testlobby.getPublicStatus(), createdLobby.getPublicStatus());
