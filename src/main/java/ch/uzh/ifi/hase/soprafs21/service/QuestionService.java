@@ -6,7 +6,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.List;
 
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,6 +30,13 @@ public class QuestionService {
         this.questionRepository = questionRepository;
 
     }
+
+    public void checkQuestionIdInQuestions(List<Long> questions, Long questionId) {
+        if (!questions.contains(questionId)) {
+            throw new PreconditionFailedException("Question with this id is not part of the game");
+        }
+    }
+
 
     public String getMapImage(int height, int width, Question question) throws MalformedURLException {
         try {

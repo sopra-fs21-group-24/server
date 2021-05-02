@@ -61,38 +61,21 @@ public class GameController {
         this.questionService = questionService;
     }
 
-    private User checkAuth(Map<String, String> header){
-            String token = header.get("token");
-            try {
-                return userService.getUserByToken(token);
-            }
-            catch (NotFoundException e) {
-                throw new UnauthorizedException(e.getMessage());
-            }
-    }
-
-    private void checkPartofGame(GameEntity game, User user){
-        if(!game.getUserIds().contains(user.getId())){
-            throw new UnauthorizedException("Non player is trying to acess an only-player component");
-        }
-            
-    }
-
-    private void checkGameCreator(GameEntity game, User user){
-       if (!user.getId().equals(game.getCreatorUserId())) {
+    private void checkGameCreator(GameEntity game, User user) {
+        if (!user.getId().equals(game.getCreatorUserId())) {
             throw new NotCreatorException("User is not the game-creator");
-        } 
+        }
     }
 
     // evtl implementieren fürs debugging
     @GetMapping("/games")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<GameGetDTO> getAllGames(){
+    public List<GameGetDTO> getAllGames() {
 
         List<GameGetDTO> allGames = new ArrayList<>();
 
-        for(GameEntity game : gameService.getAllGames()){
+        for (GameEntity game : gameService.getAllGames()) {
             allGames.add(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
         }
 
@@ -103,12 +86,12 @@ public class GameController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public GameGetDTO createGame(
-        @RequestBody GamePostDTOCreate gamePostDTOCreate,
-        @RequestHeader Map<String, String> header) 
-        throws NotFoundException, NotCreatorException, PreconditionFailedException{
+            @RequestBody GamePostDTOCreate gamePostDTOCreate,
+            @RequestHeader Map<String, String> header)
+            throws NotFoundException, NotCreatorException, PreconditionFailedException {
 
-        checkAuth(header);
-        
+        gameService.checkAuth(header);
+
         GameEntity gameRaw = DTOMapper.INSTANCE.convertGamePostDTOCreateToGameEntity(gamePostDTOCreate);
         gameRaw.setGameModeFromName(gamePostDTOCreate.getGamemode());
         gameRaw.setUserModeFromName(gamePostDTOCreate.getUsermode());
@@ -123,11 +106,11 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public GameGetDTO getGame(
-        @PathVariable Long gameId, 
-        @RequestHeader Map<String, String> header) 
-        throws UnauthorizedException, NotFoundException {
+            @PathVariable Long gameId,
+            @RequestHeader Map<String, String> header)
+            throws UnauthorizedException, NotFoundException {
 
-        checkAuth(header);
+        gameService.checkAuth(header);
         GameEntity game = gameService.gameById(gameId);
         // checkPartofGame, momentan abgeschaltet
 
@@ -136,49 +119,50 @@ public class GameController {
 
     @GetMapping("/games/{gameId}/start")
     public GameGetDTO startGame(
-        @PathVariable Long gameId, 
-        @RequestHeader Map<String, String> header) 
-        throws PreconditionFailedException, NotCreatorException, NotFoundException {
+            @PathVariable Long gameId,
+            @RequestHeader Map<String, String> header)
+            throws PreconditionFailedException, NotCreatorException, NotFoundException {
 
         GameEntity game = gameService.gameById(gameId);
-        User user= checkAuth(header);
+        User user = gameService.checkAuth(header);
         checkGameCreator(game, user);
 
         gameService.startGame(gameId);
 
         return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
     }
-    
+
     @GetMapping("/games/{gameId}/exit")
     public void exitGame(
-        @PathVariable Long gameId, 
-        @RequestHeader Map<String, String> header) 
-        throws PreconditionFailedException, NotCreatorException, NotFoundException {
+            @PathVariable Long gameId,
+            @RequestHeader Map<String, String> header)
+            throws PreconditionFailedException, NotCreatorException, NotFoundException {
 
         GameEntity game = gameService.gameById(gameId);
-        User user= checkAuth(header);
-        checkPartofGame(game, user);
+        User user = gameService.checkAuth(header);
+        gameService.checkPartofGame(game, user);
 
-       if (!user.getId().equals(game.getCreatorUserId())) {
+        if (!user.getId().equals(game.getCreatorUserId())) {
             gameService.exitGame(game);
-        } else {
+        }
+        else {
             gameService.exitGameUser(game, user);
-            
-        } 
+
+        }
     }
 
     @PutMapping("/games/{gameId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public GameGetDTO changeGameInfo(
-        @PathVariable Long gameId,
-        @RequestBody GamePutDTO gamePutDTO,
-        @RequestHeader Map<String, String> header) 
-        throws UnauthorizedException, NotCreatorException{
+            @PathVariable Long gameId,
+            @RequestBody GamePutDTO gamePutDTO,
+            @RequestHeader Map<String, String> header)
+            throws UnauthorizedException, NotCreatorException {
 
         GameEntity game = DTOMapper.INSTANCE.convertGamePutDTOToGameEntity(gamePutDTO);
 
-        User user = checkAuth(header);
+        User user = gameService.checkAuth(header);
         checkGameCreator(game, user);
 
         game.setGameId(gameId);
@@ -193,19 +177,19 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ScoreGetDTO makeGuess(
-        @PathVariable Long gameId,
-        @RequestBody AnswerPostDTO answerPostDTO,
-        @RequestHeader Map<String, String> header) 
-    throws UnauthorizedException, PreconditionFailedException {
+            @PathVariable Long gameId,
+            @RequestBody AnswerPostDTO answerPostDTO,
+            @RequestHeader Map<String, String> header)
+            throws UnauthorizedException, PreconditionFailedException {
 
-        User user = checkAuth(header);
+        User user = gameService.checkAuth(header);
         // check if user is part of game, reactivate if isse is fixed
 
         Answer answer = DTOMapper.INSTANCE.convertAnwserPostDTOtoAnswer(answerPostDTO);
         answer.setUserId(user.getId());
         answer.setGameId(gameId);
         Score score = gameService.makeGuess(answer);
-        
+
         ScoreGetDTO scoreDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(score);
         scoreDTO.setSolutionCoordinate(answer.getCoordQuestion());
         scoreDTO.setUsername(user.getUsername());
@@ -217,26 +201,27 @@ public class GameController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<ScoreGetDTO> getGameScores(
-        @PathVariable Long gameId, 
-        @RequestHeader Map<String, String> header) 
-        throws NotFoundException, UnauthorizedException {
+            @PathVariable Long gameId,
+            @RequestHeader Map<String, String> header)
+            throws NotFoundException, UnauthorizedException {
 
         GameEntity game = gameService.gameById(gameId);
-        User user = checkAuth(header);
-        checkPartofGame(game, user);
+        User user = gameService.checkAuth(header);
+        gameService.checkPartofGame(game, user);
 
         // hacking
         Coordinate solution;
         List<Long> questions = game.getQuestions();
-        if (game.getRound() < 4){
-            solution = gameService.questionById(questions.get(game.getRound()-1)).getCoordinate();
-        } else {
+        if (game.getRound() < 4) {
+            solution = gameService.questionById(questions.get(game.getRound() - 1)).getCoordinate();
+        }
+        else {
             solution = gameService.questionById(questions.get(2)).getCoordinate();
         }
 
         List<ScoreGetDTO> scoresDTO = new ArrayList<>();
         ListIterator<Score> scores = gameService.scoresByGame(game);
-        while(scores.hasNext()){
+        while (scores.hasNext()) {
             ScoreGetDTO scoreGetDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(scores.next());
             User scoreUser = userService.getUserByUserId(scoreGetDTO.getUserId());
             scoreGetDTO.setSolutionCoordinate(solution);
@@ -254,18 +239,19 @@ public class GameController {
     public List<Long> getGameQuestions(@PathVariable Long gameId, @RequestHeader Map<String, String> header)
             throws NotFoundException, UnauthorizedException {
         GameEntity game = gameService.gameById(gameId);
-        User user = checkAuth(header);
-        checkPartofGame(game, user);
+        User user = gameService.checkAuth(header);
+        gameService.checkPartofGame(game, user);
 
         // evtl dto creaierten
-        return game.getQuestions();
+        // return game.getQuestions();
+        return gameService.getQuestionsOfGame(game);
     }
 
     @PostMapping("/games/{gameId}/questions/{questionId}") // evtl überflüsssig
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String getGameQuestionsSpecific(@PathVariable Long gameId, @PathVariable Long questionId,
-            @RequestBody QuestionGetDTO qDTO, @RequestHeader Map<String, String> header)
+                                           @RequestBody QuestionGetDTO qDTO, @RequestHeader Map<String, String> header)
             throws NotFoundException, UnauthorizedException, PreconditionFailedException, MalformedURLException {
 
         GameEntity game = gameService.gameById(gameId);
@@ -274,12 +260,16 @@ public class GameController {
 
         List<Long> questions = game.getQuestions();
 
-        if (!questions.contains(questionId)) {
-            throw new PreconditionFailedException("Question with this id is not part of the game");
-        }
+//        if (!questions.contains(questionId)) {
+//            throw new PreconditionFailedException("Question with this id is not part of the game");
+//        }
+
+        // Moved the if statement above to the QuestionService to be able to mock it in the GameControllerTest
+        questionService.checkQuestionIdInQuestions(questions, questionId);
 
         Question question = gameService.questionById(questionId);
 
         return questionService.getMapImage(qDTO.getHeight(), qDTO.getWidth(), question);
+
     }
 }

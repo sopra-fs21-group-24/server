@@ -1,18 +1,45 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Question;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.QuestionGetDTO;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs21.service.QuestionService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.annotations.NotFound;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.mockito.internal.stubbing.answers.DoesNothing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(GameController.class)
 public class GameControllerTest {
@@ -112,20 +139,104 @@ public class GameControllerTest {
     @Test
     public void getGameQuestionsSuccess() throws Exception {
 
+        List<Long> questions = new ArrayList<>();
+        GameEntity game = new GameEntity();
+        game.setQuestions(questions);
+
+        User user = new User();
+
+        when(gameService.gameById(Mockito.any())).thenReturn(game);
+        when(gameService.checkAuth(Mockito.any())).thenReturn(user);
+        doNothing().when(gameService).checkPartofGame(Mockito.any(), Mockito.any());
+        when(gameService.getQuestionsOfGame(Mockito.any())).thenReturn(questions);
+
+
+
+        MockHttpServletRequestBuilder getRequest = get("/games/25/questions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("token", "1");
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(game.getQuestions())));
+
     }
 
     @Test
     public void getGameQuestionsFailed() throws Exception {
+
+        GameEntity game = new GameEntity();
+
+        User user = new User();
+
+        when(gameService.gameById(Mockito.any())).thenReturn(game);
+        when(gameService.checkAuth(Mockito.any())).thenReturn(user);
+        doThrow(new UnauthorizedException("Non player is trying to acess an only-player component")).when(gameService).checkPartofGame(Mockito.any(), Mockito.any());
+
+        MockHttpServletRequestBuilder getRequest = get("/games/25/questions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("token", "1");
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isUnauthorized())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnauthorizedException))
+                .andExpect(result -> assertEquals("Non player is trying to acess an only-player component", result.getResolvedException().getMessage()));
 
     }
 
     @Test
     public void getGameQuestionsSpecificSuccess() throws Exception {
 
+
+        QuestionGetDTO questionGetDTO = new QuestionGetDTO();
+        questionGetDTO.setHeight(500);
+        questionGetDTO.setWidth(500);
+
+        GameEntity game = new GameEntity();
+        game.setGameId(25L);
+
+        Question question = new Question();
+        question.setQuestionId(50L);
+
+        when(gameService.gameById(Mockito.any())).thenReturn(game);
+        doNothing().when(questionService).checkQuestionIdInQuestions(Mockito.any(), Mockito.any());
+        when(gameService.questionById(Mockito.any())).thenReturn(question);
+        when(questionService.getMapImage(Mockito.anyInt(), Mockito.anyInt(), Mockito.any())).thenReturn("Some String");
+
+
+        MockHttpServletRequestBuilder postRequest = post("/games/25/questions/50")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(questionGetDTO))
+                .header("token", "1");
+
+        mockMvc.perform(postRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is("Some String")));
+
     }
 
     @Test
     public void getGameQuestionsSpecificFailed() throws Exception {
+
+        GameEntity game = new GameEntity();
+
+        QuestionGetDTO questionGetDTO = new QuestionGetDTO();
+        questionGetDTO.setHeight(500);
+        questionGetDTO.setWidth(500);
+
+        when(gameService.gameById(Mockito.any())).thenReturn(game);
+        doNothing().when(questionService).checkQuestionIdInQuestions(Mockito.any(), Mockito.any());
+        when(gameService.questionById(Mockito.any())).thenThrow(new NotFoundException("Question with this questionId is not found"));
+
+        MockHttpServletRequestBuilder putRequest = post("/games/25/questions/50")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(questionGetDTO))
+                .header("token", "1");
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException))
+                .andExpect(result -> assertEquals("Question with this questionId is not found", result.getResolvedException().getMessage()));
 
     }
 
