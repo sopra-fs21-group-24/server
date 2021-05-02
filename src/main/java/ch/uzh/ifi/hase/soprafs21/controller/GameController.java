@@ -140,7 +140,7 @@ public class GameController {
         if (user.getId().equals(game.getCreatorUserId())) {
             gameService.exitGame(game);
         }
-        else { // case 2
+        else { 
             gameService.exitGameUser(game, user);
 
         }
