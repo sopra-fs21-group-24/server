@@ -347,7 +347,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void exitGameFailedUnauthorizedException() throws Exception {
+    public void exitGameFailedByCheckAuth() throws Exception {
 
         GameEntity game = new GameEntity();
         game.setGameId(1L);
@@ -357,35 +357,8 @@ public class GameControllerTest {
         User user = new User();
         user.setId(3L);
 
-        doThrow(new PreconditionFailedException("Precondition Failed")).when(gameService).exitGame(Mockito.any());
-        given(gameService.checkAuth(Mockito.any())).willReturn(user);
-        given(gameService.gameById(Mockito.any())).willReturn(game);
-
-
-        MockHttpServletRequestBuilder getRequest = get("/games/1/exit")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("token","1");
-
-        mockMvc.perform(getRequest)
-                .andExpect(status().isPreconditionFailed())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof PreconditionFailedException));
-
-    }
-
-    @Test
-    public void exitGameFailedNotCreatorException() throws Exception {
-
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setCreatorUserId(2L);
-        game.setGameMode(new Pixelation());
-
-        User user = new User();
-        user.setId(3L);
-
-        doThrow(new NotCreatorException("Precondition Failed")).when(gameService).exitGame(Mockito.any());
-        given(gameService.checkAuth(Mockito.any())).willReturn(user);
-        given(gameService.gameById(Mockito.any())).willReturn(game);
+        when(gameService.gameById(Mockito.any())).thenReturn(game);
+        when(gameService.checkAuth(Mockito.any())).thenThrow(new UnauthorizedException("Not authorized"));
 
 
         MockHttpServletRequestBuilder getRequest = get("/games/1/exit")
@@ -394,13 +367,14 @@ public class GameControllerTest {
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isUnauthorized())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotCreatorException));
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnauthorizedException));
 
     }
 
 
+
     @Test
-    public void exitGameFailedNotFoundException() throws Exception {
+    public void exitGameFailedByCheckPartOfGame() throws Exception {
 
         GameEntity game = new GameEntity();
         game.setGameId(1L);
@@ -410,9 +384,10 @@ public class GameControllerTest {
         User user = new User();
         user.setId(3L);
 
-        doThrow(new NotFoundException("Precondition Failed")).when(gameService).exitGame(Mockito.any());
+
         given(gameService.checkAuth(Mockito.any())).willReturn(user);
         given(gameService.gameById(Mockito.any())).willReturn(game);
+        doThrow(new UnauthorizedException("Precondition Failed")).when(gameService).checkPartofGame(Mockito.any(), Mockito.any());
 
 
         MockHttpServletRequestBuilder getRequest = get("/games/1/exit")
@@ -420,8 +395,8 @@ public class GameControllerTest {
                 .header("token","1");
 
         mockMvc.perform(getRequest)
-                .andExpect(status().isNotFound())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException));
+                .andExpect(status().isUnauthorized())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnauthorizedException));
 
     }
 
@@ -545,31 +520,37 @@ public class GameControllerTest {
     @Test
     public void getGameQuestionsSpecificSuccess() throws Exception {
 
-
+        // Create QuestionGetDTO to send in POST request
         QuestionGetDTO questionGetDTO = new QuestionGetDTO();
         questionGetDTO.setHeight(500);
         questionGetDTO.setWidth(500);
 
+        // Create GameEntity
         GameEntity game = new GameEntity();
-        game.setGameId(25L);
 
+        // Create Question
         Question question = new Question();
-        question.setQuestionId(50L);
 
+        // Create User
+        User user = new User();
+
+        // Mock methods from services to avoid exceptions
+        when(gameService.checkAuth(Mockito.any())).thenReturn(user);
         when(gameService.gameById(Mockito.any())).thenReturn(game);
         doNothing().when(questionService).checkQuestionIdInQuestions(Mockito.any(), Mockito.any());
         when(gameService.questionById(Mockito.any())).thenReturn(question);
-        when(questionService.getMapImage(Mockito.anyInt(), Mockito.anyInt(), Mockito.any())).thenReturn("Some String");
+        when(questionService.getMapImage(Mockito.anyInt(), Mockito.anyInt(), Mockito.any())).thenReturn("SomeEncodedString");
 
-
+        // Create POST request
         MockHttpServletRequestBuilder postRequest = post("/games/25/questions/50")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(questionGetDTO))
                 .header("token", "1");
 
+        // Send POST request and check response & status
         mockMvc.perform(postRequest)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", is("Some String")));
+                .andExpect(jsonPath("$", is("SomeEncodedString")));
 
     }
 

@@ -250,6 +250,8 @@ public class GameController {
         GameEntity game = gameService.gameById(gameId);
         // checkAuth
         // checkPartofGame
+        User user = gameService.checkAuth(header);
+        gameService.checkPartofGame(game, user);
 
         List<Long> questions = game.getQuestions();
 
