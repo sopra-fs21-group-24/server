@@ -29,12 +29,6 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
-import java.util.*;
 
 @Service
 @Transactional
@@ -106,17 +100,19 @@ public class GameService {
                 exitGame(game);
             }
         }
-
-
     }
 
-    public boolean existsGameByCreatorUserId(Long gameId) {
+    public Optional<GameEntity> gameByCreatorUserIdOptional(Long userId){
+        return gameRepository.findByCreatorUserId(userId);
+    }
+
+    public boolean existsGameByCreatorModded(Long userId) {
         // TODO
         // remove this closeLooseEnds 
         // remove check for ended games
         closeLooseEnds();
 
-        Optional<GameEntity> found = gameRepository.findByCreatorUserId(gameId);
+        Optional<GameEntity> found = gameRepository.findByCreatorUserId(userId);
         if (found.isPresent()) {
             // remove this - leave if present -> preconditionError
             GameEntity game = found.get();
@@ -136,7 +132,7 @@ public class GameService {
         if (creator.isEmpty()) {
             throw new NotFoundException("[createGame] A user with this userId " + gameRaw.getCreatorUserId() + "doesn't exist");
         }
-        existsGameByCreatorUserId(userId);
+        existsGameByCreatorModded(userId);
 
         GameEntity game = gameRepository.save(gameRaw);
 
@@ -246,27 +242,38 @@ public class GameService {
 
 
     public void exitGame(GameEntity game) {
-        ListIterator<Score> scores = scoresByGame(game);
+        // case 1: game has started
+        if (game.getRound() > 0){
+            ListIterator<Score> scores = scoresByGame(game);
 
-        while (scores.hasNext()) {
-            Score score = scores.next();
+            while (scores.hasNext()) {
+                Score score = scores.next();
 
-            Long totalScore = score.getTotalScore();
-            User user = userService.getUserByUserId(score.getUserId());
-            Map<String, Integer> highScores = user.getHighScores();
-            String key = game.getGameMode().getName();
+                Long totalScore = score.getTotalScore();
+                User user = userService.getUserByUserId(score.getUserId());
+                Map<String, Integer> highScores = user.getHighScores();
+                String key = game.getGameMode().getName();
 
-            Integer highest = highScores.get(key);
+                Integer highest = highScores.get(key);
 
-            if (totalScore > highest) {
-                highScores.put(key, totalScore.intValue());
-                user.setHighScores(highScores);
+                if (totalScore > highest) {
+                    highScores.put(key, totalScore.intValue());
+                    user.setHighScores(highScores);
+                }
             }
-
+        }
+        // case 2: game has not started yet
+        else {
+            for(Long userId : game.getUserIds()){
+                User user = userService.getUserByUserId(userId);
+                user.setInLobby(false);
+            }
         }
 
+        lobbyService.deleteLobby(game.getLobbyId());
         gameRepository.delete(game);
         gameRepository.flush();
+        userRepository.flush();
     }
 
     public void exitGameUser(GameEntity game, User user) {

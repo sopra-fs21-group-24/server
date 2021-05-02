@@ -4,6 +4,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -125,9 +126,14 @@ public class LobbyController {
             @PathVariable Long lobbyId,
             @RequestHeader Map<String, String> header) {
         User user = lobbyService.checkAuth(header);
-        lobbyService.userExitLobby(user,lobbyId);
-
+        
+        // when host leaves lobby
+        Optional<GameEntity> found = gameService.gameByCreatorUserIdOptional(user.getId());
+        if (found.isPresent()){
+            gameService.exitGame(found.get());
+        }
+        else {
+            lobbyService.userExitLobby(user,lobbyId);
+        }
     }
-
-
 }
