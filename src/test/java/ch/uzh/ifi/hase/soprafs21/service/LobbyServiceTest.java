@@ -1,12 +1,16 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.when;
 
 import java.awt.*;
 import java.util.Optional;
 
+import ch.uzh.ifi.hase.soprafs21.exceptions.MissingInformationException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -93,6 +97,39 @@ public class LobbyServiceTest {
 
 
         }
+
+    @Test
+    public void createLobby_invalidInputs_failNotFoundException() {
+
+
+        userService.createUser(testUser);
+
+        //no user suer found for lobby
+        testlobby.setCreator(null);
+        when(userRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+        // then
+
+        assertThrows(NotFoundException .class, () -> lobbyService.createLobby(testlobby));
+
+    }
+
+    @Test
+    public void createLobby_invalidInputs_failPreconditionFailedException() {
+
+
+        userService.createUser(testUser);
+
+        //no user suer found for lobby
+        testUser.setInLobby(true);
+        testlobby.setCreator(null);
+        when(userRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testUser));
+        // then
+
+        assertThrows(PreconditionFailedException.class, () -> lobbyService.createLobby(testlobby));
+
+    }
+
+
 
     @Test
     public void adduserToExistingLobby() {
