@@ -289,17 +289,17 @@ public class GameService {
         scoreService.delete(score);
 
         // remove user
-        List<Long> users = game.getUserIds();
+        List<Long> users = new ArrayList<>(game.getUserIds());
         users.remove(userId);
         game.setUserIds(users);
 
         if (users.size() == 1) {
             exitGame(game);
+        } 
+        else {
+            MultiPlayer uMode = (MultiPlayer) game.getUserMode();
+            uMode.adjustThreshold(game, user);
         }
-
-        MultiPlayer uMode = (MultiPlayer) game.getUserMode();
-        uMode.adjustThreshold(game, user);
-
     }
 
     public void moveLobbyUsers(GameEntity game,  Lobby lobby) {
