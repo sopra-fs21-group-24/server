@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
-import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
-import ch.uzh.ifi.hase.soprafs21.entity.Score;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.SinglePlayer;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
@@ -158,58 +155,49 @@ public class GameServiceIntegrationTest {
     }
 
     @Test
-    public void moveLobbies_success() {
-return;
-/*
-        User testUser = new User();
-        testUser.setPassword("password");
-        testUser.setUsername("testUsername");
-        testUser.setInLobby(false);
+    public void movePlayerFromLobbyToGame_success() {
 
-        User createdUser = userService.createUser(testUser);
+        // Create first User / Creator
+        User firstUser = new User();
+        firstUser.setUsername("testUsername");
+        firstUser.setPassword("password");
+        firstUser.setInLobby(false);
+        User createdUser1 = userService.createUser(firstUser);
 
-        User testUser2 = new User();
-        testUser2.setPassword("password");
-        testUser2.setUsername("testUsername2");
-        testUser2.setInLobby(false);
+        // Create second User
+        User secondUser = new User();
+        secondUser.setPassword("password");
+        secondUser.setUsername("testUsername2");
+        secondUser.setInLobby(false);
+        User createdUser2 = userService.createUser(secondUser);
 
-        User createdUser2 = userService.createUser(testUser2);
-
-
-
-
+        // Create Game Entity linking to the Creator
         GameEntity game = new GameEntity();
         game.setRound(1);
         game.setGameMode(new Time());
-        game.setCreatorUserId(testUser.getId());
+        game.setCreatorUserId(firstUser.getId());
         game.setUserMode(new SinglePlayer());
-
         game.setBreakDuration(40);
         GameEntity createdGame = gameService.createGame(game, true);
 
-
-
+        // Create Lobby and linking it to Game & User
         Lobby lobby = new Lobby();
         lobby.setRoomKey(3000L);
-        lobby.setCreator(createdUser.getId());
+        lobby.setCreator(firstUser.getId());
         lobby.setGameId(game.getGameId());
         lobby.setPublicStatus(true);
-
         Lobby createdLobby = lobbyService.createLobby(lobby);
-        //lobbyService.addUserToExistingLobby(createdUser,lobby);
+        // Link Lobby to Game
+        createdGame.setLobbyId(createdLobby.getId());
+        // Add second user to lobby
         lobbyService.addUserToExistingLobby(createdUser2,lobby);
 
-        createdGame.setLobbyId(createdLobby.getId());
-        Long lobbyId = createdLobby.getId();
-        Mockito.when(lobbyRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(createdLobby));
         // when
-
-        gameService.moveLobbyUsers(game);
-        List<Long> lobbyUsers = lobby.getUsers();
+        // Transfer Users to Game
+        gameService.moveLobbyUsers(game, createdLobby);
 
         // then
         assertArrayEquals(createdGame.getUserIds().toArray(), lobby.getUsers().toArray());
-*/
     }
 
 }
