@@ -216,7 +216,7 @@ public class GameController {
     @GetMapping("/games/{gameId}/scores")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<ScoreGetDTO> gameScores(
+    public List<ScoreGetDTO> getGameScores(
         @PathVariable Long gameId, 
         @RequestHeader Map<String, String> header) 
         throws NotFoundException, UnauthorizedException {
@@ -251,7 +251,7 @@ public class GameController {
     @GetMapping("/games/{gameId}/questions")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<Long> gameQuestions(@PathVariable Long gameId, @RequestHeader Map<String, String> header)
+    public List<Long> getGameQuestions(@PathVariable Long gameId, @RequestHeader Map<String, String> header)
             throws NotFoundException, UnauthorizedException {
         GameEntity game = gameService.gameById(gameId);
         User user = checkAuth(header);
@@ -264,7 +264,7 @@ public class GameController {
     @PostMapping("/games/{gameId}/questions/{questionId}") // evtl überflüsssig
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public String gameQuestionsSpecific(@PathVariable Long gameId, @PathVariable Long questionId,
+    public String getGameQuestionsSpecific(@PathVariable Long gameId, @PathVariable Long questionId,
             @RequestBody QuestionGetDTO qDTO, @RequestHeader Map<String, String> header)
             throws NotFoundException, UnauthorizedException, PreconditionFailedException, MalformedURLException {
 
