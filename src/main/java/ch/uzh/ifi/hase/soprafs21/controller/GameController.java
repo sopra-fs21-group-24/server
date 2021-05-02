@@ -136,10 +136,11 @@ public class GameController {
         User user = gameService.checkAuth(header);
         gameService.checkPartofGame(game, user);
 
+        // case 1: game creator exits
         if (user.getId().equals(game.getCreatorUserId())) {
             gameService.exitGame(game);
         }
-        else {
+        else { // case 2
             gameService.exitGameUser(game, user);
 
         }
