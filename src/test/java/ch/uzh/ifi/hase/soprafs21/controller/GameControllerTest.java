@@ -520,31 +520,37 @@ public class GameControllerTest {
     @Test
     public void getGameQuestionsSpecificSuccess() throws Exception {
 
-
+        // Create QuestionGetDTO to send in POST request
         QuestionGetDTO questionGetDTO = new QuestionGetDTO();
         questionGetDTO.setHeight(500);
         questionGetDTO.setWidth(500);
 
+        // Create GameEntity
         GameEntity game = new GameEntity();
-        game.setGameId(25L);
 
+        // Create Question
         Question question = new Question();
-        question.setQuestionId(50L);
 
+        // Create User
+        User user = new User();
+
+        // Mock methods from services to avoid exceptions
+        when(gameService.checkAuth(Mockito.any())).thenReturn(user);
         when(gameService.gameById(Mockito.any())).thenReturn(game);
         doNothing().when(questionService).checkQuestionIdInQuestions(Mockito.any(), Mockito.any());
         when(gameService.questionById(Mockito.any())).thenReturn(question);
-        when(questionService.getMapImage(Mockito.anyInt(), Mockito.anyInt(), Mockito.any())).thenReturn("Some String");
+        when(questionService.getMapImage(Mockito.anyInt(), Mockito.anyInt(), Mockito.any())).thenReturn("SomeEncodedString");
 
-
+        // Create POST request
         MockHttpServletRequestBuilder postRequest = post("/games/25/questions/50")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(questionGetDTO))
                 .header("token", "1");
 
+        // Send POST request and check response & status
         mockMvc.perform(postRequest)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", is("Some String")));
+                .andExpect(jsonPath("$", is("SomeEncodedString")));
 
     }
 
