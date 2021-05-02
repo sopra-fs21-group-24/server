@@ -1,14 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.UserAlreadyExistsException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.*;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.coyote.Response;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
@@ -177,7 +176,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void getUserByIdFailedTest() throws Exception {
+    public void getUserByIdFailed() throws Exception {
 
         given(userService.getUserByUserId(Mockito.any())).willThrow(new NotFoundException("User with userId: 1 not found"));
 
@@ -192,7 +191,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void updateUserSuccessfulTest() throws Exception {
+    public void updateUserSuccessful() throws Exception {
 
 
         Map<String, Integer> highscores = new HashMap<String, Integer>();
@@ -224,49 +223,46 @@ public class UserControllerTest {
 
     }
 
+
     @Test
-    public void updateUserSuccessful () throws Exception {
+    public void updateUserFailedByCheckAuth() throws Exception {
+
+        User user = new User();
+        user.setId(1L);
+        user.setToken("1");
+
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setUsername("Max");
+        userPostDTO.setPassword("password");
 
 
-//        Map<String, Integer> highscores = new HashMap<String, Integer>();
-//        highscores.put("Time", 4000);
-//        highscores.put("Pixelation", 2000);
-//        highscores.put("Clouds", 1000);
-//
-//        User user = new User();
-//        user.setId(1L);
-//        user.setUsername("Ben");
-//        user.setPassword("1234");
-//        user.setToken("1");
-//        user.setHighScores(highscores);
-//
-//        UserPostDTO userPostDTO = new UserPostDTO();
-//        userPostDTO.setUsername("Max");
-//        userPostDTO.setPassword("password");
-//
-//        when(userService.updateUser(user.getId(), user)).thenReturn(user);
-//
-//        MockHttpServletRequestBuilder putRequest = put("/users/1")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(asJsonString(userPostDTO))
-//                .header("token", "1");
-//
-//        mockMvc.perform(putRequest)
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.id", is(1)))
-//                .andExpect(jsonPath("$.username", is("Max")))
-//                .andExpect(jsonPath("$.token", is(user.getToken())))
-//                .andExpect(jsonPath("$.highscores", is(user.getHighScores())));
+        when(userService.checkAuth(Mockito.any())).thenThrow(new UnauthorizedException("Unauthorized"));
+
+        MockHttpServletRequestBuilder putRequest = put("/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPostDTO))
+                .header("token", "1");
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isUnauthorized())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnauthorizedException));
+
     }
 
     @Test
-    public void updateUserFailedTest() throws Exception {
+    public void updateUserFailedByUpdateUser() throws Exception {
 
+//        User user = new User();
+//        user.setId(1L);
+//        user.setToken("1");
+//
 //        UserPostDTO userPostDTO = new UserPostDTO();
 //        userPostDTO.setUsername("Max");
 //        userPostDTO.setPassword("password");
 //
-//        when(userService.updateUser(Mockito.any(), Mockito.any())).thenThrow(new NotCreatorException("You're trying to update an user other than yourself!"));
+//
+//        when(userService.checkAuth(Mockito.any())).thenReturn(user);
+//        when(userService.updateUser(user.getId(), user)).thenThrow(new NotCreatorException("You're trying to update an user other than yourself!"));
 //
 //        MockHttpServletRequestBuilder putRequest = put("/users/1")
 //                .contentType(MediaType.APPLICATION_JSON)
@@ -275,8 +271,7 @@ public class UserControllerTest {
 //
 //        mockMvc.perform(putRequest)
 //                .andExpect(status().isUnauthorized())
-//                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotCreatorException))
-//                .andExpect(result -> assertEquals("You're trying to update an user other than yourself!", result.getResolvedException().getMessage()));
+//                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotCreatorException));
 
     }
 
