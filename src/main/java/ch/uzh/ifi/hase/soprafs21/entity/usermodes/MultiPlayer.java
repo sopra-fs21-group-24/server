@@ -13,7 +13,7 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 public class MultiPlayer extends UserMode {
     private static final long serialVersionUID = 1L;
 
-    private String name = "MultiPlayer";
+    private String name = "Multiplayer";
     private int playersFinished = 0;
 
     @Override

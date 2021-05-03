@@ -11,7 +11,7 @@ import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 public class SinglePlayer extends UserMode {
     private static final long serialVersionUID = 1L;
 
-    private String name = "SinglePlayer";
+    private String name = "Singleplayer";
 
     @Override
     public void init(GameEntity game, boolean publicStatus) {
