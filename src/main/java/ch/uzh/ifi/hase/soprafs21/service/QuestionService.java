@@ -37,6 +37,10 @@ public class QuestionService {
         }
     }
 
+    // debug
+    public List<Question> getAllQuestions(){
+        return questionRepository.findAll();
+    }
 
     public String getMapImage(int height, int width, Question question) throws MalformedURLException {
         try {
