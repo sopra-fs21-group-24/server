@@ -47,7 +47,7 @@ public class QuestionEventListener{
                 Coordinate coordinate = new Coordinate(lon, lat);
 
                 Question question = new Question();
-                question.setZoomLevel(zoom);
+                question.setZoomLevel(12);
                 question.setCoordinate(coordinate);
 
                 questionRepository.save(question);

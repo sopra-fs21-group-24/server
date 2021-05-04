@@ -43,7 +43,15 @@ public abstract class GameMode implements Serializable {
         return Math.round(scoreFactor * 500);
     } 
 
+    public void checkTimeValid(GameEntity game, long currentTime) {
+        Long roundStart = game.getRoundStart();
+        if (currentTime < roundStart || currentTime > (roundStart + game.getRoundDuration() * 1000)){
+            throw new PreconditionFailedException("Request outside of round timeframe");
+        } 
+    }
+
     public float calculateTimeFactor(GameEntity game, Long currentTime){
+        checkTimeValid(game, currentTime);
         return 1.0f - ((currentTime - game.getRoundStart()) / ((float)game.getRoundDuration()*1000*3));
     }
 

@@ -6,9 +6,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import ch.uzh.ifi.hase.soprafs21.controller.GameController;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import org.aspectj.util.FileUtil;
@@ -60,14 +62,17 @@ public class QuestionService {
 
     public String getMapImage(int height, int width, Question question){
         try {
+            Coordinate coord = question.getCoordinate();
+
             String apikey = "AIzaSyCbLudPiesxon89uVFg9qloApgl_8BXviY";
-            String url = "https://maps.googleapis.com/maps/api/staticmap?center="+question.getCoordinate().getLat()+","+question.getCoordinate().getLon()+"&zoom="+ question.getZoomLevel() +
+            String url = "https://maps.googleapis.com/maps/api/staticmap?center="+coord.getLat()+","+coord.getLon()+"&zoom="+ question.getZoomLevel() +
                     "&size="+ height +"x"+ width +"&scale=2&maptype=satellite&key="+apikey;
 
-            logger.info("Url: " + url);
-
             URL mapUrl = new URL(url);
+            logger.info("Url: " + mapUrl.toString());
+
             HttpURLConnection httpURLConnection = (HttpURLConnection) mapUrl.openConnection();
+            httpURLConnection.setRequestMethod("GET");
 
             InputStream responseStream = httpURLConnection.getInputStream();
 
