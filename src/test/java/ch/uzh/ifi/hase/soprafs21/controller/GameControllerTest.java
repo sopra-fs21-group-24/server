@@ -538,7 +538,7 @@ public class GameControllerTest {
         when(gameService.checkAuth(Mockito.any())).thenReturn(user);
         when(gameService.gameById(Mockito.any())).thenReturn(game);
         doNothing().when(questionService).checkQuestionIdInQuestions(Mockito.any(), Mockito.any());
-        when(gameService.questionById(Mockito.any())).thenReturn(question);
+        when(questionService.questionById(Mockito.any())).thenReturn(question);
         when(questionService.getMapImage(Mockito.anyInt(), Mockito.anyInt(), Mockito.any())).thenReturn("SomeEncodedString");
 
         // Create POST request
@@ -565,7 +565,7 @@ public class GameControllerTest {
 
         when(gameService.gameById(Mockito.any())).thenReturn(game);
         doNothing().when(questionService).checkQuestionIdInQuestions(Mockito.any(), Mockito.any());
-        when(gameService.questionById(Mockito.any())).thenThrow(new NotFoundException("Question with this questionId is not found"));
+        when(questionService.questionById(Mockito.any())).thenThrow(new NotFoundException("Question with this questionId is not found"));
 
         MockHttpServletRequestBuilder putRequest = post("/games/25/questions/50")
                 .contentType(MediaType.APPLICATION_JSON)

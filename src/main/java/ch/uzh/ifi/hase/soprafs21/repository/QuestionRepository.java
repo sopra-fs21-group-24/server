@@ -11,5 +11,6 @@ import ch.uzh.ifi.hase.soprafs21.entity.Question;
     public interface QuestionRepository extends JpaRepository<Question, Long> {
         Question findByQuestionId(Long questionId);
         List<Question> findAll();
+        long count();
     }
 

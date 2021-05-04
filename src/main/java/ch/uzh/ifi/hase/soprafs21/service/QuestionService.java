@@ -3,13 +3,17 @@ package ch.uzh.ifi.hase.soprafs21.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
+import ch.uzh.ifi.hase.soprafs21.controller.GameController;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import org.aspectj.util.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,8 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
 
+    Logger logger = LoggerFactory.getLogger(QuestionService.class);
+
     @Autowired
     public QuestionService(@Qualifier("questionRepository") QuestionRepository questionRepository) {
         this.questionRepository = questionRepository;
@@ -37,16 +43,28 @@ public class QuestionService {
         }
     }
 
+    public Question questionById(Long questionId) {
+        Optional<Question> found = questionRepository.findById(questionId);
+        if (found.isEmpty()) {
+            throw new NotFoundException("Question with this questionId is not found");
+        }
+        else {
+            return found.get();
+        }
+    }
+
     // debug
     public List<Question> getAllQuestions(){
         return questionRepository.findAll();
     }
 
-    public String getMapImage(int height, int width, Question question) throws MalformedURLException {
+    public String getMapImage(int height, int width, Question question){
         try {
             String apikey = "AIzaSyCbLudPiesxon89uVFg9qloApgl_8BXviY";
             String url = "https://maps.googleapis.com/maps/api/staticmap?center="+question.getCoordinate().getLat()+","+question.getCoordinate().getLon()+"&zoom="+ question.getZoomLevel() +
                     "&size="+ height +"x"+ width +"&scale=2&maptype=satellite&key="+apikey;
+
+            logger.info("Url: " + url);
 
             URL mapUrl = new URL(url);
             HttpURLConnection httpURLConnection = (HttpURLConnection) mapUrl.openConnection();
@@ -65,6 +83,10 @@ public class QuestionService {
         }
 
         return null;
-}
+    }
+
+    public long count() {
+        return questionRepository.count();
+    }
 }
 
