@@ -2,7 +2,10 @@ package ch.uzh.ifi.hase.soprafs21.entity.gamemodes;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 
+import java.io.Serial;
+
 public class Time extends GameMode {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String name = "Time";

@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -17,6 +18,7 @@ import ch.uzh.ifi.hase.soprafs21.service.ScoreService;
 @Table(name = "USERMODE")
 public abstract class UserMode implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected transient LobbyService lobbyService;
@@ -34,12 +36,7 @@ public abstract class UserMode implements Serializable {
         game.setRoundStart(game.getGameStartTime());
     }
 
-    public void checkTimeValid(GameEntity game, long currentTime) {
-        Long roundStart = game.getRoundStart();
-        if (currentTime < roundStart || currentTime > (roundStart + game.getRoundDuration() * 1000)){
-            throw new PreconditionFailedException("Request outside of round timeframe");
-        } 
-    }
+
 
     public abstract void nextRoundPrep(GameEntity game, long currentTime);
     public abstract String getName();

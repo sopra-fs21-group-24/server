@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity.gamemodes;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 @Table(name = "GAMEMODE")
 public abstract class GameMode implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
