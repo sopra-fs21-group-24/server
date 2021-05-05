@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
-import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
@@ -26,7 +26,6 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
-import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
 @Service
@@ -35,7 +34,7 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
-    private final QuestionRepository questionRepository;
+    private final QuestionService questionService;
     private final ScoreService scoreService;
     private final LobbyService lobbyService;
     private final UserService userService;
@@ -43,12 +42,12 @@ public class GameService {
     @Autowired
     public GameService(@Qualifier("gameRepository") GameRepository gameRepository,
                        UserRepository userRepository,
-                       QuestionRepository questionRepository,
+                       QuestionService questionService,
                        ScoreService scoreService,
                        LobbyService lobbyService,
                        UserService userService
     ) {
-        this.questionRepository = questionRepository;
+        this.questionService = questionService;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.scoreService = scoreService;
@@ -142,27 +141,25 @@ public class GameService {
         return game;
     }
 
-    public GameEntity startGame(Long gameId) {
+    public List<Long> createQuestionList(){
         // TODO
-        // - set questions?
+        // set of distinct questions, zukunft mit users
+        long questionId;
+        List<Long> questions = new ArrayList<>();
+
+        Random random = new Random();
+        for (int i=0; i < 3; i++){
+            questionId = random.nextInt((int)questionService.count());
+            questions.add(questionId);
+        }
+        return questions;
+    }
+
+    public GameEntity startGame(Long gameId) {
 
         GameEntity game = gameById(gameId);
 
-        ArrayList<Coordinate> coordinates = new ArrayList<>();
-        coordinates.add(new Coordinate(8.5500, 47.3667));
-        coordinates.add(new Coordinate(-73.935242, 40.730610));
-        coordinates.add(new Coordinate(-123.116226, 49.246292));
-        // HardCoded Question
-        List<Long> questions = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            Question question = new Question();
-            question.setZoomLevel(12);
-            question.setCoordinate(coordinates.get(i));
-            Long q1 = questionRepository.saveAndFlush(question).getQuestionId();
-            questions.add(q1);
-        }
-
-        game.setQuestions(questions);
+        game.setQuestions(createQuestionList());
 
         game.setCurrentTime();
         game.setRound(game.getRound() + 1);
@@ -204,8 +201,8 @@ public class GameService {
             throw new PreconditionFailedException("User has already answered this question");
         }
 
-        // set soulution in anwser
-        Question question = questionById(answer.getQuestionId());
+        // set solution in answer
+        Question question = questionService.questionById(answer.getQuestionId());
         answer.setCoordQuestion(question.getCoordinate());
 
         // timeFactor
@@ -231,11 +228,6 @@ public class GameService {
         UserMode uMode = game.getUserMode();
         uMode.nextRoundPrep(game, currentTime);
 
-        // exit, round einmal zuviel incremented in nextRoundPrep
-        if (game.getRound() == 4) {
-            // exit here
-        }
-
         return score;
     }
 
@@ -248,7 +240,7 @@ public class GameService {
             while (scores.hasNext()) {
                 Score score = scores.next();
 
-                Long totalScore = score.getTotalScore();
+                long totalScore = score.getTotalScore();
                 User user = userService.getUserByUserId(score.getUserId());
                 Map<String, Integer> highScores = user.getHighScores();
                 String key = game.getGameMode().getName();
@@ -256,7 +248,7 @@ public class GameService {
                 Integer highest = highScores.get(key);
 
                 if (totalScore > highest) {
-                    highScores.put(key, totalScore.intValue());
+                    highScores.put(key, (int)totalScore);
                     user.setHighScores(highScores);
                 }
             }
@@ -349,13 +341,5 @@ public class GameService {
         return scores.listIterator();
     }
 
-    public Question questionById(Long questionId) {
-        Optional<Question> found = questionRepository.findById(questionId);
-        if (found.isEmpty()) {
-            throw new NotFoundException("Question with this questionId is not found");
-        }
-        else {
-            return found.get();
-        }
-    }
+    
 }

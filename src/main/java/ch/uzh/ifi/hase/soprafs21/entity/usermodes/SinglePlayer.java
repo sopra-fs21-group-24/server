@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 
 public class SinglePlayer extends UserMode {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String name = "Singleplayer";

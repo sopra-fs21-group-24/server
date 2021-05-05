@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +12,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 
 public class MultiPlayer extends UserMode {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String name = "Multiplayer";

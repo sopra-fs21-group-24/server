@@ -208,10 +208,10 @@ public class GameController {
         Coordinate solution;
         List<Long> questions = game.getQuestions();
         if (game.getRound() < 4) {
-            solution = gameService.questionById(questions.get(game.getRound() - 1)).getCoordinate();
+            solution = questionService.questionById(questions.get(game.getRound() - 1)).getCoordinate();
         }
         else {
-            solution = gameService.questionById(questions.get(2)).getCoordinate();
+            solution = questionService.questionById(questions.get(2)).getCoordinate();
         }
 
         List<ScoreGetDTO> scoresDTO = new ArrayList<>();
@@ -240,6 +240,14 @@ public class GameController {
         return gameService.getQuestionsOfGame(game);
     }
 
+    // just for debug resons
+    @GetMapping("/games/questions")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<Question> getGameQuestions() throws NotFoundException, UnauthorizedException {
+        return questionService.getAllQuestions();
+    }
+
     @PostMapping("/games/{gameId}/questions/{questionId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -256,7 +264,7 @@ public class GameController {
         List<Long> questions = game.getQuestions();
 
         questionService.checkQuestionIdInQuestions(questions, questionId);
-        Question question = gameService.questionById(questionId);
+        Question question = questionService.questionById(questionId);
 
         return questionService.getMapImage(qDTO.getHeight(), qDTO.getWidth(), question);
 

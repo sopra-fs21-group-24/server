@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity.gamemodes;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 @Table(name = "GAMEMODE")
 public abstract class GameMode implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -41,7 +43,15 @@ public abstract class GameMode implements Serializable {
         return Math.round(scoreFactor * 500);
     } 
 
+    public void checkTimeValid(GameEntity game, long currentTime) {
+        Long roundStart = game.getRoundStart();
+        if (currentTime < roundStart || currentTime > (roundStart + game.getRoundDuration() * 1000)){
+            throw new PreconditionFailedException("Request outside of round timeframe");
+        } 
+    }
+
     public float calculateTimeFactor(GameEntity game, Long currentTime){
+        checkTimeValid(game, currentTime);
         return 1.0f - ((currentTime - game.getRoundStart()) / ((float)game.getRoundDuration()*1000*3));
     }
 
