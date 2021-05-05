@@ -6,13 +6,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import ch.uzh.ifi.hase.soprafs21.controller.GameController;
-import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
-import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import org.aspectj.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +16,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 
 @Service
@@ -61,6 +59,9 @@ public class QuestionService {
     }
 
     public String getMapImage(int height, int width, Question question){
+
+        Long startTime = System.currentTimeMillis();
+
         try {
             Coordinate coord = question.getCoordinate();
 
@@ -69,19 +70,21 @@ public class QuestionService {
                     "&size="+ height +"x"+ width +"&scale=2&maptype=satellite&key="+apikey;
 
             URL mapUrl = new URL(url);
-            logger.info("Url: " + mapUrl.toString());
+            logger.debug("Url: {}", mapUrl);
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) mapUrl.openConnection();
             httpURLConnection.setRequestMethod("GET");
 
             InputStream responseStream = httpURLConnection.getInputStream();
-
             byte[] fileContent = FileUtil.readAsByteArray(responseStream);
-            String encodedString = Base64.getEncoder().encodeToString(fileContent);
 
             responseStream.close();
             httpURLConnection.disconnect();
-            return encodedString;
+
+            Long endTime = System.currentTimeMillis();
+            logger.info("(questionId = {}) Request took: {} secs", question.getQuestionId(), (endTime - startTime)/1000.0);
+
+            return Base64.getEncoder().encodeToString(fileContent);
         }
         catch (IOException e) {
             e.printStackTrace();
