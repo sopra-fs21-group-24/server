@@ -67,6 +67,9 @@ public class UserService {
     public User logOut(User unauthorizedUser) {
         User foundUser = userRepository.findByUsername(unauthorizedUser.getUsername());
         if (foundUser != null && foundUser.getToken() != null && unauthorizedUser.getToken().equals(foundUser.getToken())){
+            foundUser.setInLobby(false);
+            // TODO
+            // User Aus created game werfen
             return userRepository.save(foundUser);
         } else {
             throw new NotCreatorException("No/Wrong Token was provided to authenticate logout procedure!");

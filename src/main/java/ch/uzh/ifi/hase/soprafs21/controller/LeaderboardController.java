@@ -28,7 +28,7 @@ public class LeaderboardController {
     // Getting a leaderboard by Gamemode
     @GetMapping("/leaderboard/{GameMode}")
     @ResponseStatus(HttpStatus.OK)
-    public ArrayList<LeaderboardGetDTO> getLeaderboardByGameMode(@PathVariable("GameMode") gameModeEnum gameMode){
+    public ArrayList<LeaderboardGetDTO> getLeaderboardByGameMode(@PathVariable("GameMode") String gameMode){
         return leaderboardService.getScoresForGameMode(gameMode);
 
     }

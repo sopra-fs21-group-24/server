@@ -5,8 +5,8 @@ import ch.uzh.ifi.hase.soprafs21.entity.gameModeEnum;
 public class LeaderboardGetDTO {
 
     private String username;
-    private gameModeEnum gameMode;
-    private int score;
+    private String gameMode;
+    private Long score;
 
 
     public String getUsername() {
@@ -17,19 +17,19 @@ public class LeaderboardGetDTO {
         this.username = username;
     }
 
-    public gameModeEnum getGameMode() {
+    public String getGameMode() {
         return gameMode;
     }
 
-    public void setGameMode(gameModeEnum gameMode) {
+    public void setGameMode(String gameMode) {
         this.gameMode = gameMode;
     }
 
-    public int getScore() {
+    public Long getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(Long score) {
         this.score = score;
     }
 }

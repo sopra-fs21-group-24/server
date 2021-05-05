@@ -65,9 +65,8 @@ public class QuestionService {
         try {
             Coordinate coord = question.getCoordinate();
 
-            String apikey = "AIzaSyCbLudPiesxon89uVFg9qloApgl_8BXviY";
             String url = "https://maps.googleapis.com/maps/api/staticmap?center="+coord.getLat()+","+coord.getLon()+"&zoom="+ question.getZoomLevel() +
-                    "&size="+ height +"x"+ width +"&scale=2&maptype=satellite&key="+apikey;
+                    "&size="+ height +"x"+ width +"&scale=2&maptype=satellite&key="+System.getenv("apikey"); //see on heroku if this works
 
             URL mapUrl = new URL(url);
             logger.debug("Url: {}", mapUrl);
