@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.repository;
 
 
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
@@ -10,5 +11,5 @@ import java.util.List;
 
 @Repository("leaderboardRepository")
 public interface LeaderboardRepository extends JpaRepository<Leaderboard, Long> {
-    List<Leaderboard> findTop5ByGameMode(gameModeEnum gameMode);
+    List<Leaderboard> findTop5ByGameMode(String gameMode);
 }

@@ -32,7 +32,7 @@ public class LeaderboardService {
     public LeaderboardService(@Qualifier("leaderboardRepository") LeaderboardRepository leaderboardRepository) {
         this.leaderboardRepository = leaderboardRepository;
     }
-    public ArrayList<LeaderboardGetDTO> getScoresForGameMode(gameModeEnum gameMode){
+    public ArrayList<LeaderboardGetDTO> getScoresForGameMode(String gameMode){
         ArrayList<LeaderboardGetDTO> finalList = new ArrayList<>();
         for (Leaderboard l :leaderboardRepository.findTop5ByGameMode(gameMode)){
             finalList.add(DTOMapper.INSTANCE.convertEntityToLeaderboardGetDTO(l));

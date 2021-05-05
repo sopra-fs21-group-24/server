@@ -7,17 +7,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
+import ch.uzh.ifi.hase.soprafs21.entity.*;
+import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Answer;
-import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.Question;
-import ch.uzh.ifi.hase.soprafs21.entity.Score;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
@@ -34,19 +30,23 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
+    private final LeaderboardRepository leaderboardRepository;
     private final QuestionService questionService;
     private final ScoreService scoreService;
     private final LobbyService lobbyService;
     private final UserService userService;
 
+
     @Autowired
     public GameService(@Qualifier("gameRepository") GameRepository gameRepository,
                        UserRepository userRepository,
+                       LeaderboardRepository leaderboardRepository,
                        QuestionService questionService,
                        ScoreService scoreService,
                        LobbyService lobbyService,
                        UserService userService
     ) {
+        this.leaderboardRepository = leaderboardRepository;
         this.questionService = questionService;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
@@ -250,6 +250,18 @@ public class GameService {
                 if (totalScore > highest) {
                     highScores.put(key, (int)totalScore);
                     user.setHighScores(highScores);
+                }
+                //Update Leaderboard
+                for (Leaderboard l:leaderboardRepository.findTop5ByGameMode(game.getGameMode().getName())){
+                    if (l.getScore()<score.getTotalScore()){
+                        leaderboardRepository.delete(l);
+                        Leaderboard update = new Leaderboard();
+                        update.setUsername(user.getUsername());
+                        update.setScore(score.getTotalScore());
+                        update.setGameMode(game.getGameMode().getName());
+                        leaderboardRepository.saveAndFlush(update);
+                    }
+
                 }
             }
         }
