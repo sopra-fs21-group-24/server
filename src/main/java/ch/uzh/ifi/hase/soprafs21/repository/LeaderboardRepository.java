@@ -10,6 +10,6 @@ import ch.uzh.ifi.hase.soprafs21.entity.gameModeEnum;
 import java.util.List;
 
 @Repository("leaderboardRepository")
-public interface LeaderboardRepository extends JpaRepository<Leaderboard, Long> {
+public interface LeaderboardRepository extends JpaRepository<Leaderboard, String> {
     List<Leaderboard> findTop5ByGameMode(String gameMode);
 }

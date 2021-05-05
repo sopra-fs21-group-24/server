@@ -124,8 +124,8 @@ public class DTOMapperTest {
 
         Leaderboard leaderboard = new Leaderboard();
 
-        leaderboard.setScore(12);
-        leaderboard.setGameMode(gameModeEnum.CLOUDS);
+        leaderboard.setScore(12L);
+        leaderboard.setGameMode("Clouds");
         leaderboard.setUsername("abc");
         leaderboard.setId(2L);
 

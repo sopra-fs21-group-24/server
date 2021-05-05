@@ -1,9 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
 
@@ -12,10 +8,10 @@ import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
 @Table(name = "Leaderboard")
 public class Leaderboard implements Observer {
     @Id
-    @Column(nullable = false, unique = true)
+    @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String  username;
 
     @Column(nullable = false)
@@ -52,12 +48,12 @@ public class Leaderboard implements Observer {
 
 
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
