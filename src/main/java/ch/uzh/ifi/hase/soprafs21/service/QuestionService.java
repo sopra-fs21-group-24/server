@@ -1,13 +1,10 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
+import ch.uzh.ifi.hase.soprafs21.entity.Question;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
+import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
 import org.aspectj.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +13,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
-import ch.uzh.ifi.hase.soprafs21.entity.Question;
-import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
-import ch.uzh.ifi.hase.soprafs21.repository.QuestionRepository;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -66,7 +65,7 @@ public class QuestionService {
             Coordinate coord = question.getCoordinate();
 
             String url = "https://maps.googleapis.com/maps/api/staticmap?center="+coord.getLat()+","+coord.getLon()+"&zoom="+ question.getZoomLevel() +
-                    "&size="+ height +"x"+ width +"&scale=2&maptype=satellite&key="+System.getenv("apikey"); //see on heroku if this works
+                    "&size="+ String.valueOf(width) +"x"+ String.valueOf(height) +"&scale=2&maptype=satellite&key="+System.getenv("apikey"); //see on heroku if this works
 
             URL mapUrl = new URL(url);
             logger.debug("Url: {}", mapUrl);
