@@ -2,9 +2,11 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
@@ -54,6 +57,8 @@ public class GameController {
     private final GameService gameService;
     private final UserService userService;
     private final QuestionService questionService;
+
+    private Map<DeferredResult, Long> scoreSubscribers = new ConcurrentHashMap<>();
 
     GameController(GameService gameService, UserService userService, QuestionService questionService) {
         this.gameService = gameService;
@@ -195,14 +200,19 @@ public class GameController {
     @GetMapping("/games/{gameId}/scores")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<ScoreGetDTO> getGameScores(
+    public DeferredResult<List<ScoreGetDTO>> getGameScores(
             @PathVariable Long gameId,
             @RequestHeader Map<String, String> header)
             throws NotFoundException, UnauthorizedException {
-
+        
         GameEntity game = gameService.gameById(gameId);
         User user = gameService.checkAuth(header);
         gameService.checkPartofGame(game, user);
+
+        final DeferredResult<List<ScoreGetDTO>> result = new DeferredResult<>(null, Collections.emptyList());
+        this.scoreSubscribers.put(result, game.getGameId());
+    
+        result.onCompletion(() -> scoreSubscribers.remove(result));
 
         // hacking
         Coordinate solution;
@@ -214,6 +224,7 @@ public class GameController {
             solution = questionService.questionById(questions.get(2)).getCoordinate();
         }
 
+        // refactor to for loop
         List<ScoreGetDTO> scoresDTO = new ArrayList<>();
         ListIterator<Score> scores = gameService.scoresByGame(game);
         while (scores.hasNext()) {
@@ -224,7 +235,11 @@ public class GameController {
             scoresDTO.add(scoreGetDTO);
         }
 
-        return scoresDTO;
+        if (!scoresDTO.isEmpty()){
+            result.setResult(scoresDTO);
+        }
+
+        return result;
     }
 
     @GetMapping("/games/{gameId}/questions")

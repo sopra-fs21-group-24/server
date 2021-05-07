@@ -7,12 +7,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
-import ch.uzh.ifi.hase.soprafs21.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Answer;
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+import ch.uzh.ifi.hase.soprafs21.entity.Question;
+import ch.uzh.ifi.hase.soprafs21.entity.Score;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
@@ -34,6 +39,7 @@ public class GameService {
     private final ScoreService scoreService;
     private final LobbyService lobbyService;
     private final UserService userService;
+
 
 
     @Autowired

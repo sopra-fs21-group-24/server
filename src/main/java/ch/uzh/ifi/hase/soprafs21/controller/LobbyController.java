@@ -2,10 +2,23 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
+import javax.naming.spi.DirStateFactory.Result;
+import javax.xml.bind.annotation.W3CDomHandler;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
@@ -38,17 +52,19 @@ import ch.uzh.ifi.hase.soprafs21.service.UserService;
 @RestController
 public class LobbyController {
 
+    Logger logger = LoggerFactory.getLogger(LobbyController.class);
+
     private final LobbyService lobbyService;
     private final UserService userService;
     private final GameService gameService;
+
+    private ExecutorService lobbyClerk = Executors.newFixedThreadPool(5);
 
     LobbyController(LobbyService lobbyService, UserService userService, GameService gameService) {
         this.lobbyService = lobbyService;
         this.userService = userService;
         this.gameService = gameService;
     }
-
-
 
     @GetMapping("/lobby/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -69,15 +85,32 @@ public class LobbyController {
     }
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
-    public List<LobbyGetDTOAllLobbies> getAllLobbies() {
-        List<LobbyGetDTOAllLobbies> finalLobbyList = new ArrayList<>();
-        for (Lobby i : lobbyService.getAllLobbies()) {
-            LobbyGetDTOAllLobbies lobbyGetDTOAllLobbies = DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(i);
-            lobbyGetDTOAllLobbies.setUsers(i.getUsers().size());
-            lobbyGetDTOAllLobbies.setUsername(userService.getUserByUserId(i.getCreator()).getUsername());
-            finalLobbyList.add(lobbyGetDTOAllLobbies);
+    public DeferredResult<List<LobbyGetDTOAllLobbies>> getAllLobbies() throws IllegalStateException{
+        // authentication?
+
+        final DeferredResult<List<LobbyGetDTOAllLobbies>> result = new DeferredResult<>(10000L, Collections.emptyList());
+        if (!lobbyService.existRequestAllLobbies(result)){
+            lobbyService.addRequestToQueueLobbies(result);
+            logger.info("Im here!");
+            result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
         }
-        return finalLobbyList;
+
+        result.onTimeout(() -> logger.info("timout of request"));
+        result.onCompletion(() -> logger.info("Completion of request"));
+
+
+        lobbyClerk.execute(() -> {
+            try {
+                // result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
+                Thread.sleep(9000L);
+            }
+            catch (Exception e){
+                result.setErrorResult(result);
+            }
+        });
+        
+        return result;
+
     }
 
     //only for testing

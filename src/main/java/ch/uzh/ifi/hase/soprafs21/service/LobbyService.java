@@ -1,8 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -17,12 +22,16 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 
 @Service
 @Transactional
 public class LobbyService {
 
     private final Logger log = LoggerFactory.getLogger(LobbyService.class);
+
+    private Queue<DeferredResult<List<LobbyGetDTOAllLobbies>>> allLobbiesRequests = new ConcurrentLinkedQueue<>();
 
     private final LobbyRepository lobbyRepository;
     private final UserRepository userRepository;
@@ -66,6 +75,8 @@ public class LobbyService {
         userRepository.saveAndFlush(creator);
         lobbyRepository.saveAndFlush(newlobby);
         log.debug("Created Information for Lobby: {}", newlobby);
+
+        handleLobbies();
         return newlobby;
     }
 
@@ -93,6 +104,9 @@ public class LobbyService {
         if (lobby.getUsers().size() < 3){
             lobby.addUser(user.getId());
             user.setInLobby(true);
+
+            handleLobbies();
+
             userRepository.saveAndFlush(user);
             lobbyRepository.saveAndFlush(lobby);
         }
@@ -130,6 +144,8 @@ public class LobbyService {
 
         user.setInLobby(false);
 
+        handleLobbies();
+
         userRepository.flush();
         lobbyRepository.flush();
     }
@@ -142,5 +158,40 @@ public class LobbyService {
         lobbyRepository.delete(lobby);
         lobbyRepository.flush();
     }
+
+    // ------------- Lobby long polling --------------- // 
+
+    public void handleLobbies(){
+        List<LobbyGetDTOAllLobbies> finalLobbyList = getLobbyGetDTOAllLobbies();
+
+        for (DeferredResult<List<LobbyGetDTOAllLobbies>> subscriber : allLobbiesRequests){
+            subscriber.setResult(finalLobbyList);
+        }
+    }
+
+    public List<LobbyGetDTOAllLobbies> getLobbyGetDTOAllLobbies() {
+        List<LobbyGetDTOAllLobbies> finalLobbyList = new ArrayList<>();
+        for (Lobby lobby : getAllLobbies()) {
+            LobbyGetDTOAllLobbies lobbyGetDTOAllLobbies = DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(lobby);
+            lobbyGetDTOAllLobbies.setUsers(lobby.getUsers().size());
+            lobbyGetDTOAllLobbies.setUsername(userService.getUserByUserId(lobby.getCreator()).getUsername());
+            finalLobbyList.add(lobbyGetDTOAllLobbies);
+        }
+        return finalLobbyList;
+    }
+
+    public void removeRequestFromQueueLobbies(DeferredResult<List<LobbyGetDTOAllLobbies>> request){
+        allLobbiesRequests.remove(request);
+    }
+
+    public void addRequestToQueueLobbies(DeferredResult<List<LobbyGetDTOAllLobbies>> request){
+        log.info("Test: {}", allLobbiesRequests);
+        allLobbiesRequests.add(request);
+    }
+
+    public boolean existRequestAllLobbies(DeferredResult<List<LobbyGetDTOAllLobbies>> request){
+        return allLobbiesRequests.contains(request);
+    }
+
 
 }
