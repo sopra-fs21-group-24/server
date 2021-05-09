@@ -23,7 +23,7 @@ import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 public class LobbyService {
 
     private final Logger log = LoggerFactory.getLogger(LobbyService.class);
-
+    private final static long maxPlayers = 3;
     private final LobbyRepository lobbyRepository;
     private final UserRepository userRepository;
     private final UserService userService;
@@ -90,7 +90,7 @@ public class LobbyService {
             throw new NotFoundException("User is already in Lobby");
         }
         if (lobby == null){throw new NotFoundException("Lobby does not exist");}
-        if (lobby.getUsers().size() < 3){
+        if (lobby.getUsers().size() < maxPlayers){
             lobby.addUser(user.getId());
             user.setInLobby(true);
             userRepository.saveAndFlush(user);
