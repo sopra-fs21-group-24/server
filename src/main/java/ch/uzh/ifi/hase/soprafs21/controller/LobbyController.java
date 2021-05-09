@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
@@ -38,6 +41,8 @@ import ch.uzh.ifi.hase.soprafs21.service.UserService;
 @RestController
 public class LobbyController {
 
+    Logger logger = LoggerFactory.getLogger(LobbyController.class);
+
     private final LobbyService lobbyService;
     private final UserService userService;
     private final GameService gameService;
@@ -48,10 +53,7 @@ public class LobbyController {
         this.gameService = gameService;
     }
 
-
-
-    @GetMapping("/lobby/{id}")
-    @ResponseStatus(HttpStatus.OK)
+@GetMapping("/lobby/{id}") @ResponseStatus(HttpStatus.OK)
     public LobbyGetDTO getLobbyWithId(@PathVariable("id") Long lobbyid) {
         Lobby lobby = lobbyService.getLobbyById(lobbyid);
         GameEntity game = gameService.gameById(lobby.getGameId());
@@ -69,15 +71,29 @@ public class LobbyController {
     }
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
-    public List<LobbyGetDTOAllLobbies> getAllLobbies() {
-        List<LobbyGetDTOAllLobbies> finalLobbyList = new ArrayList<>();
-        for (Lobby i : lobbyService.getAllLobbies()) {
-            LobbyGetDTOAllLobbies lobbyGetDTOAllLobbies = DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(i);
-            lobbyGetDTOAllLobbies.setUsers(i.getUsers().size());
-            lobbyGetDTOAllLobbies.setUsername(userService.getUserByUserId(i.getCreator()).getUsername());
-            finalLobbyList.add(lobbyGetDTOAllLobbies);
+    public DeferredResult<List<LobbyGetDTOAllLobbies>> getAllLobbies(@RequestHeader Map<String, String> header) 
+    throws IllegalStateException, InterruptedException{
+        // TODO
+        // authentication?
+
+        final DeferredResult<List<LobbyGetDTOAllLobbies>> result = new DeferredResult<>(null);
+        lobbyService.addRequestToQueueLobbies(result);
+
+        result.onTimeout(() -> {
+            logger.info("timout of request");
+            result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
+        });
+
+        result.onCompletion(() -> {
+            lobbyService.removeRequestFromQueueLobbies(result);
+        });
+
+        if (header.get("initial").equals("true")){
+            result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
         }
-        return finalLobbyList;
+
+        return result;
+
     }
 
     //only for testing
@@ -88,7 +104,6 @@ public class LobbyController {
         Lobby lobby = DTOMapper.INSTANCE.convertLobbyPostDTOtoEntity(lobbyPostDTO);
         Lobby createdLobby = lobbyService.createLobby(lobby);
         return getLobbyWithId(createdLobby.getId());
-
     }
 
     @PostMapping("/lobby/{roomKey}/roomkey")

@@ -47,6 +47,7 @@ public class GameService {
     private final Random random = new Random();
 
 
+
     @Autowired
     public GameService(@Qualifier("gameRepository") GameRepository gameRepository,
                        UserRepository userRepository,
