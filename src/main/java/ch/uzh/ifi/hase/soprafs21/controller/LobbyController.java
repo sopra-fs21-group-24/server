@@ -2,20 +2,9 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
-import javax.naming.spi.DirStateFactory.Result;
-import javax.xml.bind.annotation.W3CDomHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,16 +47,13 @@ public class LobbyController {
     private final UserService userService;
     private final GameService gameService;
 
-    private ExecutorService lobbyClerk = Executors.newFixedThreadPool(5);
-
     LobbyController(LobbyService lobbyService, UserService userService, GameService gameService) {
         this.lobbyService = lobbyService;
         this.userService = userService;
         this.gameService = gameService;
     }
 
-    @GetMapping("/lobby/{id}")
-    @ResponseStatus(HttpStatus.OK)
+@GetMapping("/lobby/{id}") @ResponseStatus(HttpStatus.OK)
     public LobbyGetDTO getLobbyWithId(@PathVariable("id") Long lobbyid) {
         Lobby lobby = lobbyService.getLobbyById(lobbyid);
         GameEntity game = gameService.gameById(lobby.getGameId());
@@ -85,29 +71,22 @@ public class LobbyController {
     }
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
-    public DeferredResult<List<LobbyGetDTOAllLobbies>> getAllLobbies() throws IllegalStateException{
+    public DeferredResult<List<LobbyGetDTOAllLobbies>> getAllLobbies() throws IllegalStateException, InterruptedException{
         // authentication?
 
-        final DeferredResult<List<LobbyGetDTOAllLobbies>> result = new DeferredResult<>(10000L, Collections.emptyList());
-        if (!lobbyService.existRequestAllLobbies(result)){
-            lobbyService.addRequestToQueueLobbies(result);
-            logger.info("Im here!");
+        final DeferredResult<List<LobbyGetDTOAllLobbies>> result = new DeferredResult<>(5000L);
+        lobbyService.addRequestToQueueLobbies(result);
+
+        result.onTimeout(() -> {
+            logger.info("timout of request");
             result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
-        }
-
-        result.onTimeout(() -> logger.info("timout of request"));
-        result.onCompletion(() -> logger.info("Completion of request"));
-
-
-        lobbyClerk.execute(() -> {
-            try {
-                // result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
-                Thread.sleep(9000L);
-            }
-            catch (Exception e){
-                result.setErrorResult(result);
-            }
         });
+
+        result.onCompletion(() -> {
+            lobbyService.removeRequestFromQueueLobbies(result);
+        });
+
+        result.setResult(lobbyService.update());
         
         return result;
 
@@ -121,7 +100,6 @@ public class LobbyController {
         Lobby lobby = DTOMapper.INSTANCE.convertLobbyPostDTOtoEntity(lobbyPostDTO);
         Lobby createdLobby = lobbyService.createLobby(lobby);
         return getLobbyWithId(createdLobby.getId());
-
     }
 
     @PostMapping("/lobby/{roomKey}/roomkey")
