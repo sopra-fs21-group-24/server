@@ -42,7 +42,7 @@ public class QuestionEventListener{
             for (CSVRecord record : records) {
                 double lon = Double.parseDouble(record.get("lon"));
                 double lat = Double.parseDouble(record.get("lat"));
-                int zoom = Integer.parseInt(record.get("zoom"));
+                // evtl. add zoom reading from file
 
                 Coordinate coordinate = new Coordinate(lon, lat);
 
