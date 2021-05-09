@@ -7,12 +7,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
-import ch.uzh.ifi.hase.soprafs21.entity.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Answer;
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+import ch.uzh.ifi.hase.soprafs21.entity.Question;
+import ch.uzh.ifi.hase.soprafs21.entity.Score;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.UserMode;
@@ -27,6 +34,8 @@ import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 @Transactional
 public class GameService {
 
+    private final Logger logger = LoggerFactory.getLogger(GameService.class);
+
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
     private final LeaderboardService leaderboardService;
@@ -34,6 +43,8 @@ public class GameService {
     private final ScoreService scoreService;
     private final LobbyService lobbyService;
     private final UserService userService;
+    
+    private final Random random = new Random();
 
 
     @Autowired
@@ -146,7 +157,6 @@ public class GameService {
         long questionId;
         List<Long> questions = new ArrayList<>();
 
-        Random random = new Random();
         for (int i=0; i < 3; i++){
             questionId = random.nextInt((int)questionService.count());
             questions.add(questionId);
@@ -236,27 +246,30 @@ public class GameService {
         if (game.getRound() > 0){
             ListIterator<Score> scores = scoresByGame(game);
 
-            leaderboardService.updateLeaderboard(game.getGameMode().getName(), scores);
+            String gModeName = game.getGameMode().getName();
+            leaderboardService.updateLeaderboard(gModeName, scores);
 
-            while (scores.hasNext()) {
-                Score score = scores.next();
+            while (scores.hasPrevious()) {
+                Score score = scores.previous();
 
                 long totalScore = score.getTotalScore();
                 User user = userService.getUserByUserId(score.getUserId());
                 Map<String, Integer> highScores = user.getHighScores();
-                String key = game.getGameMode().getName();
 
-                Integer highest = highScores.get(key);
+                Integer highest = highScores.get(gModeName);
 
                 if (totalScore > highest) {
-                    highScores.put(key, (int)totalScore);
+                    highScores.put(gModeName, (int)totalScore);
                     user.setHighScores(highScores);
                 }
+                logger.info("Highscores: {}", user.getHighScores().get(gModeName));
             }
         }
         // case 2: game has not started yet
         else {
-            for(Long userId : game.getUserIds()){
+            // TODO 
+            // entfernen
+            for(Long userId : game.getUserIds()){ 
                 User user = userService.getUserByUserId(userId);
                 user.setInLobby(false);
             }

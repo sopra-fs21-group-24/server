@@ -1,9 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Score;
+import java.util.ArrayList;
+import java.util.ListIterator;
 
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
+import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
-
-import java.util.ArrayList;
-import java.util.ListIterator;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 
 /**
  * User Service
@@ -42,16 +41,15 @@ public class LeaderboardService {
             Score score = scores.next();
            // for (Leaderboard l : leaderboardRepository.findTop5ByGameMode(gameMode)) {
                     //leaderboardRepository.delete(l);
-                    Leaderboard update = new Leaderboard();
-                    update.setUsername(userService.getUserByUserId(score.getUserId()).getUsername());
-                    update.setScore(score.getTotalScore());
-                    update.setGameMode(gameMode);
-                    leaderboardRepository.saveAndFlush(update);
-
-
-               // }
+            Leaderboard update = new Leaderboard();
+            update.setUsername(userService.getUserByUserId(score.getUserId()).getUsername());
+            update.setScore(score.getTotalScore());
+            update.setGameMode(gameMode);
+            leaderboardRepository.save(update);
             }
-        }
+
+        leaderboardRepository.flush();
+    }
 
     public ArrayList<LeaderboardGetDTO> getScoresForGameMode(String gameMode){
         ArrayList<LeaderboardGetDTO> finalList = new ArrayList<>();
