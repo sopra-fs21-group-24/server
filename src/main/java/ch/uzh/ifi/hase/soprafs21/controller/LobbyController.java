@@ -86,7 +86,10 @@ public class LobbyController {
             lobbyService.removeRequestFromQueueLobbies(result);
         });
 
-        result.setResult(lobbyService.update());
+        List<LobbyGetDTOAllLobbies> lobbies = lobbyService.update();
+        if (lobbies != null){
+            result.setResult(lobbies);
+        }
         
         return result;
 
