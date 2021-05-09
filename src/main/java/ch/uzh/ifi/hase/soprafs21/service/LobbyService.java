@@ -32,6 +32,8 @@ public class LobbyService {
 
     private Queue<DeferredResult<List<LobbyGetDTOAllLobbies>>> allLobbiesRequests = new ConcurrentLinkedQueue<>();
 
+    static final int MAX_PLAYERS = 3;
+
     private final LobbyRepository lobbyRepository;
     private final UserRepository userRepository;
     private final UserService userService;
@@ -100,7 +102,7 @@ public class LobbyService {
             throw new NotFoundException("User is already in Lobby");
         }
         if (lobby == null){throw new NotFoundException("Lobby does not exist");}
-        if (lobby.getUsers().size() < 3){
+        if (lobby.getUsers().size() < MAX_PLAYERS){
             lobby.addUser(user.getId());
             user.setInLobby(true);
 
