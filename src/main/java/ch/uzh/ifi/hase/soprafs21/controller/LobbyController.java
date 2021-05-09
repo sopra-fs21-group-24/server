@@ -71,10 +71,12 @@ public class LobbyController {
     }
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
-    public DeferredResult<List<LobbyGetDTOAllLobbies>> getAllLobbies() throws IllegalStateException, InterruptedException{
+    public DeferredResult<List<LobbyGetDTOAllLobbies>> getAllLobbies(@RequestHeader Map<String, String> header) 
+    throws IllegalStateException, InterruptedException{
+        // TODO
         // authentication?
 
-        final DeferredResult<List<LobbyGetDTOAllLobbies>> result = new DeferredResult<>(5000L);
+        final DeferredResult<List<LobbyGetDTOAllLobbies>> result = new DeferredResult<>(null);
         lobbyService.addRequestToQueueLobbies(result);
 
         result.onTimeout(() -> {
@@ -86,11 +88,10 @@ public class LobbyController {
             lobbyService.removeRequestFromQueueLobbies(result);
         });
 
-        List<LobbyGetDTOAllLobbies> lobbies = lobbyService.update();
-        if (lobbies != null){
-            result.setResult(lobbies);
+        if (header.get("initial").equals("true")){
+            result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
         }
-        
+
         return result;
 
     }

@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +31,6 @@ public class LobbyService {
     private final Logger log = LoggerFactory.getLogger(LobbyService.class);
 
     private Queue<DeferredResult<List<LobbyGetDTOAllLobbies>>> allLobbiesRequests = new ConcurrentLinkedQueue<>();
-    private BlockingQueue<List<LobbyGetDTOAllLobbies>> queue = new ArrayBlockingQueue<>(1);
 
     private final LobbyRepository lobbyRepository;
     private final UserRepository userRepository;
@@ -147,10 +143,10 @@ public class LobbyService {
 
         user.setInLobby(false);
 
-        handleLobbies();
-
         userRepository.flush();
         lobbyRepository.flush();
+
+        handleLobbies();
     }
 
     public void deleteLobby(Long lobbyId){
@@ -172,20 +168,11 @@ public class LobbyService {
         for (DeferredResult<List<LobbyGetDTOAllLobbies>> subscriber : allLobbiesRequests){
             subscriber.setResult(finalLobbyList);
         }
-
-        if (!queue.isEmpty()){
-            try{
-                queue.take();
-            } catch (InterruptedException e){
-                e.printStackTrace();
-            }
-        }
-       
-        queue.add(finalLobbyList);
     }
 
     public List<LobbyGetDTOAllLobbies> getLobbyGetDTOAllLobbies() {
         List<LobbyGetDTOAllLobbies> finalLobbyList = new ArrayList<>();
+
         for (Lobby lobby : getAllLobbies()) {
             LobbyGetDTOAllLobbies lobbyGetDTOAllLobbies = DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(lobby);
             lobbyGetDTOAllLobbies.setUsers(lobby.getUsers().size());
@@ -200,15 +187,6 @@ public class LobbyService {
     }
 
     public void addRequestToQueueLobbies(DeferredResult<List<LobbyGetDTOAllLobbies>> request){
-        log.info("Test: {}", allLobbiesRequests);
         allLobbiesRequests.add(request);
-    }
-
-    public boolean existRequestAllLobbies(DeferredResult<List<LobbyGetDTOAllLobbies>> request){
-        return allLobbiesRequests.contains(request);
-    }
-
-    public List<LobbyGetDTOAllLobbies> update() throws InterruptedException{
-            return queue.poll(5000L, TimeUnit.MILLISECONDS);
     }
 }
