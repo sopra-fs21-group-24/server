@@ -51,7 +51,7 @@ public class LeaderboardService {
 
     public ArrayList<LeaderboardGetDTO> getScoresForGameMode(String gameMode){
         ArrayList<LeaderboardGetDTO> finalList = new ArrayList<>();
-        for (Leaderboard l :leaderboardRepository.findTop5ByGameMode(gameMode)){
+        for (Leaderboard l :leaderboardRepository.findTop5ByGameModeOrderByScoreDesc(gameMode)){
             finalList.add(DTOMapper.INSTANCE.convertEntityToLeaderboardGetDTO(l));
         }
         return finalList;
