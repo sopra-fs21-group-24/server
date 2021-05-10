@@ -66,7 +66,7 @@ public class LeaderboardRepositoryIntegrationTest {
         entityManager.persistAndFlush(leaderboard6);
 
         // when
-        List<Leaderboard> found = leaderboardRepository.findTop5ByGameMode("Clouds");
+        List<Leaderboard> found = leaderboardRepository.findTop5ByGameModeOrderByScoreDesc("Clouds");
         // then
         assertEquals(found.size(),5);
         found.forEach(l->{
