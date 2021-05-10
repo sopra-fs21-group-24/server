@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository("leaderboardRepository")
 public interface LeaderboardRepository extends JpaRepository<Leaderboard, String> {
-    List<Leaderboard> findTop5ByGameMode(String gameMode);
+    List<Leaderboard> findTop5ByGameModeOrderByScoreDesc(String gameMode);
 }
