@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,23 +24,18 @@ import org.springframework.web.context.request.async.DeferredResult;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
-/**
- * User Controller
- * This class is responsible for handling all REST request that are related to the user.
- * The controller will receive the request and delegate the execution to the UserService and finally return the result.
- */
+
 @RestController
 public class LobbyController {
-
     Logger logger = LoggerFactory.getLogger(LobbyController.class);
 
     private final LobbyService lobbyService;
@@ -53,21 +48,31 @@ public class LobbyController {
         this.gameService = gameService;
     }
 
+@Async
 @GetMapping("/lobby/{id}") @ResponseStatus(HttpStatus.OK)
-    public LobbyGetDTO getLobbyWithId(@PathVariable("id") Long lobbyid) {
-        Lobby lobby = lobbyService.getLobbyById(lobbyid);
+    public DeferredResult<LobbyGetDTO> getLobbyWithId(
+        @PathVariable("id") Long lobbyId, @RequestHeader Map<String, String> header) {
+
+        Lobby lobby = lobbyService.getLobbyById(lobbyId);
         GameEntity game = gameService.gameById(lobby.getGameId());
 
-        LobbyGetDTO lobbyDTO = DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
-        List<UserGetDTOWithoutToken> userlist = new ArrayList<>();
-        for (Long i : lobby.getUsers()) {
-            userlist.add(DTOMapper.INSTANCE.convertEntityToUserGetDTOWithoutToken(userService.getUserByUserId(i)));
+        final DeferredResult<LobbyGetDTO> result = new DeferredResult<>(null);
+        lobbyService.addRequestToQueueLobbyMap(result, lobbyId);
 
+        result.onTimeout(() -> {
+            logger.info("timout of request");
+            result.setResult(lobbyService.getLobbyGetDTO(lobby, game.getGameMode()));
+        });
+
+        result.onCompletion(() -> {
+            lobbyService.removeRequestFromLobbyMap(result);
+        });
+
+        if (header.get("initial").equals("true")){
+            result.setResult(lobbyService.getLobbyGetDTO(lobby, game.getGameMode()));
         }
 
-        lobbyDTO.setGamemode(game.getGameMode());
-        lobbyDTO.setUsers(userlist);
-        return lobbyDTO;
+        return result;
     }
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
@@ -103,7 +108,8 @@ public class LobbyController {
     public LobbyGetDTO createLobby(@RequestBody LobbyPostDTO lobbyPostDTO) {
         Lobby lobby = DTOMapper.INSTANCE.convertLobbyPostDTOtoEntity(lobbyPostDTO);
         Lobby createdLobby = lobbyService.createLobby(lobby);
-        return getLobbyWithId(createdLobby.getId());
+        GameMode gMode = gameService.gameById(createdLobby.getId()).getGameMode();
+        return lobbyService.getLobbyGetDTO(createdLobby, gMode);
     }
 
     @PostMapping("/lobby/{roomKey}/roomkey")
@@ -131,7 +137,8 @@ public class LobbyController {
     @ResponseStatus(HttpStatus.OK)
     public LobbyGetDTO getLobbyWithRoomKey(@PathVariable("roomKey") Long roomKey) {
         Lobby lobby = lobbyService.getLobbyByRoomkey(roomKey);
-        return getLobbyWithId(lobby.getId());
+        GameMode gMode = gameService.gameById(lobby.getId()).getGameMode();
+        return lobbyService.getLobbyGetDTO(lobby, gMode);
     }
 
     @PutMapping("/lobby/{lobbyId}")

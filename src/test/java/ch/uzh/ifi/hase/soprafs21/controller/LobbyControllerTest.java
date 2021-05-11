@@ -1,24 +1,24 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Pixelation;
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
-import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
-import ch.uzh.ifi.hase.soprafs21.exceptions.UserAlreadyExistsException;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
-import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs21.service.GameService;
-import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Collections;
+
+import javax.security.auth.message.callback.PrivateKeyCallback.Request;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.coyote.Response;
+
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,20 +26,21 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.*;
-
-import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Pixelation;
+import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
+import ch.uzh.ifi.hase.soprafs21.service.GameService;
+import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
+import ch.uzh.ifi.hase.soprafs21.service.UserService;
 @WebMvcTest(LobbyController.class)
 public class LobbyControllerTest {
 
@@ -58,7 +59,7 @@ public class LobbyControllerTest {
 
 
     @Test
-    public void getLeobbyWithIdSuccessful() throws Exception {
+    public void getLobbyWithIdSuccessful() throws Exception {
 
         Lobby lobby = new Lobby();
         lobby.setId(1L);
@@ -71,30 +72,47 @@ public class LobbyControllerTest {
         game.setGameId(1L);
         game.setGameMode(new Pixelation());
 
+        LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
+        lobbyGetDTO.setId(1L);
+        lobbyGetDTO.setGameId(1L);
+        lobbyGetDTO.setCreator(1L);
+        lobbyGetDTO.setPublicStatus(true);
+        lobbyGetDTO.setRoomKey(123L);
+        lobbyGetDTO.setGamemode(game.getGameMode());
+        lobbyGetDTO.setUsers(Collections.emptyList());
+   
         given(lobbyService.getLobbyById(Mockito.any())).willReturn(lobby);
+        given(lobbyService.getLobbyGetDTO(Mockito.any(), Mockito.any())).willReturn(lobbyGetDTO);
         given(gameService.gameById(Mockito.any())).willReturn(game);
 
 
         MockHttpServletRequestBuilder getRequest = get("/lobby/1")
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("initial", "true");
 
-        mockMvc.perform(getRequest)
-                .andExpect(status().isOk())
+        MvcResult asyncListener = mockMvc
+                .perform(getRequest)
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(asyncListener))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.gameId", is(1)))
                 .andExpect(jsonPath("$.creator", is(1)))
                 .andExpect(jsonPath("$.roomKey", is(123)))
                 .andExpect(jsonPath("$.publicStatus", is(true)))
+                .andExpect(jsonPath("$.users", is(Collections.emptyList())))
                 .andExpect(jsonPath("$.gamemode.name", is("Pixelation")));
     }
 
     @Test
-    public void getLeobbyWithIdFailed() throws Exception {
+    public void getLobbyWithIdFailed() throws Exception {
 
         given(lobbyService.getLobbyById(Mockito.any())).willThrow(new NotFoundException("Lobby with this lobbyid: 1 not found"));
 
         MockHttpServletRequestBuilder getRequest = get("/lobby/1")
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("initial", "true");
 
         mockMvc.perform(getRequest)
                 .andExpect(status().isNotFound())
@@ -208,8 +226,18 @@ public class LobbyControllerTest {
         game.setGameId(1L);
         game.setGameMode(new Pixelation());
 
+        LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
+        lobbyGetDTO.setId(1L);
+        lobbyGetDTO.setGameId(1L);
+        lobbyGetDTO.setCreator(1L);
+        lobbyGetDTO.setPublicStatus(true);
+        lobbyGetDTO.setRoomKey(123L);
+        lobbyGetDTO.setGamemode(game.getGameMode());
+        lobbyGetDTO.setUsers(Collections.emptyList());
+
         given(lobbyService.getLobbyByRoomkey(Mockito.any())).willReturn(lobby);
         given(lobbyService.getLobbyById(Mockito.any())).willReturn(lobby);
+        given(lobbyService.getLobbyGetDTO(Mockito.any(), Mockito.any())).willReturn(lobbyGetDTO);
         given(gameService.gameById(Mockito.any())).willReturn(game);
 
 
