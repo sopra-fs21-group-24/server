@@ -16,11 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
+import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
@@ -41,13 +43,16 @@ public class LobbyService {
 
     private final LobbyRepository lobbyRepository;
     private final UserRepository userRepository;
+    private final GameRepository gameRepository;
     private final UserService userService;
 
     @Autowired
-    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, UserRepository userRepository, UserService userService) {
+    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, 
+                UserRepository userRepository, UserService userService, GameRepository gameRepository) {
         this.lobbyRepository = lobbyRepository;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.gameRepository = gameRepository;
     }
 
     public User checkAuth(Map<String, String> header){
@@ -106,8 +111,10 @@ public class LobbyService {
         if(user.getInLobby().booleanValue()){
             throw new NotFoundException("User is already in Lobby");
         }
-        if (lobby == null){throw new NotFoundException("Lobby does not exist");}
-        if (lobby.getUsers().size() < MAX_PLAYERS){
+        else if (lobby == null){
+            throw new NotFoundException("Lobby does not exist");
+        }
+        else if (lobby.getUsers().size() < MAX_PLAYERS){
             lobby.addUser(user.getId());
             user.setInLobby(true);
 
@@ -115,7 +122,7 @@ public class LobbyService {
             userRepository.saveAndFlush(user);
             lobbyRepository.saveAndFlush(lobby);
 
-            // handleLobby(lobby);
+            handleLobby(lobby, gameByLobbyId(lobby.getId()).getGameMode());
             handleLobbies();
         }
         else {
@@ -155,7 +162,7 @@ public class LobbyService {
         userRepository.flush();
         lobbyRepository.flush();
 
-        // handleLobby(lobby);
+        handleLobby(lobby, gameByLobbyId(lobby.getId()).getGameMode());
         handleLobbies();
     }
 
@@ -171,6 +178,17 @@ public class LobbyService {
     }
 
     // ------------- Lobby long polling --------------- // 
+
+    // helper
+    public GameEntity gameByLobbyId(Long lobbyId){
+        Optional<GameEntity> found = gameRepository.findByLobbyId(lobbyId);
+        if(found.isPresent()){
+            return found.get();
+        } else {
+            throw new NotFoundException("[LobbyService] Game for lobby not found");
+        }
+        
+    }
 
     // getAllLobbies
     public void handleLobbies(){
