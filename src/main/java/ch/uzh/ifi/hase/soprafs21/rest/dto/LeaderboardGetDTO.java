@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs21.entity.gameModeEnum;
 
 public class LeaderboardGetDTO {
 

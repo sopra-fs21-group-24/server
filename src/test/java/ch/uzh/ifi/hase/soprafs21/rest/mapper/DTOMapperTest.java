@@ -1,15 +1,30 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs21.entity.*;
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Pixelation;
-import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import ch.uzh.ifi.hase.soprafs21.entity.Answer;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Pixelation;
+import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.AnswerPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePutDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 
 /**
  * DTOMapperTest
@@ -59,7 +74,7 @@ public class DTOMapperTest {
         user.setUsername("firstname@lastname");
         user.setToken("1");
         user.setId(2L);
-        HashMap highscore = new HashMap();
+        HashMap<String, Integer> highscore = new HashMap<>();
         highscore.put("Time", 3);
         user.setHighScores(highscore);
         // MAP -> Create user
