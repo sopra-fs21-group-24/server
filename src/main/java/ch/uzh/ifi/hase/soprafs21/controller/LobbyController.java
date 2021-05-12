@@ -57,7 +57,7 @@ public class LobbyController {
         GameEntity game = gameService.gameById(lobby.getGameId());
 
         final DeferredResult<LobbyGetDTO> result = new DeferredResult<>(null);
-        lobbyService.addRequestToQueueLobbyMap(result, lobbyId);
+        lobbyService.addRequestToQueueLobbyMap(result, lobby.getId());
 
         result.onTimeout(() -> {
             logger.info("timout of request");
@@ -74,6 +74,7 @@ public class LobbyController {
 
         return result;
     }
+
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
     public DeferredResult<List<LobbyGetDTOAllLobbies>> getAllLobbies(@RequestHeader Map<String, String> header) 

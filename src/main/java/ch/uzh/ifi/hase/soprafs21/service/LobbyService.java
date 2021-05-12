@@ -223,7 +223,7 @@ public class LobbyService {
     // getLobby
     public void handleLobby(Lobby lobby, GameMode gameMode){
         for (Map.Entry<DeferredResult<LobbyGetDTO>, Long> entry : singleLobbyRequests.entrySet()){
-           if(entry.getValue() == lobby.getId()){
+           if(entry.getValue().equals(lobby.getId())){
                entry.getKey().setResult(getLobbyGetDTO(lobby, gameMode));
            }
         }

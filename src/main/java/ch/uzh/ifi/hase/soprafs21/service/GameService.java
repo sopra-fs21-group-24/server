@@ -345,6 +345,8 @@ public class GameService {
             lobbyLocal.setPublicStatus(publicStatus);
         }
 
+        gameRepository.saveAndFlush(gameLocal);
+
         lobbyService.handleLobbies();
         lobbyService.handleLobby(lobbyService.getLobbyById(gameLocal.getLobbyId()), gameLocal.getGameMode());
 
