@@ -1,15 +1,14 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
+import java.util.ArrayList;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import ch.uzh.ifi.hase.soprafs21.entity.gameModeEnum;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
 import ch.uzh.ifi.hase.soprafs21.service.LeaderboardService;
-
-import java.util.ArrayList;
 
 /**
  * Leaderboard.java  Controller

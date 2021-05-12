@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.Logger;
@@ -15,13 +16,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
+import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 
 @Service
@@ -31,18 +37,22 @@ public class LobbyService {
     private final Logger log = LoggerFactory.getLogger(LobbyService.class);
 
     private Queue<DeferredResult<List<LobbyGetDTOAllLobbies>>> allLobbiesRequests = new ConcurrentLinkedQueue<>();
+    private Map<DeferredResult<LobbyGetDTO>, Long> singleLobbyRequests = new ConcurrentHashMap<>();
 
     static final int MAX_PLAYERS = 3;
 
     private final LobbyRepository lobbyRepository;
     private final UserRepository userRepository;
+    private final GameRepository gameRepository;
     private final UserService userService;
 
     @Autowired
-    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, UserRepository userRepository, UserService userService) {
+    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, 
+                UserRepository userRepository, UserService userService, GameRepository gameRepository) {
         this.lobbyRepository = lobbyRepository;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.gameRepository = gameRepository;
     }
 
     public User checkAuth(Map<String, String> header){
@@ -101,15 +111,19 @@ public class LobbyService {
         if(user.getInLobby().booleanValue()){
             throw new NotFoundException("User is already in Lobby");
         }
-        if (lobby == null){throw new NotFoundException("Lobby does not exist");}
-        if (lobby.getUsers().size() < MAX_PLAYERS){
+        else if (lobby == null){
+            throw new NotFoundException("Lobby does not exist");
+        }
+        else if (lobby.getUsers().size() < MAX_PLAYERS){
             lobby.addUser(user.getId());
             user.setInLobby(true);
 
-            handleLobbies();
 
             userRepository.saveAndFlush(user);
             lobbyRepository.saveAndFlush(lobby);
+
+            handleLobby(lobby, gameByLobbyId(lobby.getId()).getGameMode());
+            handleLobbies();
         }
         else {
             throw  new PreconditionFailedException("To many users in the lobby!"); 
@@ -148,6 +162,7 @@ public class LobbyService {
         userRepository.flush();
         lobbyRepository.flush();
 
+        handleLobby(lobby, gameByLobbyId(lobby.getId()).getGameMode());
         handleLobbies();
     }
 
@@ -164,6 +179,18 @@ public class LobbyService {
 
     // ------------- Lobby long polling --------------- // 
 
+    // helper
+    public GameEntity gameByLobbyId(Long lobbyId){
+        Optional<GameEntity> found = gameRepository.findByLobbyId(lobbyId);
+        if(found.isPresent()){
+            return found.get();
+        } else {
+            throw new NotFoundException("[LobbyService] Game for lobby not found");
+        }
+        
+    }
+
+    // getAllLobbies
     public void handleLobbies(){
         List<LobbyGetDTOAllLobbies> finalLobbyList = getLobbyGetDTOAllLobbies();
 
@@ -190,5 +217,38 @@ public class LobbyService {
 
     public void addRequestToQueueLobbies(DeferredResult<List<LobbyGetDTOAllLobbies>> request){
         allLobbiesRequests.add(request);
+    }
+
+
+    // getLobby
+    public void handleLobby(Lobby lobby, GameMode gameMode){
+        for (Map.Entry<DeferredResult<LobbyGetDTO>, Long> entry : singleLobbyRequests.entrySet()){
+           if(entry.getValue().equals(lobby.getId())){
+               entry.getKey().setResult(getLobbyGetDTO(lobby, gameMode));
+           }
+        }
+    }
+
+    public LobbyGetDTO getLobbyGetDTO(Lobby lobby, GameMode gameMode){
+        LobbyGetDTO lobbyDTO = DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
+        List<UserGetDTOWithoutToken> userlist = new ArrayList<>();
+
+        for (Long i : lobby.getUsers()) {
+            userlist.add(DTOMapper.INSTANCE.convertEntityToUserGetDTOWithoutToken(userService.getUserByUserId(i)));
+        }
+
+        lobbyDTO.setGamemode(gameMode);
+        lobbyDTO.setUsers(userlist);
+
+        return lobbyDTO;
+    }
+    
+
+    public void removeRequestFromLobbyMap(DeferredResult<LobbyGetDTO> request){
+        singleLobbyRequests.remove(request);
+    }
+
+    public void addRequestToQueueLobbyMap(DeferredResult<LobbyGetDTO> request, Long lobbyId){
+       singleLobbyRequests.put(request, lobbyId);
     }
 }

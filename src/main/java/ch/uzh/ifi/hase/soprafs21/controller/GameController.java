@@ -58,7 +58,7 @@ public class GameController {
     private final UserService userService;
     private final QuestionService questionService;
 
-    private Map<DeferredResult, Long> scoreSubscribers = new ConcurrentHashMap<>();
+    private Map<DeferredResult<List<ScoreGetDTO>>, Long> scoreSubscribers = new ConcurrentHashMap<>();
 
     GameController(GameService gameService, UserService userService, QuestionService questionService) {
         this.gameService = gameService;
