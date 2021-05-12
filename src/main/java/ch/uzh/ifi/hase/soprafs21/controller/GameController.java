@@ -104,16 +104,33 @@ public class GameController {
     @GetMapping("/games/{gameId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public GameGetDTO getGame(
+    public DeferredResult<GameGetDTO> getGame(
             @PathVariable Long gameId,
             @RequestHeader Map<String, String> header)
             throws UnauthorizedException, NotFoundException {
 
         gameService.checkAuth(header);
         GameEntity game = gameService.gameById(gameId);
+        // TODO
         // checkPartofGame, momentan abgeschaltet
 
-        return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
+        final DeferredResult<GameGetDTO> result = new DeferredResult<>(null);
+        gameService.addRequestToQueueGameMap(result, game.getGameId());
+        
+        result.onTimeout(() -> {
+            logger.info("timout of request");
+            result.setResult(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
+        });
+
+        result.onCompletion(() -> {
+            gameService.removeRequestFromGameMap(result);
+        });
+
+        if (header.get("initial").equals("true")){
+            result.setResult(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
+        }
+
+        return result;
     }
 
     @GetMapping("/games/{gameId}/start")

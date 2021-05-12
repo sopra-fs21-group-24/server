@@ -6,6 +6,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
@@ -29,12 +31,16 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 
 @Service
 @Transactional
 public class GameService {
 
     private final Logger logger = LoggerFactory.getLogger(GameService.class);
+
+    private Map<DeferredResult<GameGetDTO>, Long> singleGameRequests = new ConcurrentHashMap<>();
 
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
@@ -332,6 +338,7 @@ public class GameService {
         String nameGameModePut = game.getGameMode().getName();
         Lobby lobbyLocal = lobbyService.getLobbyById(gameLocal.getLobbyId());
 
+        // TODO
         // evt. wegnehmen
         if (!nameUserModeLocal.equals(nameUserModePut)) {
             gameLocal.setUserMode(game.getUserMode());
@@ -354,13 +361,34 @@ public class GameService {
     }
 
     public ListIterator<Score> scoresByGame(GameEntity game) {
-        List<Long> userIds = game.getUserIds();
         ArrayList<Score> scores = new ArrayList<>();
-        for (Long userId : userIds) {
+        for (Long userId : game.getUserIds()) {
             scores.add(scoreService.findById(userId));
         }
         return scores.listIterator();
     }
 
+
+    // ------------- Lobby long polling --------------- // 
+
+    public void handleGame(GameEntity game){
+        for (Map.Entry<DeferredResult<GameGetDTO>, Long> entry : singleGameRequests.entrySet()){
+           if(entry.getValue().equals(game.getGameId())){
+               entry.getKey().setResult(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
+           }
+        }
+    }
+
+    public void handleScores(){
+
+    }
+
+    public void removeRequestFromGameMap(DeferredResult<GameGetDTO> request){
+        singleGameRequests.remove(request);
+    }
+
+    public void addRequestToQueueGameMap(DeferredResult<GameGetDTO> request, Long gameId){
+       singleGameRequests.put(request, gameId);
+    }
     
 }
