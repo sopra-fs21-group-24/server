@@ -1,15 +1,11 @@
-<center>
-
-# MAPGUESSЯ
-
-</center>
+<h1 align="center">MAPGUESSЯ</h1>
 
 <center>
-<img width=30%"  src="public/logo.png"/>
+<img width=30%"  src="https://github.com/sopra-fs21-group-24/data/blob/main/assets/logo.png"/>
 </center>
 
 ## Introduction
-*the project’s aim*
+We created a game similair to [GeoGuessr](https://www.geoguessr.com/). The players will be randomly placed somewhere on Google maps (for example: a country, a city or a monumental place like the eiffel tower). At the beginning of the game the map won't be visible and there are some clouds over the map. The goal of the player is to brush away as little as possible of the clouds to recognize the place he is located in. The player will give his answer by placing a pin on a map that is displayed on the lower left side of the screen. The scoring will be based on points. Depending on the game mode points are computed by time, accuracy of guess and amount of clouds brushed away.
 
 Deployed instance: [sopra-fs21-group-24-client.herokuapp.com](https://sopra-fs21-group-24-client.herokuapp.com/)
 
@@ -33,7 +29,12 @@ have to take to get started with your application. What commands are required to
 *Roadmap: The top 2-3 features that new developers who want to contribute to your project could add
 *
 ## Authors and acknowledgment
-*Authors and acknowledgment*
-This project is based on this template //TODO: insert link
+This project was started using the following front end [template](https://github.com/HASEL-UZH/sopra-fs21-template-client) provided by the University of Zurich.
+#### Team Members
+* Claudio Gebbia - [@claudioge](https://github.com/claudioge)
+* Jérôme Hadorn - [@jeromehadorn](https://github.com/jeromehadorn)
+* Hoàng Ben Lê Giang - [@benlegiang](https://github.com/benlegiang)
+* David Diener - [@Dave5252](https://github.com/Dave5252)
+* Philip Giryes - [@Pieli](https://github.com/Pieli)
 ## License
-This project is licensed under the MIT license.
+This project is licensed under the MIT license. Check out the License text [here](https://github.com/sopra-fs21-group-24/server/blob/master/LICENSE).
