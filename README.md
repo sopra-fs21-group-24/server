@@ -9,13 +9,11 @@ We created a game similair to [GeoGuessr](https://www.geoguessr.com/). The playe
 
 Deployed instance: [sopra-fs21-group-24-client.herokuapp.com](https://sopra-fs21-group-24-client.herokuapp.com/)
 
-Link to FE: TODO:
+Associated Front End repository can be found here: [Client Repository](https://github.com/sopra-fs21-group-24/client)
+
 ## Technologies
 *used (short)*
-<img height="100px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/java/java.png"></img>
-
-<!-- <img height="100px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png"></img> -->
-
+<img height="200px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/java/java.png"></img>
 
 ## High-level components
 *High-level components: Identify your project’s 3-5 main components. What is their role?
