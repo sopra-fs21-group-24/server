@@ -72,7 +72,7 @@ public class GameService {
             return userService.getUserByToken(token);
         }
         catch (NotFoundException e) {
-            throw new UnauthorizedException(e.getMessage());
+            throw new UnauthorizedException("User with this token was not found");
         }
     }
 
@@ -346,7 +346,7 @@ public class GameService {
         }
 
         lobbyService.handleLobbies();
-        lobbyService.handleLobby(lobbyService.getLobbyById(game.getLobbyId()), game.getGameMode());
+        lobbyService.handleLobby(lobbyService.getLobbyById(gameLocal.getLobbyId()), gameLocal.getGameMode());
 
         return gameLocal;
     }
