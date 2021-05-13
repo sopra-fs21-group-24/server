@@ -6,7 +6,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
 
 @Entity
 @Table(name = "Leaderboard")
-public class Leaderboard implements Observer {
+public class Leaderboard{
     @Id
     @GeneratedValue
     private Long id;
@@ -57,8 +57,4 @@ public class Leaderboard implements Observer {
         return id;
     }
 
-    @Override
-    public void update() {
-        throw new UnsupportedOperationException();
-    }
 }

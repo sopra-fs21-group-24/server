@@ -2,6 +2,8 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 import java.util.ArrayList;
 import java.util.ListIterator;
+
+import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
  */
 @Service
 @Transactional
-public class LeaderboardService {
+public class LeaderboardService implements Observer {
 
     private final Logger log = LoggerFactory.getLogger(LeaderboardService.class);
 
@@ -34,6 +36,7 @@ public class LeaderboardService {
         this.userService = userService;
 
     }
+    @Override
     public void updateLeaderboard(String gameMode, ListIterator<Score> scores) {
         while (scores.hasNext()) {
             Score score = scores.next();
@@ -57,5 +60,7 @@ public class LeaderboardService {
         return finalList;
 
     }
+
+
 
 }
