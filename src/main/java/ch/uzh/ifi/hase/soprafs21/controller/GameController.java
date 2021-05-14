@@ -125,7 +125,7 @@ public class GameController {
             result.setResult(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
         }
 
-        if (header.get("initial").equals("true")){
+        else if (header.get("initial").equals("true")){
             result.setResult(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
         }
 
@@ -241,7 +241,7 @@ public class GameController {
             result.setResult(gameService.getScoreGetDTOs(game));
         }
 
-        if (header.get("initial").equals("true")){
+        else if (header.get("initial").equals("true")){
             result.setResult(gameService.getScoreGetDTOs(game));
         }
 
