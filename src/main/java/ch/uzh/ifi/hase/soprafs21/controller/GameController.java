@@ -4,9 +4,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
-import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
@@ -57,8 +54,6 @@ public class GameController {
     private final GameService gameService;
     private final UserService userService;
     private final QuestionService questionService;
-
-    private Map<DeferredResult<List<ScoreGetDTO>>, Long> scoreSubscribers = new ConcurrentHashMap<>();
 
     GameController(GameService gameService, UserService userService, QuestionService questionService) {
         this.gameService = gameService;
@@ -125,6 +120,10 @@ public class GameController {
         result.onCompletion(() -> {
             gameService.removeRequestFromGameMap(result);
         });
+
+        if(header.get("initial") == null){
+            result.setResult(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
+        }
 
         if (header.get("initial").equals("true")){
             result.setResult(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
@@ -227,33 +226,23 @@ public class GameController {
         gameService.checkPartofGame(game, user);
 
         final DeferredResult<List<ScoreGetDTO>> result = new DeferredResult<>(null, Collections.emptyList());
-        this.scoreSubscribers.put(result, game.getGameId());
+        gameService.addRequestAllScoreMap(result, game.getGameId());
     
-        result.onCompletion(() -> scoreSubscribers.remove(result));
+        result.onTimeout(() -> {
+            logger.info("timout of request");
+            result.setResult(gameService.getScoreGetDTOs(game));
+        });
 
-        // hacking
-        Coordinate solution;
-        List<Long> questions = game.getQuestions();
-        if (game.getRound() < 4) {
-            solution = questionService.questionById(questions.get(game.getRound() - 1)).getCoordinate();
-        }
-        else {
-            solution = questionService.questionById(questions.get(2)).getCoordinate();
-        }
+        result.onCompletion(() -> {
+            gameService.removeRequestFromAllScoreMap(result);
+        });
 
-        // refactor to for loop
-        List<ScoreGetDTO> scoresDTO = new ArrayList<>();
-        ListIterator<Score> scores = gameService.scoresByGame(game);
-        while (scores.hasNext()) {
-            ScoreGetDTO scoreGetDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(scores.next());
-            User scoreUser = userService.getUserByUserId(scoreGetDTO.getUserId());
-            scoreGetDTO.setSolutionCoordinate(solution);
-            scoreGetDTO.setUsername(scoreUser.getUsername());
-            scoresDTO.add(scoreGetDTO);
+        if(header.get("initial") == null){
+            result.setResult(gameService.getScoreGetDTOs(game));
         }
 
-        if (!scoresDTO.isEmpty()){
-            result.setResult(scoresDTO);
+        if (header.get("initial").equals("true")){
+            result.setResult(gameService.getScoreGetDTOs(game));
         }
 
         return result;
