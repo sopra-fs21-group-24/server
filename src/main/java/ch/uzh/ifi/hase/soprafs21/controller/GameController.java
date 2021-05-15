@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -122,6 +121,7 @@ public class GameController {
         });
 
         if(header.get("initial") == null){
+            logger.info("Initial not found in getGame");
             result.setResult(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
         }
 
@@ -225,7 +225,7 @@ public class GameController {
         User user = gameService.checkAuth(header);
         gameService.checkPartofGame(game, user);
 
-        final DeferredResult<List<ScoreGetDTO>> result = new DeferredResult<>(null, Collections.emptyList());
+        final DeferredResult<List<ScoreGetDTO>> result = new DeferredResult<>(null);
         gameService.addRequestAllScoreMap(result, game.getGameId());
     
         result.onTimeout(() -> {
