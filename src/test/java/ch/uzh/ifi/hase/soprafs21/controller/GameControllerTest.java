@@ -22,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -34,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.mockito.BDDMockito.given;
@@ -63,12 +65,12 @@ public class GameControllerTest {
         GameEntity game2 = new GameEntity();
         game2.setGameId(2L);
         game2.setGameMode(new Pixelation());
+
         List<GameEntity> gamelist = new ArrayList<>();
         gamelist.add((game));
         gamelist.add((game2));
 
         given(gameService.getAllGames()).willReturn(gamelist);
-
         given(gameService.gameById(Mockito.any())).willReturn(game,game2);
 
 
@@ -206,20 +208,23 @@ public class GameControllerTest {
         game.setGameMode(new Pixelation());
 
 
-
         given(gameService.gameById(Mockito.any())).willReturn(game);
 
 
         MockHttpServletRequestBuilder getRequest = get("/games/1")
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("initial", "true");
 
 
+        MvcResult asyncListener = mockMvc
+                .perform(getRequest)
+                .andExpect(request().asyncStarted())
+                .andReturn();
 
-            mockMvc.perform(getRequest)
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.gameId", is(1)))
-                    .andExpect(jsonPath("$.gameMode.name", is("Pixelation"))) ;
-
+        mockMvc.perform(asyncDispatch(asyncListener))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gameId", is(1)))
+                .andExpect(jsonPath("$.gameMode.name", is("Pixelation"))) ;
     }
 
     @Test

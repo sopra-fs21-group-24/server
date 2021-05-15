@@ -61,7 +61,7 @@ public class GameEntity implements Serializable {
     private transient int roundDuration = 30;
 
     @Column(nullable = true)
-    private transient int breakDuration = 0; // nur zum debuggen anstatt 5
+    private transient int breakDuration = 5; // nur zum debuggen anstatt 5
     
     @Column(nullable = true)
     @ElementCollection

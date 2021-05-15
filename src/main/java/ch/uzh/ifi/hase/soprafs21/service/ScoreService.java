@@ -56,5 +56,4 @@ public class ScoreService {
             return foundScore.get();
         }
     }
-
 }

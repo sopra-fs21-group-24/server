@@ -6,6 +6,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
@@ -29,12 +32,18 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.ScoreGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 
 @Service
 @Transactional
 public class GameService {
 
     private final Logger logger = LoggerFactory.getLogger(GameService.class);
+
+    private Map<DeferredResult<GameGetDTO>, Long> singleGameRequests = new ConcurrentHashMap<>();
+    private Map<DeferredResult<List<ScoreGetDTO>>, Long> singleAllScoreRequests = new ConcurrentHashMap<>();
 
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
@@ -180,6 +189,10 @@ public class GameService {
         uMode.setScoreService(scoreService);
         uMode.start(game);
 
+        // update callbacks 
+        handleGame(game);
+        handleScores(game);
+
         return game;
     }
 
@@ -238,11 +251,18 @@ public class GameService {
         UserMode uMode = game.getUserMode();
         uMode.nextRoundPrep(game, currentTime);
 
+        // update callbacks 
+        handleGame(game);
+        handleScores(game);
+
         return score;
     }
 
 
     public void exitGame(GameEntity game) {
+        // TODO
+        // Do scores get deleted?
+
         // case 1: game has started
         if (game.getRound() > 0){
             ListIterator<Score> scores = scoresByGame(game);
@@ -281,7 +301,6 @@ public class GameService {
                 lobbyService.deleteLobby(game.getLobbyId());
             }
         }            
-
 
         gameRepository.delete(game);
         gameRepository.flush();
@@ -332,6 +351,7 @@ public class GameService {
         String nameGameModePut = game.getGameMode().getName();
         Lobby lobbyLocal = lobbyService.getLobbyById(gameLocal.getLobbyId());
 
+        // TODO
         // evt. wegnehmen
         if (!nameUserModeLocal.equals(nameUserModePut)) {
             gameLocal.setUserMode(game.getUserMode());
@@ -347,6 +367,8 @@ public class GameService {
 
         gameRepository.saveAndFlush(gameLocal);
 
+        // update callback
+        handleGame(game);
         lobbyService.handleLobbies();
         lobbyService.handleLobby(lobbyService.getLobbyById(gameLocal.getLobbyId()), gameLocal.getGameMode());
 
@@ -354,13 +376,79 @@ public class GameService {
     }
 
     public ListIterator<Score> scoresByGame(GameEntity game) {
-        List<Long> userIds = game.getUserIds();
         ArrayList<Score> scores = new ArrayList<>();
-        for (Long userId : userIds) {
+        for (Long userId : game.getUserIds()) {
             scores.add(scoreService.findById(userId));
         }
         return scores.listIterator();
     }
 
+
+    // ------------- Lobby long polling --------------- // 
+
+    // --- handler --- //
+    public void handleGame(GameEntity game){
+        GameGetDTO gameDTO = DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game);
+        for (Map.Entry<DeferredResult<GameGetDTO>, Long> entry : singleGameRequests.entrySet()){
+           if(entry.getValue().equals(game.getGameId())){
+               entry.getKey().setResult(gameDTO);
+           }
+        }
+    }
+
+    public void handleScores(GameEntity game){
+        List<ScoreGetDTO> result = getScoreGetDTOs(game);
+        for (Map.Entry<DeferredResult<List<ScoreGetDTO>>, Long> entry : singleAllScoreRequests.entrySet()){
+           if(entry.getValue().equals(game.getGameId())){
+               entry.getKey().setResult(result);
+           }
+        }
+    }
+
+    // --- helper --- //
+    public List<ScoreGetDTO> getScoreGetDTOs(GameEntity game){
+
+        List<ScoreGetDTO> scoresDTO = new ArrayList<>();
+
+        Coordinate solution = questionSolution(game);
+
+        // one to one: user - score?
+        for (ListIterator<Score> scores = scoresByGame(game);scores.hasNext();) {
+            ScoreGetDTO scoreGetDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(scores.next());
+            User scoreUser = userService.getUserByUserId(scoreGetDTO.getUserId());
+            scoreGetDTO.setSolutionCoordinate(solution);
+            scoreGetDTO.setUsername(scoreUser.getUsername());
+            scoresDTO.add(scoreGetDTO);
+        }
+
+        return scoresDTO;
+    }
+
+    public Coordinate questionSolution(GameEntity game){
+        // Todo
+       // hacky -> refactor
+        List<Long> questions = game.getQuestions();
+        if (game.getRound() < 4) {
+            return questionService.questionById(questions.get(game.getRound() - 1)).getCoordinate();
+        }
+        // so that after round 3, round 3 can get fetched
+        return questionService.questionById(questions.get(2)).getCoordinate();
+    }
+
+    public void removeRequestFromGameMap(DeferredResult<GameGetDTO> request){
+        singleGameRequests.remove(request);
+    }
+
+    public void addRequestToQueueGameMap(DeferredResult<GameGetDTO> request, Long gameId){
+       singleGameRequests.put(request, gameId);
+    }
+
+    public void removeRequestFromAllScoreMap(DeferredResult<List<ScoreGetDTO>> request){
+    singleAllScoreRequests.remove(request);
+    }
+
+    public void addRequestAllScoreMap(DeferredResult<List<ScoreGetDTO>> request, Long gameId){
+       singleAllScoreRequests.put(request, gameId);
+    }
     
 }
