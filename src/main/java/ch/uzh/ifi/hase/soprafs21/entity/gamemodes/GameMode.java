@@ -38,9 +38,9 @@ public abstract class GameMode implements Serializable {
         }
         // normalized to distance india - chile 
         double distanceFactor = 1 - (haversineDistance(coordGuess, coordQuestion)/16000);
-        double scoreFactor = distanceFactor * timeFactor * difficultyFactor;
+        double scoreFactor = distanceFactor * difficultyFactor;
 
-        return Math.round(scoreFactor * 500);
+        return Math.round(scoreFactor * 450 + timeFactor * 50);
     } 
 
     public void checkTimeValid(GameEntity game, long currentTime) {
@@ -52,7 +52,13 @@ public abstract class GameMode implements Serializable {
 
     public float calculateTimeFactor(GameEntity game, Long currentTime){
         checkTimeValid(game, currentTime);
-        return 1.0f - ((currentTime - game.getRoundStart()) / ((float)game.getRoundDuration()*1000*3));
+        long inGameTime = currentTime - game.getRoundStart(); 
+        int roundDuration = game.getRoundDuration()*1000;
+
+        if (inGameTime <= (roundDuration/2)){
+            return 1;
+        } 
+        return 1.0f - (inGameTime / (float)roundDuration);
     }
 
     public double haversineDistance(Coordinate coordGuess, Coordinate coordQuestion){
