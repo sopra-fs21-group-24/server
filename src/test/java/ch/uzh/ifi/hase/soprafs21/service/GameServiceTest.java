@@ -19,12 +19,14 @@ import org.hibernate.annotations.NotFound;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestReporter;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
@@ -36,6 +38,9 @@ import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
 public class GameServiceTest {
+    @Mock
+    private LobbyService lobbyService;
+
     @Mock
     private UserService userService;
 
@@ -188,6 +193,15 @@ public class GameServiceTest {
         // setting missing components
         testGame.setCreatorUserId(user.getId()); // visual, but userService doesn't return
         testGame.setUserMode(new MultiPlayer());
+
+
+        // dummy lobby
+        Lobby lobby = new Lobby();
+        lobby.setId(1337L);
+        lobby.setCreator(testGame.getCreatorUserId());
+        lobby.setPublicStatus(true);
+        lobby.setGameId(testGame.getGameId());
+        when(lobbyService.createLobby(Mockito.any())).thenReturn(lobby);
 
         // sanity check
         GameEntity game = assertDoesNotThrow(() -> gameService.createGame(testGame, true));
