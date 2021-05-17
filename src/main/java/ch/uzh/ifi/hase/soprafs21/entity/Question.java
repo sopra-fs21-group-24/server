@@ -1,11 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
+import javax.persistence.*;
 import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 
 @Entity
@@ -22,8 +17,18 @@ public class Question implements Serializable{
     private int zoomLevel;
 
     @Column(nullable = false)
+    private String country;
+
+    @Column(nullable = false)
     private Coordinate coordinate;
 
+    public String getCountry() {
+        return this.country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
 
     public Long getQuestionId() {
         return questionId;
