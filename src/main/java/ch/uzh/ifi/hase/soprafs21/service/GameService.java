@@ -152,6 +152,8 @@ public class GameService {
         }
         existsGameByCreatorModded(userId);
 
+        // TODO
+        // change this to saveandflush in return statement
         GameEntity game = gameRepository.save(gameRaw);
 
         UserMode uMode = gameRaw.getUserMode();
@@ -262,6 +264,7 @@ public class GameService {
     public void exitGame(GameEntity game) {
         // TODO
         // Do scores get deleted?
+        // update personalHighscores in eine eigene method machen
 
         // case 1: game has started
         if (game.getRound() > 0){
@@ -290,6 +293,7 @@ public class GameService {
         else {
             // TODO 
             // entfernen
+            // singleplayer jemals set in lobby?, setinLobby wo anders verändert?
             for(Long userId : game.getUserIds()){ 
                 User user = userService.getUserByUserId(userId);
                 user.setInLobby(false);
