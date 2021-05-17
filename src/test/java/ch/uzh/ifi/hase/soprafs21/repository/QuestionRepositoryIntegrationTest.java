@@ -24,8 +24,8 @@ public class QuestionRepositoryIntegrationTest {
         //given
         Question question = new Question();
         question.setCoordinate(new Coordinate(1.0,2.0));
-        //question.setQuestionId(1L);
         question.setZoomLevel(12);
+        question.setCountry("Cuba");
         entityManager.persist(question);
         entityManager.flush();
 
@@ -34,11 +34,9 @@ public class QuestionRepositoryIntegrationTest {
 
         //then
         assertNotNull(found);
-        Question foundQuestion = found;
-        assertEquals(foundQuestion.getQuestionId(), question.getQuestionId());
-        assertEquals(foundQuestion.getCoordinate(), question.getCoordinate());
-        assertEquals(foundQuestion.getZoomLevel(), question.getZoomLevel());
-
+        assertEquals(found.getCoordinate(), question.getCoordinate());
+        assertEquals(found.getZoomLevel(), question.getZoomLevel());
+        assertEquals(found.getCountry(), question.getCountry());
     }
 
 
