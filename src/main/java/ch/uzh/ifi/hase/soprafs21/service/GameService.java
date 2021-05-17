@@ -42,8 +42,8 @@ public class GameService {
 
     private final Logger logger = LoggerFactory.getLogger(GameService.class);
 
-    private Map<DeferredResult<GameGetDTO>, Long> singleGameRequests = new ConcurrentHashMap<>();
-    private Map<DeferredResult<List<ScoreGetDTO>>, Long> singleAllScoreRequests = new ConcurrentHashMap<>();
+    private final Map<DeferredResult<GameGetDTO>, Long> singleGameRequests = new ConcurrentHashMap<>();
+    private final Map<DeferredResult<List<ScoreGetDTO>>, Long> singleAllScoreRequests = new ConcurrentHashMap<>();
 
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
@@ -77,6 +77,9 @@ public class GameService {
 
     public User checkAuth(Map<String, String> header) {
         String token = header.get("token");
+        if (token == null){
+            throw new UnauthorizedException("Token was not found");
+        }
         try {
             return userService.getUserByToken(token);
         }
@@ -146,19 +149,20 @@ public class GameService {
 
     public GameEntity createGame(GameEntity gameRaw, boolean publicStatus) {
         Long userId = gameRaw.getCreatorUserId();
-        Optional<User> creator = userRepository.findById(userId);
-        if (creator.isEmpty()) {
-            throw new NotFoundException("[createGame] A user with this userId " + gameRaw.getCreatorUserId() + "doesn't exist");
-        }
+
+        // does user exist?
+        userService.getUserByUserId(userId);
+
+        // does the user have another game?
         existsGameByCreatorModded(userId);
 
-        // TODO
-        // change this to saveandflush in return statement
-        GameEntity game = gameRepository.save(gameRaw);
-
+        // Prep and setting UserMode specific Settings
         UserMode uMode = gameRaw.getUserMode();
         uMode.setLobbyService(lobbyService);
         uMode.init(gameRaw, publicStatus);
+
+        GameEntity game = gameRepository.save(gameRaw);
+        gameRepository.flush();
 
         return game;
     }
