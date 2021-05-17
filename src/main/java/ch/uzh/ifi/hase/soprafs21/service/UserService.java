@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
+import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +33,13 @@ public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
+    private final LeaderboardRepository leaderboardRepository;
+
 
     @Autowired
-    public UserService(@Qualifier("userRepository") UserRepository userRepository) {
+    public UserService(@Qualifier("userRepository") UserRepository userRepository, LeaderboardRepository leaderboardRepository) {
         this.userRepository = userRepository;
+        this.leaderboardRepository = leaderboardRepository;
     }
 
     public User checkAuth(Map<String, String> header){
@@ -128,8 +133,16 @@ public class UserService {
             userToBeUpdated.setPassword(user.getPassword());
         }
         if (user.getUsername() != null){
-            userToBeUpdated.setUsername(user.getUsername());
+        for (Leaderboard leaderboard : leaderboardRepository.findAll()){
+            if (leaderboardRepository.findByUsername(userToBeUpdated.getUsername()) != null){
+                leaderboard.setUsername(user.getUsername());
+                leaderboardRepository.save(leaderboard);
+                leaderboardRepository.flush();
+            }
         }
+            userToBeUpdated.setUsername(user.getUsername());
+    }
+
 
         User newUser = userRepository.save(userToBeUpdated);
         userRepository.flush();
