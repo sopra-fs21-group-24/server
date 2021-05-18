@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
+import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
@@ -37,12 +38,6 @@ public class QuestionService {
 
     }
 
-    public void checkQuestionIdInQuestions(List<Long> questions, Long questionId) {
-        if (!questions.contains(questionId)) {
-            throw new PreconditionFailedException("Question with this id is not part of the game");
-        }
-    }
-
     public Question questionById(Long questionId) {
         Optional<Question> found = questionRepository.findById(questionId);
         if (found.isEmpty()) {
@@ -53,9 +48,30 @@ public class QuestionService {
         }
     }
 
+
+    public void checkQuestionIdInQuestions(List<Long> questions, Long questionId) {
+        if (!questions.contains(questionId)) {
+            throw new PreconditionFailedException("Question with this id is not part of the game");
+        }
+    }
+
     // debug
     public List<Question> getAllQuestions(){
         return questionRepository.findAll();
+    }
+
+    public Coordinate getRoundQuestionSolution(GameEntity game){
+        List<Long> questions = game.getQuestions();
+        if (game.getRound() == 0){
+            throw new PreconditionFailedException("Solution can't be fetched round hasn't started yet");
+        }
+
+        if (game.getRound() < 4) {
+            return questionById(questions.get(game.getRound() - 1)).getCoordinate();
+        }
+
+        // so that after round 3, round 3 can get fetched (endscreen)
+        return questionById(questions.get(2)).getCoordinate();
     }
 
     public String getMapImage(int height, int width, Question question){

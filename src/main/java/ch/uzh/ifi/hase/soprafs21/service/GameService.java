@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
-import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
@@ -109,6 +108,16 @@ public class GameService {
         return found.get();
     }
 
+    public List<GameEntity> getAllGames() {
+        return gameRepository.findAll();
+    }
+
+    public void moveLobbyUsers(GameEntity game,  Lobby lobby) {
+        if (game.getLobbyId() != null) {
+            game.setUserIds(lobby.getUsers());
+        }
+    }
+
     public List<Long> getQuestionsOfGame(GameEntity game) {
         return game.getQuestions();
     }
@@ -155,6 +164,9 @@ public class GameService {
 
         // does the user have another game?
         existsGameByCreatorModded(userId);
+
+        // TODO
+        // user in another game?
 
         // Prep and setting UserMode specific Settings
         UserMode uMode = gameRaw.getUserMode();
@@ -272,7 +284,7 @@ public class GameService {
 
         // case 1: game has started
         if (game.getRound() > 0){
-            ListIterator<Score> scores = scoresByGame(game);
+            ListIterator<Score> scores = scoreService.scoresByGame(game);
 
             String gModeName = game.getGameMode().getName();
             leaderboardService.updateLeaderboard(gModeName, scores);
@@ -337,16 +349,6 @@ public class GameService {
         }
     }
 
-    public void moveLobbyUsers(GameEntity game,  Lobby lobby) {
-        if (game.getLobbyId() != null) {
-            game.setUserIds(lobby.getUsers());
-        }
-    }
-
-    public List<GameEntity> getAllGames() {
-        return gameRepository.findAll();
-    }
-
     public GameEntity update(GameEntity game, Boolean publicStatus) {
         GameEntity gameLocal = gameById(game.getGameId());
         if (gameLocal.getRound() != 0) {
@@ -383,14 +385,6 @@ public class GameService {
         return gameLocal;
     }
 
-    public ListIterator<Score> scoresByGame(GameEntity game) {
-        ArrayList<Score> scores = new ArrayList<>();
-        for (Long userId : game.getUserIds()) {
-            scores.add(scoreService.findById(userId));
-        }
-        return scores.listIterator();
-    }
-
 
     // ------------- Lobby long polling --------------- // 
 
@@ -405,7 +399,7 @@ public class GameService {
     }
 
     public void handleScores(GameEntity game){
-        List<ScoreGetDTO> result = getScoreGetDTOs(game);
+        List<ScoreGetDTO> result = scoreService.getScoreGetDTOs(game);
         for (Map.Entry<DeferredResult<List<ScoreGetDTO>>, Long> entry : singleAllScoreRequests.entrySet()){
            if(entry.getValue().equals(game.getGameId())){
                entry.getKey().setResult(result);
@@ -414,34 +408,7 @@ public class GameService {
     }
 
     // --- helper --- //
-    public List<ScoreGetDTO> getScoreGetDTOs(GameEntity game){
 
-        List<ScoreGetDTO> scoresDTO = new ArrayList<>();
-
-        Coordinate solution = questionSolution(game);
-
-        // one to one: user - score?
-        for (ListIterator<Score> scores = scoresByGame(game);scores.hasNext();) {
-            ScoreGetDTO scoreGetDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(scores.next());
-            User scoreUser = userService.getUserByUserId(scoreGetDTO.getUserId());
-            scoreGetDTO.setSolutionCoordinate(solution);
-            scoreGetDTO.setUsername(scoreUser.getUsername());
-            scoresDTO.add(scoreGetDTO);
-        }
-
-        return scoresDTO;
-    }
-
-    public Coordinate questionSolution(GameEntity game){
-        // Todo
-       // hacky -> refactor
-        List<Long> questions = game.getQuestions();
-        if (game.getRound() < 4) {
-            return questionService.questionById(questions.get(game.getRound() - 1)).getCoordinate();
-        }
-        // so that after round 3, round 3 can get fetched
-        return questionService.questionById(questions.get(2)).getCoordinate();
-    }
 
     public void removeRequestFromGameMap(DeferredResult<GameGetDTO> request){
         singleGameRequests.remove(request);

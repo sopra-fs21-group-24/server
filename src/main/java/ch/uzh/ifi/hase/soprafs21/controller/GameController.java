@@ -37,6 +37,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.ScoreGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.QuestionService;
+import ch.uzh.ifi.hase.soprafs21.service.ScoreService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
 
@@ -53,11 +54,13 @@ public class GameController {
     private final GameService gameService;
     private final UserService userService;
     private final QuestionService questionService;
+    private final ScoreService scoreService;
 
-    GameController(GameService gameService, UserService userService, QuestionService questionService) {
+    GameController(GameService gameService, UserService userService, QuestionService questionService, ScoreService scoreService){
         this.gameService = gameService;
         this.userService = userService;
         this.questionService = questionService;
+        this.scoreService = scoreService;
     }
 
     // evtl implementieren fürs debugging
@@ -230,7 +233,7 @@ public class GameController {
     
         result.onTimeout(() -> {
             logger.info("timout of request");
-            result.setResult(gameService.getScoreGetDTOs(game));
+            result.setResult(scoreService.getScoreGetDTOs(game));
         });
 
         result.onCompletion(() -> {
@@ -238,11 +241,11 @@ public class GameController {
         });
 
         if(header.get("initial") == null){
-            result.setResult(gameService.getScoreGetDTOs(game));
+            result.setResult(scoreService.getScoreGetDTOs(game));
         }
 
         else if (header.get("initial").equals("true")){
-            result.setResult(gameService.getScoreGetDTOs(game));
+            result.setResult(scoreService.getScoreGetDTOs(game));
         }
 
         return result;

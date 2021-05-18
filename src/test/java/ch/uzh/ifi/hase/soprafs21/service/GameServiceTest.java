@@ -238,10 +238,6 @@ public class GameServiceTest {
 
         // user is not in db
         assertThrows(NotFoundException.class, () -> gameService.createGame(testGame, true));
-
-        // fail on existsGameCreatorModded
-        // fail on getUsermode/setLobbyService
-        
     }
 
     void createGameAlreadyExists() {
@@ -253,19 +249,10 @@ public class GameServiceTest {
     }
 
     @Test
-    void createGameNoUserModeFailure() {
-        // setting missing components
-        testGame.setCreatorUserId(user.getId());
-
-        // fail on getUsermode/setLobbyService
-        
-    }
-
-
-    @Test
     void createGameMultiplayerFailure() {
         // setting missing components
         testGame.setCreatorUserId(user.getId());
+        testGame.setUserMode(new MultiPlayer());
 
         // when(userService.getUserByUserId(Mockito.any())).thenThrow(NotFoundException.class);
         // assertThrows(NotFoundException.class, () -> gameService.createGame(testGame, true));
@@ -278,6 +265,7 @@ public class GameServiceTest {
     void createGameSingleplayerFailure() {
         // setting missing components
         testGame.setCreatorUserId(user.getId());
+        testGame.setUserMode(new SinglePlayer());
 
         // when(userService.getUserByUserId(Mockito.any())).thenThrow(NotFoundException.class);
         // assertThrows(NotFoundException.class, () -> gameService.createGame(testGame, true));
