@@ -48,8 +48,8 @@ public class LobbyController {
         this.gameService = gameService;
     }
 
-@Async
-@GetMapping("/lobby/{id}") @ResponseStatus(HttpStatus.OK)
+    @Async
+    @GetMapping("/lobby/{id}") @ResponseStatus(HttpStatus.OK)
     public DeferredResult<LobbyGetDTO> getLobbyWithId(
         @PathVariable("id") Long lobbyId, @RequestHeader Map<String, String> header) {
 
@@ -67,6 +67,10 @@ public class LobbyController {
         result.onCompletion(() -> {
             lobbyService.removeRequestFromLobbyMap(result);
         });
+
+        if(header.get("initial") == null){
+            result.setResult(lobbyService.getLobbyGetDTO(lobby, game.getGameMode()));
+        }
 
         if (header.get("initial").equals("true")){
             result.setResult(lobbyService.getLobbyGetDTO(lobby, game.getGameMode()));
@@ -93,6 +97,10 @@ public class LobbyController {
         result.onCompletion(() -> {
             lobbyService.removeRequestFromQueueLobbies(result);
         });
+
+        if(header.get("initial") == null){
+            result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
+        }
 
         if (header.get("initial").equals("true")){
             result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
