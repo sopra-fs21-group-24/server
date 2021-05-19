@@ -8,8 +8,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import ch.qos.logback.core.status.WarnStatus;
-import com.sun.tools.jconsole.JConsoleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +87,6 @@ public class LobbyService {
         lobbyRepository.saveAndFlush(newlobby);
         log.debug("Created Information for Lobby: {}", newlobby);
 
-        handleLobbies();
         return newlobby;
     }
 

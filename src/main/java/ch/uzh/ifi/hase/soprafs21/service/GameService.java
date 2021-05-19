@@ -171,11 +171,12 @@ public class GameService {
         GameEntity game = gameRepository.save(gameRaw);
 
         // Prep and setting UserMode specific Settings
-        UserMode uMode = gameRaw.getUserMode();
+        UserMode uMode = game.getUserMode();
         uMode.setLobbyService(lobbyService);
-        uMode.init(gameRaw, publicStatus);
+        uMode.init(game, publicStatus);
 
         gameRepository.flush();
+        lobbyService.handleLobbies();
 
         return game;
     }
