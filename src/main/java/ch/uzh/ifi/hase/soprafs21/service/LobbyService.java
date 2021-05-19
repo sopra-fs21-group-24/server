@@ -8,6 +8,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import ch.qos.logback.core.status.WarnStatus;
+import com.sun.tools.jconsole.JConsoleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,7 +145,7 @@ public class LobbyService {
     public void userExitLobby(User user, Long lobbyId){
         Long userId = user.getId();
 
-        if (!user.getInLobby().booleanValue()){
+        if (!user.getInLobby()){
             throw new PreconditionFailedException("User is not in a lobby!"); 
         }
         
@@ -206,6 +208,7 @@ public class LobbyService {
             LobbyGetDTOAllLobbies lobbyGetDTOAllLobbies = DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(lobby);
             lobbyGetDTOAllLobbies.setUsers(lobby.getUsers().size());
             lobbyGetDTOAllLobbies.setUsername(userService.getUserByUserId(lobby.getCreator()).getUsername());
+            lobbyGetDTOAllLobbies.setGameMode(gameByLobbyId(lobby.getId()).getGameMode().getName());
             finalLobbyList.add(lobbyGetDTOAllLobbies);
         }
         return finalLobbyList;

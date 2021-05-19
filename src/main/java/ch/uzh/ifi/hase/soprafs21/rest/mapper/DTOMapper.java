@@ -70,6 +70,7 @@ public interface DTOMapper {
     @Mapping(target = "username", ignore = true)
     @Mapping(source = "publicStatus", target = "publicStatus")
     @Mapping(target = "users", ignore = true)
+    @Mapping(target = "gameMode", ignore=true)
     LobbyGetDTOAllLobbies convertEntityToLobbyGetDTOAllLobbies(Lobby lobby);
 
     @Mapping(source = "username", target = "username")

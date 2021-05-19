@@ -6,7 +6,12 @@ public class LobbyGetDTOAllLobbies {
     private String username;
     private Integer users;
     private Boolean publicStatus;
+    private String GameMode;
 
+
+    public String getGameMode() {return GameMode;}
+
+    public void setGameMode(String gameMode) {GameMode = gameMode;}
 
     public Long getId() {
         return id;
