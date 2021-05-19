@@ -168,12 +168,13 @@ public class GameService {
         // TODO
         // user in another game?
 
+        GameEntity game = gameRepository.save(gameRaw);
+
         // Prep and setting UserMode specific Settings
         UserMode uMode = gameRaw.getUserMode();
         uMode.setLobbyService(lobbyService);
         uMode.init(gameRaw, publicStatus);
 
-        GameEntity game = gameRepository.save(gameRaw);
         gameRepository.flush();
 
         return game;
