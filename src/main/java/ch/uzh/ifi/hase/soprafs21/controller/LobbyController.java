@@ -56,7 +56,7 @@ public class LobbyController {
         Lobby lobby = lobbyService.getLobbyById(lobbyId);
         GameEntity game = gameService.gameById(lobby.getGameId());
 
-        final DeferredResult<LobbyGetDTO> result = new DeferredResult<>(null);
+        final DeferredResult<LobbyGetDTO> result = new DeferredResult<>(5000L);
         lobbyService.addRequestToQueueLobbyMap(result, lobby.getId());
 
         result.onTimeout(() -> {
@@ -70,6 +70,7 @@ public class LobbyController {
 
         if(header.get("initial") == null){
             result.setResult(lobbyService.getLobbyGetDTO(lobby, game.getGameMode()));
+            return result;
         }
 
         if (header.get("initial").equals("true")){
@@ -79,6 +80,7 @@ public class LobbyController {
         return result;
     }
 
+    @Async
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
     public DeferredResult<List<LobbyGetDTOAllLobbies>> getAllLobbies(@RequestHeader Map<String, String> header) 
@@ -100,6 +102,7 @@ public class LobbyController {
 
         if(header.get("initial") == null){
             result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
+            return result;
         }
 
         if (header.get("initial").equals("true")){

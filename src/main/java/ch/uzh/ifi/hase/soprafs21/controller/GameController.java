@@ -126,6 +126,7 @@ public class GameController {
         if(header.get("initial") == null){
             logger.info("Initial not found in getGame");
             result.setResult(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
+            return result;
         }
 
         else if (header.get("initial").equals("true")){
@@ -242,6 +243,7 @@ public class GameController {
 
         if(header.get("initial") == null){
             result.setResult(scoreService.getScoreGetDTOs(game));
+            return result;
         }
 
         else if (header.get("initial").equals("true")){
