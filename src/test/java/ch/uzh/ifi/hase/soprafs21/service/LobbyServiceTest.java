@@ -3,11 +3,10 @@ package ch.uzh.ifi.hase.soprafs21.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
-import java.awt.*;
 import java.util.Optional;
 
-import ch.uzh.ifi.hase.soprafs21.exceptions.MissingInformationException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +47,6 @@ public class LobbyServiceTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-
         // given
         testUser = new User();
         testUser.setPassword("123");
@@ -60,20 +58,20 @@ public class LobbyServiceTest {
         testUser2.setId(5L);
         testUser2.setUsername("testUsername");
         testUser2.setInLobby(false);
-
         testlobby = new Lobby();
         testlobby.setCreator(1L);
         testlobby.setId(4L);
         testlobby.setPublicStatus(true);
         testlobby.setGameId(3L);
 
-
         // when -> any object is being save in the userRepository -> return the dummy testUser
-        when(userRepository.save(Mockito.any())).thenReturn(testUser);
-        when(lobbyRepository.saveAndFlush(Mockito.any())).thenReturn(testlobby);
-        when(userRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testUser));
-
+        Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser);
+        Mockito.when(lobbyRepository.saveAndFlush(Mockito.any())).thenReturn(testlobby);
+        Mockito.when(lobbyRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testlobby));
+        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testUser));
     }
+
+
 
     @Test
     public void createLobby_validInputs_success() {
@@ -132,7 +130,7 @@ public class LobbyServiceTest {
     @Test
     public void adduserToExistingLobby() {
 
-/* 
+/*
         userService.createUser(testUser);
         userService.createUser(testUser2);
 
@@ -169,31 +167,26 @@ public class LobbyServiceTest {
 
 
     }
-}
 
-   /* @Test
+
+    @Test
     public void deleteLobbyTest() {
-
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser);
         userService.createUser(testUser);
-
-        when(lobbyRepository.findByid(Mockito.any())).thenReturn(Optional.ofNullable(testlobby));
-
-        Lobby createdLobby = lobbyService.createLobby(testlobby);
-        lobbyService.deleteLobby(createdLobby.getId());
+        testlobby.addUser(testUser.getId());
+        // Mockito.when(lobbyRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testlobby));
+        Mockito.when(userService.getUserByUserId(Mockito.anyLong())).thenReturn(testUser);
+        // Lobby createdLobby = lobbyService.createLobby(testlobby);
+        lobbyService.deleteLobby(testlobby.getId());
         // then
-        Mockito.verify(lobbyRepository, Mockito.times(2)).saveAndFlush(Mockito.any());
-        Mockito.verify(userRepository, Mockito.times(1)).saveAndFlush(Mockito.any());
+        Mockito.verify(lobbyRepository, Mockito.times(1)).flush();
+        // Mockito.verify(userRepository, Mockito.times(1)).saveAndFlush(Mockito.any());
 
-
-        assertEquals(testlobby.getCreator(), createdLobby.getCreator());
+        // assertEquals(testlobby.getCreator(), createdLobby.getCreator());
         assertEquals(false, testUser.getInLobby());
 
-
     }
-
-
-}*/
+}
 
 
 
