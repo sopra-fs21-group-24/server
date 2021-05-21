@@ -2,8 +2,6 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.mockito.BDDMockito.given;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +13,6 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +26,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.util.Assert;
+
 
 public class LobbyServiceTest {
 
@@ -99,6 +96,7 @@ public class LobbyServiceTest {
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser, testUser2);
         Mockito.when(lobbyRepository.saveAndFlush(Mockito.any())).thenReturn(testlobby);
         Mockito.when(lobbyRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testlobby));
+        Mockito.when(lobbyRepository.findByRoomKey(Mockito.any())).thenReturn(Optional.ofNullable(testlobby));
         Mockito.when(userRepository.findById(testUser.getId())).thenReturn(Optional.ofNullable(testUser));
         Mockito.when(userRepository.findById(testUser2.getId())).thenReturn(Optional.ofNullable(testUser2));
         Mockito.when(gameRepository.findByLobbyId(testlobby.getId())).thenReturn(Optional.of(game));
@@ -280,7 +278,7 @@ public class LobbyServiceTest {
 
 
     @Test
-    public void userExitLobbyTestFailUserNotInThisLobby() {
+    public void userExitLobbyTestFailUserNotInThisLobbyWillThrowException() {
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser);
         userService.createUser(testUser);
         testlobby.addUser(testUser.getId());
@@ -304,7 +302,7 @@ public class LobbyServiceTest {
     }
 
     @Test
-    public void gameByLobbyIdTestFail() {
+    public void gameByLobbyIdTestWillThrowException() {
         Mockito.when(gameRepository.findByLobbyId(Mockito.anyLong())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> {lobbyService.gameByLobbyId(testlobby.getId());});
@@ -344,6 +342,28 @@ public class LobbyServiceTest {
         assertEquals(testlobby.getUsers(), lobbyService.getLobbyGetDTO(testlobby,clouds).getUsers());
 
     }
+
+    @Test
+    public void getLobbyByRoomkeyTest() {
+        assertEquals(testlobby, lobbyService.getLobbyByRoomkey(testlobby.getRoomKey()));
+
+    }
+
+    @Test
+    public void getLobbyByRoomkeyTestWillThrowException() {
+        Mockito.when(lobbyRepository.findByRoomKey(Mockito.any())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {lobbyService.getLobbyByRoomkey(testlobby.getId());});
+    }
+
+    @Test
+    public void getLobbyByIdTest() {
+
+        assertEquals(testlobby, lobbyService.getLobbyById(testlobby.getId()));
+
+    }
+
+
 }
 
 
