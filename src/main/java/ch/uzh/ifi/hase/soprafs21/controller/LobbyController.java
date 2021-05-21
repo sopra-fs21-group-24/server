@@ -131,7 +131,8 @@ public class LobbyController {
         User user = lobbyService.checkAuth(header);
         Lobby lobbyToJoin = lobbyService.getLobbyByRoomkey(roomKey);
         lobbyService.addUserToExistingLobby(user,lobbyToJoin);
-        return new ResponseEntity<>(HttpStatus.OK);
+        String response = String.format("{\"lobbyId\": \"%s\"}", lobbyToJoin.getId());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/lobby/{lobbyId}")
@@ -144,7 +145,7 @@ public class LobbyController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
+    @Deprecated
     @GetMapping("/lobby/roomKey/{roomKey}")
     @ResponseStatus(HttpStatus.OK)
     public LobbyGetDTO getLobbyWithRoomKey(@PathVariable("roomKey") Long roomKey) {
