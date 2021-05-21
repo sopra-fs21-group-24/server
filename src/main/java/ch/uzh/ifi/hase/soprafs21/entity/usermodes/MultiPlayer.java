@@ -51,6 +51,10 @@ public class MultiPlayer extends UserMode {
             scoreService.save(score);
         }
 
+        // Callbacks
+        lobbyService.handleLobbies();
+        lobbyService.handleLobby(lobbyService.getLobbyById(game.getLobbyId()), game.getGameMode());
+
         // killt lobby
         lobbyService.deleteLobby(game.getLobbyId());
         
