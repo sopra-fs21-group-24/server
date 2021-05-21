@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
@@ -205,10 +206,22 @@ public class GameController {
         User user = gameService.checkAuth(header);
         // check if user is part of game, reactivate if isse is fixed
 
+        Coordinate guessCoord = answerPostDTO.getCoordGuess();
+
         Answer answer = DTOMapper.INSTANCE.convertAnwserPostDTOtoAnswer(answerPostDTO);
         answer.setUserId(user.getId());
         answer.setGameId(gameId);
-        Score score = gameService.makeGuess(answer);
+
+        Score score;
+
+        // case 1: user left, without exit 
+        if (guessCoord.getLat() == null || guessCoord.getLon() == null){
+            score = gameService.makeZeroScoreGuess(answer);
+        } 
+        // case 2: user make guess
+        else {
+            score = gameService.makeGuess(answer);
+        }
 
         ScoreGetDTO scoreDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(score);
         scoreDTO.setSolutionCoordinate(answer.getCoordQuestion());

@@ -216,17 +216,14 @@ public class GameService {
         return game;
     }
 
-    public Score makeGuess(Answer answer) {
-        long currentTime = System.currentTimeMillis();
-
-        GameEntity game = gameById(answer.getGameId());
+    // ------------- Make Guess --------------- // 
+    public void checkGuessPreconditions(GameEntity game, Answer answer){
+        Long answerQuestionId = answer.getQuestionId();
 
         // sanity check
         if (game.getRound() > 3) {
             throw new PreconditionFailedException("Rounds are exceeding max");
         }
-
-        Long answerQuestionId = answer.getQuestionId();
 
         // anwserQuestion in questions of game
         List<Long> questions = game.getQuestions();
@@ -244,21 +241,10 @@ public class GameService {
             throw new PreconditionFailedException("User has already answered this question");
         }
 
-        // set solution in answer
-        Question question = questionService.questionById(answer.getQuestionId());
-        answer.setCoordQuestion(question.getCoordinate());
+    }
 
-        // timeFactor
-        GameMode gMode = game.getGameMode();
-        float timeFactor = gMode.calculateTimeFactor(game, currentTime);
-
-        answer.setTimeFactor(timeFactor);
-
-
-        // score calculation
-        Long tempScore = gMode.calculateScore(answer);
-
-        // user answered
+    public Score apresGuess(GameEntity game, Answer answer, Long currentTime, Long tempScore){
+        // mark question as answered by "user"
         game.addUserAnswered(answer.getUserId());
 
         // save in Score
@@ -276,6 +262,39 @@ public class GameService {
         handleScores(game);
 
         return score;
+    }
+
+    public Score makeGuess(Answer answer) {
+        long currentTime = System.currentTimeMillis();
+
+        GameEntity game = gameById(answer.getGameId());
+
+        checkGuessPreconditions(game, answer);
+
+        // set solution in answer
+        Question question = questionService.questionById(answer.getQuestionId());
+        answer.setCoordQuestion(question.getCoordinate());
+
+        // timeFactor
+        GameMode gMode = game.getGameMode();
+        float timeFactor = gMode.calculateTimeFactor(game, currentTime);
+
+        answer.setTimeFactor(timeFactor);
+
+        // score calculation
+        Long tempScore = gMode.calculateScore(answer);
+
+        return apresGuess(game, answer, currentTime, tempScore);
+    }
+
+    public Score makeZeroScoreGuess(Answer answer){
+        long currentTime = System.currentTimeMillis();
+
+        GameEntity game = gameById(answer.getGameId());
+
+        Long tempScore = 0L;
+
+        return apresGuess(game, answer, currentTime, tempScore);
     }
 
 

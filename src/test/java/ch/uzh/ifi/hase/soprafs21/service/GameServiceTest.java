@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -15,11 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.hibernate.annotations.NotFound;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestReporter;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -33,6 +30,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.SinglePlayer;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
@@ -240,37 +238,25 @@ public class GameServiceTest {
         assertThrows(NotFoundException.class, () -> gameService.createGame(testGame, true));
     }
 
+    @Test
     void createGameAlreadyExists() {
         // setting missing components
         testGame.setCreatorUserId(user.getId());
 
+        // simulate: return existing game in db
+        when(gameRepository.findByCreatorUserId(Mockito.any())).thenReturn(Optional.of(testGame));
+
         // fail on existsGameCreatorModded
-        
-    }
+        // newGame with same creatorUserId in db
+        GameEntity newGame = new GameEntity();
+        newGame.setCreatorUserId(user.getId());
+        newGame.setGameId(11L);
+        newGame.setGameMode(new Time());
+        newGame.setLobbyId(null);
+        newGame.setBreakDuration(40);
+        newGame.setUserMode(new SinglePlayer());
 
-    @Test
-    void createGameMultiplayerFailure() {
-        // setting missing components
-        testGame.setCreatorUserId(user.getId());
-        testGame.setUserMode(new MultiPlayer());
-
-        // when(userService.getUserByUserId(Mockito.any())).thenThrow(NotFoundException.class);
-        // assertThrows(NotFoundException.class, () -> gameService.createGame(testGame, true));
-
-        // fail on initi 
-        
-    }
-
-    @Test
-    void createGameSingleplayerFailure() {
-        // setting missing components
-        testGame.setCreatorUserId(user.getId());
-        testGame.setUserMode(new SinglePlayer());
-
-        // when(userService.getUserByUserId(Mockito.any())).thenThrow(NotFoundException.class);
-        // assertThrows(NotFoundException.class, () -> gameService.createGame(testGame, true));
-
-        // fail on initi 
+        assertThrows(PreconditionFailedException.class, () -> gameService.createGame(newGame, true));
     }
 
     @Test
