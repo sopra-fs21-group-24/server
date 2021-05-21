@@ -2,28 +2,33 @@ package ch.uzh.ifi.hase.soprafs21.entity;
 
 import java.io.Serializable;
 
-public class Coordinate implements Serializable{
-    private double lon;
-    private double lat;
+import org.springframework.lang.Nullable;
 
-    public Coordinate(double lon, double lat){
+public class Coordinate implements Serializable{
+    @Nullable
+    private Double lon;
+
+    @Nullable
+    private Double lat;
+
+    public Coordinate(Double lon, Double lat){
         this.lon = lon;
         this.lat = lat;
     }
 
-    public double getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public void setLat(double lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
     }
 
-    public double getLon() {
+    public Double getLon() {
         return lon;
     }
 
-    public void setLon(double lon) {
+    public void setLon(Double lon) {
         this.lon = lon;
     }
 }
