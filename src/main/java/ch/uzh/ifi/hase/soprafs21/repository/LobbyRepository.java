@@ -11,8 +11,5 @@ import java.util.Optional;
 public interface LobbyRepository extends JpaRepository<Lobby, Long> {
     Optional<Lobby> findByid(Long lobbyid);
     Optional<Lobby> findByRoomKey(Long roomKey);
-
-   // @Query("select r from Lobby r where r.isPublic = true")
     List<Lobby> findAllByPublicStatusTrue();
-    //Lobby findByCreator(Long creator);
 }

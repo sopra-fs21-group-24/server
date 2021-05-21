@@ -4,12 +4,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.BDDMockito.given;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Clouds;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -45,11 +52,17 @@ public class LobbyServiceTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private GameEntity gameEntity;
+
 
     private Lobby testlobby;
     private User testUser;
     private User testUser2;
-
+    private GameEntity game;
+    private GameEntity game2;
+    private GameMode clouds;
+    private Lobby testlobby2;
 
     @BeforeEach
     public void setup() {
@@ -70,8 +83,16 @@ public class LobbyServiceTest {
         testlobby.setId(4L);
         testlobby.setPublicStatus(true);
         testlobby.setGameId(3L);
-        GameEntity game = new GameEntity();
-
+        game = new GameEntity();
+        clouds = new Clouds();
+        game.setGameMode(clouds);
+        game2 = new GameEntity();
+        game2.setGameMode(clouds);
+        testlobby2 = new Lobby();
+        testlobby2.setCreator(testUser2.getId());
+        testlobby2.setId(7L);
+        testlobby2.setPublicStatus(true);
+        testlobby2.setGameId(8L);
 
 
         // when -> any object is being save in the userRepository -> return the dummy testUser
@@ -80,16 +101,14 @@ public class LobbyServiceTest {
         Mockito.when(lobbyRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testlobby));
         Mockito.when(userRepository.findById(testUser.getId())).thenReturn(Optional.ofNullable(testUser));
         Mockito.when(userRepository.findById(testUser2.getId())).thenReturn(Optional.ofNullable(testUser2));
-        Mockito.when(gameRepository.findByLobbyId(Mockito.anyLong())).thenReturn(Optional.of(game));
+        Mockito.when(gameRepository.findByLobbyId(testlobby.getId())).thenReturn(Optional.of(game));
+        Mockito.when(gameRepository.findByLobbyId(testlobby2.getId())).thenReturn(Optional.of(game2));
     }
 
 
 
     @Test
     public void createLobby_validInputs_success() {
-
-
-        userService.createUser(testUser);
 
 
         Lobby createdLobby = lobbyService.createLobby(testlobby);
@@ -142,8 +161,7 @@ public class LobbyServiceTest {
     @Test
     public void adduserToExistingLobby() {
 
-        userService.createUser(testUser);
-        userService.createUser(testUser2);
+
         GameEntity game = new GameEntity();
         Mockito.when(gameRepository.findByLobbyId(Mockito.anyLong())).thenReturn(Optional.of(game));
 
@@ -277,8 +295,55 @@ public class LobbyServiceTest {
 
 
     }
-    
+    @Test
+    public void gameByLobbyIdTest() {
 
+        assertEquals(lobbyService.gameByLobbyId(testlobby.getId()), game);
+
+
+    }
+
+    @Test
+    public void gameByLobbyIdTestFail() {
+        Mockito.when(gameRepository.findByLobbyId(Mockito.anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {lobbyService.gameByLobbyId(testlobby.getId());});
+
+    }
+
+    @Test
+    public void getLobbyGetDTOAllLobbiesTest() {
+
+        Lobby createdLobby = lobbyService.createLobby(testlobby);
+        Lobby createdLobby2 = lobbyService.createLobby(testlobby2);
+        List<Lobby> listForRepo = new ArrayList<>();
+        listForRepo.add(createdLobby);
+        listForRepo.add(createdLobby2);
+
+        Mockito.when(lobbyRepository.findAllByPublicStatusTrue()).thenReturn(listForRepo);
+        Mockito.when(userService.getUserByUserId(Mockito.any())).thenReturn(testUser, testUser2);
+        Mockito.when(gameEntity.getGameMode()).thenReturn(clouds);
+
+
+        List<LobbyGetDTOAllLobbies> lobbyList = new ArrayList<>();
+        lobbyList.add(DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(createdLobby));
+        lobbyList.add(DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(createdLobby2));
+        int ind = 0;
+        for (LobbyGetDTOAllLobbies lobby : lobbyService.getLobbyGetDTOAllLobbies()){
+            assertEquals(lobby.getId(), lobbyList.get(ind).getId());
+            assertEquals(lobby.getPublicStatus(), lobbyList.get(ind).getPublicStatus());
+            ind+=1;
+        }
+    }
+    @Test
+    public void getLobbyGetDTOTest() {
+
+        assertEquals(testlobby.getCreator(), lobbyService.getLobbyGetDTO(testlobby,clouds).getCreator());
+        assertEquals(testlobby.getGameId(), lobbyService.getLobbyGetDTO(testlobby,clouds).getGameId());
+        assertEquals(testlobby.getPublicStatus(), lobbyService.getLobbyGetDTO(testlobby,clouds).getPublicStatus());
+        assertEquals(testlobby.getUsers(), lobbyService.getLobbyGetDTO(testlobby,clouds).getUsers());
+
+    }
 }
 
 
