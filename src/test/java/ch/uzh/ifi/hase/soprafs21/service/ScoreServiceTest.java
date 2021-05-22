@@ -57,6 +57,8 @@ public class ScoreServiceTest {
 
         // when -> any object is being save in the userRepository -> return the dummy testUser
         Mockito.when(scoreRepository.save(Mockito.any())).thenReturn(testScore);
+        Mockito.when(scoreRepository.findById(testScore.getUserId())).thenReturn(Optional.ofNullable(testScore));
+        Mockito.when(scoreRepository.findById(testScore2.getUserId())).thenReturn(Optional.ofNullable(testScore2));
     }
 
     @Test
@@ -64,7 +66,6 @@ public class ScoreServiceTest {
 
         scoreService.save(testScore);
 
-        Mockito.when(scoreRepository.findById(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testScore));
         Score foundScore = scoreService.findById(testScore.getUserId());
 
 
@@ -85,7 +86,6 @@ public class ScoreServiceTest {
 
     @Test
     public void scoresByGameTest() {
-        Mockito.when(scoreRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testScore));
         for (ListIterator<Score> it = scoreService.scoresByGame(gameEntity); it.hasNext(); ) {
             Score s = it.next();
             assertEquals(s, testScore);
@@ -93,7 +93,6 @@ public class ScoreServiceTest {
     }
     @Test
     public void getScoreGetDTOsTest() {
-        Mockito.when(scoreRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testScore));
         for (ListIterator<Score> it = scoreService.scoresByGame(gameEntity); it.hasNext(); ) {
             Score s = it.next();
             assertEquals(s, testScore);
