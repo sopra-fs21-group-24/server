@@ -16,6 +16,10 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 @Entity
 @Table(name = "GAMEMODE")
 public abstract class GameMode implements Serializable {
+    private static final int X_ZERO = 8000;
+    private static final int FULL_POINTS_RANGE = 15;
+    private static final double M = 1/Math.pow((FULL_POINTS_RANGE - X_ZERO), 2);
+
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -37,7 +41,7 @@ public abstract class GameMode implements Serializable {
             throw new PreconditionFailedException("timeFactor: " + timeFactor + " is not in range 0 - 1");
         }
         // normalized to distance india - chile 
-        double distanceFactor = 1 - (haversineDistance(coordGuess, coordQuestion)/16000);
+        double distanceFactor = calculateDistanceFactor(coordGuess, coordQuestion);
         double scoreFactor = distanceFactor * difficultyFactor;
 
         return Math.round(scoreFactor * 450 + timeFactor * 50);
@@ -48,6 +52,20 @@ public abstract class GameMode implements Serializable {
         if (currentTime < roundStart || currentTime > (roundStart + game.getRoundDuration() * 1000)){
             throw new PreconditionFailedException("Request outside of round timeframe");
         } 
+    }
+
+    public double calculateDistanceFactor(Coordinate coordGuess, Coordinate coordQuestion){
+        double distance = haversineDistance(coordGuess, coordQuestion);
+
+        if (distance < FULL_POINTS_RANGE){
+            return 1;
+        }
+
+        else if(distance > X_ZERO){
+            return 0;
+        }
+
+        return M * Math.pow((distance - X_ZERO), 2);
     }
 
     public float calculateTimeFactor(GameEntity game, Long currentTime){
