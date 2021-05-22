@@ -16,7 +16,7 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 @Entity
 @Table(name = "GAMEMODE")
 public abstract class GameMode implements Serializable {
-    private static final int X_ZERO = 1500;
+    private static final int X_ZERO = 8000;
     private static final int FULL_POINTS_RANGE = 15;
     private static final double M = 1/Math.pow((FULL_POINTS_RANGE - X_ZERO), 2);
 
@@ -61,7 +61,11 @@ public abstract class GameMode implements Serializable {
             return 1;
         }
 
-        return M * Math.pow(distance, 2);
+        else if(distance > X_ZERO){
+            return 0;
+        }
+
+        return M * Math.pow((distance - X_ZERO), 2);
     }
 
     public float calculateTimeFactor(GameEntity game, Long currentTime){
