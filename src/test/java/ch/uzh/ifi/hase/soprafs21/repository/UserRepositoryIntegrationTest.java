@@ -86,6 +86,6 @@ public class UserRepositoryIntegrationTest {
         // when
         Optional<User> found = userRepository.findByToken("Non existing Token");
         // then
-        assertEquals(found.isEmpty(), true);
+        assertTrue(found.isEmpty());
     }
 }
