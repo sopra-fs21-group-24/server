@@ -72,7 +72,7 @@ public class UserRepositoryIntegrationTest {
         assertEquals(foundUser.getUsername(), user.getUsername());
         assertEquals(foundUser.getToken(), user.getToken());
     }
-
+/*
     @Test
     public void findByToken_failure() {
         // given
@@ -88,4 +88,6 @@ public class UserRepositoryIntegrationTest {
         // then
         assertTrue(found.isEmpty());
     }
+    }*/
+
 }
