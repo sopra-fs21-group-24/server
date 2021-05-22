@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +47,6 @@ public class LobbyController {
         this.gameService = gameService;
     }
 
-    @Async
     @GetMapping("/lobby/{id}") @ResponseStatus(HttpStatus.OK)
     public DeferredResult<LobbyGetDTO> getLobbyWithId(
         @PathVariable("id") Long lobbyId, @RequestHeader Map<String, String> header) {
@@ -70,7 +68,6 @@ public class LobbyController {
 
         if(header.get("initial") == null){
             result.setResult(lobbyService.getLobbyGetDTO(lobby, game.getGameMode()));
-            return result;
         }
 
         if (header.get("initial").equals("true")){
@@ -80,7 +77,6 @@ public class LobbyController {
         return result;
     }
 
-    @Async
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
     public DeferredResult<List<LobbyGetDTOAllLobbies>> getAllLobbies(@RequestHeader Map<String, String> header) 
@@ -102,7 +98,6 @@ public class LobbyController {
 
         if(header.get("initial") == null){
             result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
-            return result;
         }
 
         if (header.get("initial").equals("true")){

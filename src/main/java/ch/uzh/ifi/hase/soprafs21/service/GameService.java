@@ -331,15 +331,16 @@ public class GameService {
             // TODO 
             // entfernen
             // singleplayer jemals set in lobby?, setinLobby wo anders verändert?
-            for(Long userId : game.getUserIds()){ 
+/*             for(Long userId : game.getUserIds()){ 
                 User user = userService.getUserByUserId(userId);
                 user.setInLobby(false);
-            }
+            } */
 
             // case 3: delete lobby only if multiplayer
             UserMode uMode = game.getUserMode();
             if (uMode.getName().equals("Multiplayer")){
                 lobbyService.deleteLobby(game.getLobbyId());
+                lobbyService.handleLobbies();
             }
         }            
 
