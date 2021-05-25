@@ -11,9 +11,21 @@ Deployed instance: [sopra-fs21-group-24-client.herokuapp.com](https://sopra-fs21
 
 Associated Front End repository can be found here: [Client Repository](https://github.com/sopra-fs21-group-24/client)
 
+Data & Reports regarding the project: [Data Repository](https://github.com/sopra-fs21-group-24/data)
+
+- [Technologies](#technologies)
+- [High-level components](#high-level-components)
+- [Launch & Deployment](#launch-&-deployment)
+- [Roadmap](#roadmap)
+    - [Question Type Selection Module](#question-type-selection-module)
+    - [Tinting of Satellite Image](#tinting-of-satellite-image)
+- [Authors and acknowledgment](#authors-and-acknowledgment)
+- [License](#license)
 ## Technologies
 *used (short)*
+<p float="left">
 <img height="200px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/java/java.png"></img>
+</p>
 
 ## High-level components
 *High-level components: Identify your project’s 3-5 main components. What is their role?

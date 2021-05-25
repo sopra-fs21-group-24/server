@@ -1,12 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
+import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,15 +19,22 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UserAlreadyExistsException;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private LeaderboardRepository leaderboardRepository;
+
+
     @InjectMocks
     private UserService userService;
 
     private User testUser;
+    private Leaderboard testLeaderboard;
 
     @BeforeEach
     public void setup() {
@@ -43,8 +49,21 @@ public class UserServiceTest {
         //testUser.setHighScores(Map<>);TODO:
         testUser.setUsername("testUsername");
 
+        testLeaderboard = new Leaderboard();
+        testLeaderboard.setUsername(testUser.getUsername());
+        testLeaderboard.setScore(100L);
+        testLeaderboard.setId(4L);
+        testLeaderboard.setGameMode(new Time().getName());
+
         // when -> any object is being save in the userRepository -> return the dummy testUser
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser);
+
+        Mockito.when(leaderboardRepository.findByUsername(testUser.getUsername())).thenReturn(testLeaderboard);
+
+        ArrayList<Leaderboard> leaderboardArrayList = new ArrayList<>();
+        leaderboardArrayList.add(testLeaderboard);
+        Mockito.when(leaderboardRepository.findAll()).thenReturn(leaderboardArrayList);
+
     }
 
     @Test
@@ -108,7 +127,6 @@ public class UserServiceTest {
         // when -> setup additional mocks for UserRepository
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testUser));
         Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
-        //Mockito.when(userRepository.findByToken(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testUser));
 
         // then -> attempt to create second user with same user -> check that an error is thrown
         assertThrows(NotFoundException.class, () -> userService.getUserByToken(createdUser.getToken()));
@@ -121,7 +139,6 @@ public class UserServiceTest {
         // when -> setup additional mocks for UserRepository
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testUser));
         Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
-        //Mockito.when(userRepository.findByToken(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testUser));
 
         // then -> attempt to create second user with same user -> check that an error is thrown
         assertThrows(NotFoundException.class, () -> userService.getUserByToken("invalid Token"));
@@ -133,9 +150,7 @@ public class UserServiceTest {
         User createdUser = userService.createUser(testUser);
 
         // when -> setup additional mocks for UserRepository
-        //Mockito.when(userRepository.findById(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testUser));
         Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
-        //Mockito.when(userRepository.findByToken(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testUser));
 
         // then -> attempt to create second user with same user -> check that an error is thrown
         assertThrows(NotFoundException.class, () -> userService.getUserByUserId(createdUser.getId()));
@@ -145,10 +160,8 @@ public class UserServiceTest {
         // given -> a first user has already been created
         User createdUser = userService.createUser(testUser);
 
-        // when -> setup additional mocks for UserRepository
-        //Mockito.when(userRepository.findById(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testUser));
+
         Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
-        //Mockito.when(userRepository.findByToken(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testUser));
 
         // then -> attempt to create second user with same user -> check that an error is thrown
         assertThrows(NotFoundException.class, () -> userService.getUserByUserId(3000L));
@@ -178,10 +191,7 @@ public class UserServiceTest {
         String oldToken = createdUser.getToken();
         System.out.println(oldToken);
         //when
-        //Mockito.when(userRepository.findById(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testUser));
         Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
-        //Mockito.when(userRepository.findByToken(Mockito.any())).thenReturn(java.util.Optional.ofNullable(testUser));
-        // then -> attempt to create second user with same user -> check that an error is thrown
         User authenticatedUser = userService.login(createdUser);
 
         assertEquals(authenticatedUser.getId(), createdUser.getId());
@@ -191,7 +201,7 @@ public class UserServiceTest {
         assertNotNull(authenticatedUser.getToken());
         System.out.println(authenticatedUser.getToken());
         System.out.println(createdUser.getToken());
-        assertFalse(authenticatedUser.getToken().equals(oldToken));
+        assertNotEquals(authenticatedUser.getToken(), oldToken);
     }
 
 
@@ -242,7 +252,7 @@ public class UserServiceTest {
 
     @Test
     public void updateUser_noAuth_failure(){
-/*         // given -> a first user has already been created
+         // given -> a first user has already been created
         User createdUser = userService.createUser(testUser);
 
         User changedTokenUser = new User();
@@ -254,13 +264,13 @@ public class UserServiceTest {
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(java.util.Optional.of(createdUser));
 
         // then -> attempt to create second user with same user -> check that an error is thrown
-        assertThrows(NotCreatorException.class, () -> userService.updateUser(changedTokenUser.getId(),changedTokenUser)); */
+        assertThrows(NotCreatorException.class, () -> userService.updateUser(changedTokenUser.getId(),changedTokenUser));
     }
 
     @Test
     public void updateUser_partialUpdate_success(){
         // given -> a first user has already been created
-/*         String oldUsername = testUser.getUsername();
+        String oldUsername = testUser.getUsername();
         User createdUser = userService.createUser(testUser);
 
         User updatedUser = new User();
@@ -272,20 +282,18 @@ public class UserServiceTest {
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(java.util.Optional.of(createdUser));
 
 
-
-        // then -> attempt to create second user with same user -> check that an error is thrown
         User afterUpdateUser = userService.updateUser(updatedUser.getId(), updatedUser);
         assertEquals(afterUpdateUser.getId(), createdUser.getId());
-        assertFalse(afterUpdateUser.getUsername().equals(oldUsername));
+        assertNotEquals(afterUpdateUser.getUsername(), oldUsername);
         assertEquals(afterUpdateUser.getInLobby(), createdUser.getInLobby());
         assertEquals(afterUpdateUser.getPassword(), createdUser.getPassword());
-        assertNotNull(afterUpdateUser.getToken()); */
+        assertNotNull(afterUpdateUser.getToken());
     }
 
     @Test
     public void updateUser_fullUpdate_success(){
         // given -> a first user has already been created
-/*         String oldUsername = testUser.getUsername();
+         String oldUsername = testUser.getUsername();
         String oldPassword = testUser.getPassword();
         User createdUser = userService.createUser(testUser);
 
@@ -302,10 +310,10 @@ public class UserServiceTest {
         // then -> attempt to create second user with same user -> check that an error is thrown
         User afterUpdateUser = userService.updateUser(updatedUser.getId(), updatedUser);
         assertEquals(afterUpdateUser.getId(), createdUser.getId());
-        assertFalse(afterUpdateUser.getUsername().equals(oldUsername));
+        assertNotEquals(afterUpdateUser.getUsername(), oldUsername);
         assertEquals(afterUpdateUser.getInLobby(), createdUser.getInLobby());
-        assertFalse(afterUpdateUser.getPassword().equals(oldPassword));
-        assertNotNull(afterUpdateUser.getToken()); */
+        assertNotEquals(afterUpdateUser.getPassword(), oldPassword);
+        assertNotNull(afterUpdateUser.getToken());
     }
 
 

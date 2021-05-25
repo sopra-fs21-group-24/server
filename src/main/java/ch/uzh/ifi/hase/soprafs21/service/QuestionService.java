@@ -77,7 +77,6 @@ public class QuestionService {
     public String getMapImage(int height, int width, Question question){
 
         Long startTime = System.currentTimeMillis();
-        logger.info("APIKEY is {}", System.getenv("apikey"));
 
         try {
             Coordinate coord = question.getCoordinate();
