@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
@@ -14,6 +17,8 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 public class MultiPlayer extends UserMode {
     @Serial
     private static final long serialVersionUID = 1L;
+
+    private final Logger logger = LoggerFactory.getLogger(MultiPlayer.class);
 
     private String name = "Multiplayer";
     private int playersFinished = 0;
@@ -62,6 +67,7 @@ public class MultiPlayer extends UserMode {
 
     public void nextRoundPrep(GameEntity game, long currentTime) {
         int threshold = game.getThreshold();
+        logger.info("thresh {}, players {}", threshold, playersFinished);
 
         if (this.playersFinished == threshold){
             game.setRoundStart(currentTime + (game.getBreakDuration() * 1000));
@@ -79,7 +85,7 @@ public class MultiPlayer extends UserMode {
 
         if (game.getUsersAnswered().contains(user.getId())){
             this.playersFinished--;
-        } 
+        }
 
         game.setThreshold(threshold - 1);
     }

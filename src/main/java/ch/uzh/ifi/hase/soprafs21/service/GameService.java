@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.Question;
@@ -293,9 +294,7 @@ public class GameService {
 
     public Score makeZeroScoreGuess(Answer answer){
         long currentTime = System.currentTimeMillis();
-
         GameEntity game = gameById(answer.getGameId());
-
         Long tempScore = 0L;
 
         return apresGuess(game, answer, currentTime, tempScore);
@@ -363,13 +362,26 @@ public class GameService {
         users.remove(userId);
         game.setUserIds(users);
 
-        if (users.size() == 1) {
+        // TODO
+        // remove if stable, last part was else
+/*         if (users.size() == 1) {
             exitGame(game);
-        } 
-        else {
-            MultiPlayer uMode = (MultiPlayer) game.getUserMode();
-            uMode.adjustThreshold(game, user);
+        }  */
+
+        // case: two already guessed, third leaves without
+        List<Long> usersAnswered = game.getUsersAnswered();
+        if (!usersAnswered.contains(user.getId())) {
+            logger.info("WAAAS HEEEREEE");
+            Answer answer = new Answer();
+            answer.setGameId(game.getGameId());
+            answer.setUserId(user.getId());
+            answer.setCoordGuess(new Coordinate(null, null));
+
+            apresGuess(game, answer, System.currentTimeMillis(), 0L);
         }
+
+        MultiPlayer uMode = (MultiPlayer) game.getUserMode();
+        uMode.adjustThreshold(game, user);
     }
 
     public GameEntity update(GameEntity game, Boolean publicStatus) {
