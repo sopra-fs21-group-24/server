@@ -198,10 +198,14 @@ public class GameService {
 
         GameEntity game = gameById(gameId);
 
-        game.setQuestions(createQuestionList());
+        // game has already started
+        if (game.getRound() > 0){
+            throw new PreconditionFailedException("Game has already started!");
+        }
 
+        game.setQuestions(createQuestionList());
         game.setCurrentTime();
-        game.setRound(game.getRound() + 1);
+        game.setRound(1);
 
 
         UserMode uMode = game.getUserMode();

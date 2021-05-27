@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,8 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -123,28 +128,38 @@ public class LobbyControllerTest {
     @Test
     public void getAllLobbiesSuccessful() throws Exception {
 
-//        Lobby lobby = new Lobby();
-//        lobby.setId(1L);
-//        lobby.setGameId(1L);
-//        lobby.setCreator(1L);
-//        lobby.setPublicStatus(true);
-//        lobby.setRoomKey(123L);
-//
-//        LobbyGetDTOAllLobbies lobbyGetDTOAllLobbies = DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(lobby);
-//        List<LobbyGetDTOAllLobbies> lobbies = new ArrayList<LobbyGetDTOAllLobbies>();
-//        lobbies.add(lobbyGetDTOAllLobbies);
-//
-//        doReturn(lobbies).when(lobbyService).getAllLobbies();
-//
-//        MockHttpServletRequestBuilder getRequest = get("/lobby")
-//                .contentType(MediaType.APPLICATION_JSON);
-//
-//        mockMvc.perform(getRequest)
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.[0].id", is(1)))
-//                .andExpect(jsonPath("$.[0].username", is(1)))
-//                .andExpect(jsonPath("$.[0].users", is(123)))
-//                .andExpect(jsonPath("$.[0].publicStatus", is(true)));
+        Lobby lobby = new Lobby();
+        lobby.setId(1L);
+        lobby.setGameId(2L);
+        lobby.setCreator(1L);
+        lobby.setPublicStatus(true);
+        lobby.setRoomKey(123L);
+        lobby.addUser(1L);
+
+        LobbyGetDTOAllLobbies lobbyGetDTOAllLobbies = DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(lobby);
+/*         lobbyGetDTOAllLobbies.setUsers(lobby.getUsers().size());
+        lobbyGetDTOAllLobbies.setUsername(userService.getUserByUserId(lobby.getCreator()).getUsername());
+        lobbyGetDTOAllLobbies.setGameMode(gameByLobbyId(lobby.getId()).getGameMode().getName()); */
+
+        List<LobbyGetDTOAllLobbies> lobbies = new ArrayList<>();
+        lobbies.add(lobbyGetDTOAllLobbies);
+
+        when(lobbyService.getLobbyGetDTOAllLobbies()).thenReturn(lobbies);
+
+        MockHttpServletRequestBuilder getRequest = get("/lobby")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("initial", "true");
+
+        MvcResult asyncListener = mockMvc
+                .perform(getRequest)
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(asyncListener))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].id", is(1)))
+                // .andExpect(jsonPath("$.[0].users", is(1)))
+                .andExpect(jsonPath("$.[0].publicStatus", is(true)));
 
     }
 

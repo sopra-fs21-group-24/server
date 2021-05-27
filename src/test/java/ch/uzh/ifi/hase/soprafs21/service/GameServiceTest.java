@@ -14,14 +14,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Answer;
+import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -36,6 +40,12 @@ import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
 public class GameServiceTest {
+    @Mock
+    private ScoreService scoreService;
+
+    @Mock
+    private QuestionService questionService;
+
     @Mock
     private LobbyService lobbyService;
 
@@ -53,6 +63,7 @@ public class GameServiceTest {
 
     private GameEntity testGame;
     private User user;
+    private Answer answer;
 
     @BeforeEach
     public void setup() {
@@ -65,14 +76,26 @@ public class GameServiceTest {
         user.setToken("maximilian");
         user.setPassword("sicher");
 
+        // sampe Anwser
+        answer = new Answer();
+        answer.setGameId(1L);
+        answer.setUserId(1L);
+        answer.setCoordGuess(new Coordinate(1.0, 1.2));
+        answer.setQuestionId(0L);
 
         // given
         testGame = new GameEntity();
+        testGame.setCreatorUserId(1L);
         testGame.setGameId(1L);
         testGame.setGameMode(new Time());
         testGame.setLobbyId(null);
         testGame.setBreakDuration(40);
         testGame.setUserMode(new SinglePlayer());
+
+        // user list initial
+        List<Long> usersInitial = new ArrayList<>();
+        usersInitial.add(testGame.getCreatorUserId());
+        testGame.setUserIds(usersInitial);
 
 
         // when -> any object is being save in the userRepository -> return the dummy testUser
@@ -261,17 +284,159 @@ public class GameServiceTest {
 
     @Test
     void createQuestionList() {
+        // test not necessary
+        when(questionService.count()).thenReturn(1L);
+        
+        List<Long> expected = new ArrayList<>();
+        expected.add(0L);
+        expected.add(0L);
+        expected.add(0L);
+
+        assertEquals(gameService.createQuestionList(), expected);
     }
 
     // StartGame Functionality
+    // TODO
     @Test
-    void startGame() {
+    void startGameGeneralSucess() {
+        // given: game is in system 
+        when(questionService.count()).thenReturn(3L);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+
+        gameService.startGame(testGame.getGameId());
+
+        assertAll(
+            () -> assertEquals(testGame.getRound(), 1),
+            () -> assertNotNull(testGame.getRoundStart()),
+            () -> assertNotNull(testGame.getGameStartTime()),
+            () -> assertNotNull(testGame.getQuestions())
+        );
+
+    }
+
+    @Test
+    void startGameSinglePlayerSuccess() { 
+        // Singleplayer settings
+        List<Long> expected = new ArrayList<>();
+        expected.add(testGame.getCreatorUserId());
+
+        // general check
+        startGameGeneralSucess();
+
+        // singleplayer specific tests
+        assertEquals(expected, testGame.getUserIds());
+    }
+
+    @Test
+    void startGameSinglePlayerFailure() { 
+        // singleplayer failure
+        testGame.getUserIds().add(3L);
+
+        // given game in system
+        when(questionService.count()).thenReturn(3L);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+
+        assertThrows(PreconditionFailedException.class, () ->  gameService.startGame(testGame.getGameId()));
+    }
+
+    @Test
+    void startGameMultiPlayerSuccess() { 
+        // multiplayer settings
+        testGame.setUserMode(new MultiPlayer());
+
+        List<Long> expected = new ArrayList<>();
+        expected.add(testGame.getCreatorUserId());
+        expected.add(3L);
+
+        Lobby lobby = new Lobby();
+        lobby.setCreator(testGame.getCreatorUserId());
+        lobby.setGameId(testGame.getGameId());
+        lobby.setPublicStatus(true);
+        lobby.setUsers(expected);
+
+        // given
+        when(lobbyService.getLobbyById(Mockito.any())).thenReturn(lobby);
+
+        // general check
+        startGameGeneralSucess();
+
+        // multiplayer specifc tests
+        assertAll(
+            () -> assertEquals(expected, testGame.getUserIds()),
+            () -> assertNull(testGame.getLobbyId())
+        );
+
+    }
+
+    @Test
+    void startGameInvalidGameIdFailure() {
+        // given
+        when(questionService.count()).thenReturn(3L);
+
+        // invalid gameId
+        Long gameId = 1337L;
+
+        // throws exception
+        assertThrows(NotFoundException.class, () -> gameService.startGame(gameId));;
+
+    }
+
+    @Test
+    void startGameAlreadyStartedFailure() {
+        // given
+        when(questionService.count()).thenReturn(3L);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+
+        // start game
+        gameService.startGame(testGame.getGameId());
+
+        // should throw error
+        assertThrows(PreconditionFailedException.class, () -> gameService.startGame(testGame.getGameId()));;
     }
 
     // MakeGuess Functionality
     @Test
-    void makeGuess() {
+    void makeGuessGeneralSucess() {
     }
+
+    @Test
+    void makeGuessTimeSuccess() {
+    }
+
+    @Test
+    void makeGuessCloudsSuccess() {
+    }
+
+    @Test
+    void makeGuessPixelationSuccess() {
+    }
+
+    @Test
+    void makeGuessTimeFailure() {
+    }
+
+    @Test
+    void makeGuessCloudsFailure() {
+    }
+
+    @Test
+    void makeGuessPixelationFailure() {
+    }
+
+    @Test
+    void checkGuessPreconditionsSucess() {
+    }
+
+    @Test
+    void checkGuessPreconditionsFailure() {
+    }
+
+    @Test
+    void apresGuess() {
+    }
+
+
+    //--------
 
     // exitGame Functionality
     @Test
@@ -281,14 +446,6 @@ public class GameServiceTest {
     // exitGame Functionality
     @Test
     void exitGameUser() {
-    }
-
-    @Test
-    void moveLobbyUsers() {
-    }
-
-    @Test
-    void scoresByGame() {
     }
 
     @Test
@@ -305,14 +462,6 @@ public class GameServiceTest {
 
     @Test
     void handleScores() {
-    }
-
-    @Test
-    void getScoreGetDTOs() {
-    }
-
-    @Test
-    void questionSolution() {
     }
 
     @Test
