@@ -122,7 +122,8 @@ public class GameController {
         });
 
         if(header.get("initial") == null){
-            logger.info("Initial not found in getGame");
+            // TODO
+            // logger.info("Initial not found in getGame");
             result.setResult(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
             return result;
         }
@@ -197,7 +198,7 @@ public class GameController {
             @PathVariable Long gameId,
             @RequestBody AnswerPostDTO answerPostDTO,
             @RequestHeader Map<String, String> header)
-            throws UnauthorizedException, PreconditionFailedException {
+            throws UnauthorizedException, PreconditionFailedException, NotFoundException{
 
         User user = gameService.checkAuth(header);
         // check if user is part of game, reactivate if isse is fixed

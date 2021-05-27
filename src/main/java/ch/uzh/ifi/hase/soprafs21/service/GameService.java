@@ -248,7 +248,7 @@ public class GameService {
 
     }
 
-    public Score apresGuess(GameEntity game, Answer answer, Long currentTime, Long tempScore){
+    public Score apresGuess(GameEntity game, Answer answer, Long currentTime, Long tempScore) throws NotFoundException{
         // mark question as answered by "user"
         game.addUserAnswered(answer.getUserId());
 
@@ -353,25 +353,15 @@ public class GameService {
 
         Long userId = user.getId();
 
-        // delete Score
-        Score score = scoreService.findById(userId);
-        scoreService.delete(score);
 
         // remove user
         List<Long> users = new ArrayList<>(game.getUserIds());
         users.remove(userId);
         game.setUserIds(users);
 
-        // TODO
-        // remove if stable, last part was else
-/*         if (users.size() == 1) {
-            exitGame(game);
-        }  */
-
         // case: two already guessed, third leaves without
         List<Long> usersAnswered = game.getUsersAnswered();
         if (!usersAnswered.contains(user.getId())) {
-            logger.info("WAAAS HEEEREEE");
             Answer answer = new Answer();
             answer.setGameId(game.getGameId());
             answer.setUserId(user.getId());
@@ -380,6 +370,11 @@ public class GameService {
             apresGuess(game, answer, System.currentTimeMillis(), 0L);
         }
 
+        // delete Score
+        Score score = scoreService.findById(userId);
+        scoreService.delete(score);
+
+        // adjust the playercount for next round
         MultiPlayer uMode = (MultiPlayer) game.getUserMode();
         uMode.adjustThreshold(game, user);
     }
