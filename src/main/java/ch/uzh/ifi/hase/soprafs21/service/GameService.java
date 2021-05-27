@@ -335,15 +335,18 @@ public class GameService {
             // delete lobby only if multiplayer
             UserMode uMode = game.getUserMode();
             if (uMode.getName().equals("Multiplayer")){
+                logger.info("Was here");
                 lobbyService.deleteLobby(game.getLobbyId());
             }
         }            
 
+        // callback game
+        handleGame(game);
+
         gameRepository.delete(game);
         gameRepository.flush();
-        userRepository.flush();
 
-        // callback
+        // callback lobby
         lobbyService.handleLobbies();
     }
 

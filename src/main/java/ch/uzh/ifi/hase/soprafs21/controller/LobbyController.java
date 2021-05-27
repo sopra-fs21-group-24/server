@@ -85,11 +85,10 @@ public class LobbyController {
         // TODO
         // authentication?
 
-        final DeferredResult<List<LobbyGetDTOAllLobbies>> result = new DeferredResult<>(null);
+        final DeferredResult<List<LobbyGetDTOAllLobbies>> result = new DeferredResult<>(3000L);
         lobbyService.addRequestToQueueLobbies(result);
 
         result.onTimeout(() -> {
-            logger.info("timout of request");
             result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
         });
 
