@@ -31,7 +31,6 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
 
 @RestController
@@ -39,12 +38,10 @@ public class LobbyController {
     Logger logger = LoggerFactory.getLogger(LobbyController.class);
 
     private final LobbyService lobbyService;
-    private final UserService userService;
     private final GameService gameService;
 
-    LobbyController(LobbyService lobbyService, UserService userService, GameService gameService) {
+    LobbyController(LobbyService lobbyService, GameService gameService) {
         this.lobbyService = lobbyService;
-        this.userService = userService;
         this.gameService = gameService;
     }
 
