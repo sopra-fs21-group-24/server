@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
-import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +12,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.exceptions.MissingInformationException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UserAlreadyExistsException;
+import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 
 /**
@@ -73,8 +73,6 @@ public class UserService {
         User foundUser = userRepository.findByUsername(unauthorizedUser.getUsername());
         if (foundUser != null && foundUser.getToken() != null && unauthorizedUser.getToken().equals(foundUser.getToken())){
             foundUser.setInLobby(false);
-            // TODO
-            // User Aus created game werfen
             return userRepository.save(foundUser);
         } else {
             throw new NotCreatorException("No/Wrong Token was provided to authenticate logout procedure!");

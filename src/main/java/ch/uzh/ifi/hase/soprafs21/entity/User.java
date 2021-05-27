@@ -44,6 +44,7 @@ public class User implements Serializable {
 
     @Column(nullable = false)
     private Boolean isInLobby  = false;
+
     // TODO
     //List with already answered questions
 
