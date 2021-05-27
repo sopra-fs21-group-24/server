@@ -22,24 +22,74 @@ Data & Reports regarding the project: [Data Repository](https://github.com/sopra
 - [Authors and acknowledgment](#authors-and-acknowledgment)
 - [License](#license)
 ## Technologies
-*used (short)*
+Our geography-game is a Spring application running Java, Gradle and JPA Hibernate. JPA is used for all persistence related functionalities; declaring entities and handling the repositories. 
+The Groovy based buld automation tool Gradle is used from compilation, packaging to testing and deployment.
 <p float="left">
 <img height="200px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/java/java.png"></img>
 </p>
 
 ## High-level components
-*High-level components: Identify your project’s 3-5 main components. What is their role?
-How are they correlated? Reference the main class, file, or function in the README text
-with a link.*
+The main components of ou project are also the main components of the whole Game. 
+To be able to play the game a user has to register himself. The request is sent from the Front-End to the [UserController](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/controller/UserController.java), which creates a new [**User**](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/User.java) entity.
+Whenever a user clicks on a GameMode (Multiplayer, Singleplayer), a new [**GameEntity**](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/GameEntity.java) is created.
+If a player chose the Multiplayer modes, additionally to the GameEntity a [**Lobby**](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/Lobby.java) is created. The lobby(service) handles all user organization functionalities, e.g. join/leave lobby join through RoomKey. 
+Whenever a user finishes a game, a new [**Leaderboard**](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/Leaderboard.java) 
+entity is created with the username, score and gameMode(Clouds, Pixelation, Time).
+The new entity is stored in the LeaderboardRepository.
+
+
 TODO: insert a graphic
 ## Launch & Deployment
-*Launch & Deployment: Write down the steps a new developer joining your team would
-have to take to get started with your application. What commands are required to build and run your project locally? How can they run the tests? Do you have external dependencies or a database that needs to be running? How can they do releases?*
+One special thing in our project is the API key. We stored the key as a local variable on our server, so no one can use it without our permission.
+To add a new local variable follow these steps:
+1. Open the Start Search, type in “env”, and choose “Edit the system environment variables”:
+2. Click the “Environment Variables…” button.
+3. Under the “System Variables” section (the lower half) click on new.
+4. Enter for the name of the variable: apikey nad for the value our provided api key.
+
+### Build
+To build the server use:
+```bash
+./gradlew build
+```
+### Run
+To run the server use:
+```bash
+./gradlew bootRun
+```
+### Test
+To run all tests use:
+```bash
+./gradlew test
+```
+### Development Mode
+
+You can start the backend in development mode, this will automatically trigger a new build and reload the application
+once the content of a file has been changed and you save the file.
+
+Start two terminal windows and run:
+
+`./gradlew build --continuous`
+
+and in the other one:
+
+`./gradlew bootRun`
+
+If you want to avoid running all tests with every change, use the following command instead:
+
+`./gradlew build --continuous -xtest`
+
+To deploy a new release, you have to merge the working (and tested) branch into the master branch, which then gets automatically pushed on to heroku.
 ## Roadmap
-*Roadmap: The top 2-3 features that new developers who want to contribute to your project could add
-*
+* Add a new endpoint in [gameConroller](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/controller/GameController.java) to choose from different map modes(e.g. Switzerland, Cities, Europe, Monuments). 
+  Don't forget the corresponding functions in the Service! If the data is not present in the data folder, add it, or insert a new csv file. 
+  Talk to the Front-End developers for deployment.
+* Check coordinates in the [data](https://github.com/sopra-fs21-group-24/server/tree/master/data) folder, sometimes they are a bit of. Correct them and feel free to add new ones.
+* Tweak the scoring function in the [GameMode](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/gamemodes/GameMode.java) function.
+
 ## Authors and acknowledgment
 This project was started using the following front end [template](https://github.com/HASEL-UZH/sopra-fs21-template-client) provided by the University of Zurich.
+The Satellite get fetched through the GoogleMaps API.
 #### Team Members
 * Claudio Gebbia - [@claudioge](https://github.com/claudioge)
 * Jérôme Hadorn - [@jeromehadorn](https://github.com/jeromehadorn)
