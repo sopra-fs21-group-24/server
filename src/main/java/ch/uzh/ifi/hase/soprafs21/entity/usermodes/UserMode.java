@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
-import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs21.service.ScoreService;
 
