@@ -336,6 +336,7 @@ public class GameService {
             if (uMode.getName().equals("Multiplayer")){
                 logger.info("Was here");
                 lobbyService.deleteLobby(game.getLobbyId());
+                lobbyService.handleLobbies();
             }
         }            
 
