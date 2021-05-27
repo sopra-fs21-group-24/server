@@ -380,17 +380,9 @@ public class GameService {
             throw new PreconditionFailedException("Game has already started, Can not change running game");
         }
 
-        String nameUserModeLocal = gameLocal.getUserMode().getName();
-        String nameUserModePut = game.getUserMode().getName();
         String nameGameModeLocal = gameLocal.getGameMode().getName();
         String nameGameModePut = game.getGameMode().getName();
         Lobby lobbyLocal = lobbyService.getLobbyById(gameLocal.getLobbyId());
-
-        // TODO
-        // evt. wegnehmen
-        if (!nameUserModeLocal.equals(nameUserModePut)) {
-            gameLocal.setUserMode(game.getUserMode());
-        }
 
         if (!nameGameModeLocal.equals(nameGameModePut)) {
             gameLocal.setGameMode(game.getGameMode());

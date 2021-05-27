@@ -188,7 +188,6 @@ public class GameController {
 
         game.setGameId(gameId);
         game.setGameModeFromName(gamePutDTO.getGamemode());
-        game.setUserModeFromName(gamePutDTO.getUsermode());
         GameEntity gameLocal = gameService.update(game, gamePutDTO.getPublicStatus());
 
         return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(gameLocal);
