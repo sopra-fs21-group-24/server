@@ -201,6 +201,7 @@ public class GameServiceIntegrationTest {
         lobbyService.addUserToExistingLobby(createdUser2,lobby);
         // --> problematisch
 
+        // REMOVED moveLobbyUsers !!! 
         // when
         // Transfer Users to Game
         gameService.moveLobbyUsers(game, createdLobby);
