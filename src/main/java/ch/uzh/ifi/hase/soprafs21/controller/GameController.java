@@ -39,7 +39,6 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.QuestionService;
 import ch.uzh.ifi.hase.soprafs21.service.ScoreService;
-import ch.uzh.ifi.hase.soprafs21.service.UserService;
 
 
 /**
@@ -53,13 +52,11 @@ public class GameController {
     Logger logger = LoggerFactory.getLogger(GameController.class);
 
     private final GameService gameService;
-    private final UserService userService;
     private final QuestionService questionService;
     private final ScoreService scoreService;
 
-    GameController(GameService gameService, UserService userService, QuestionService questionService, ScoreService scoreService){
+    GameController(GameService gameService, QuestionService questionService, ScoreService scoreService){
         this.gameService = gameService;
-        this.userService = userService;
         this.questionService = questionService;
         this.scoreService = scoreService;
     }
@@ -162,7 +159,7 @@ public class GameController {
         User user = gameService.checkAuth(header);
         gameService.checkPartofGame(game, user);
 
-        // case 1: game creator exits
+        // case 1: game creator 
         if (user.getId().equals(game.getCreatorUserId())) {
             gameService.exitGame(game);
         }
@@ -188,7 +185,6 @@ public class GameController {
 
         game.setGameId(gameId);
         game.setGameModeFromName(gamePutDTO.getGamemode());
-        game.setUserModeFromName(gamePutDTO.getUsermode());
         GameEntity gameLocal = gameService.update(game, gamePutDTO.getPublicStatus());
 
         return DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(gameLocal);

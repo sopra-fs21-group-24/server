@@ -3,15 +3,14 @@ package ch.uzh.ifi.hase.soprafs21.service;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.Score;
+import ch.uzh.ifi.hase.soprafs21.entity.patterns.Observer;
 import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LeaderboardGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
@@ -24,8 +23,6 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 @Service
 @Transactional
 public class LeaderboardService implements Observer {
-
-    private final Logger log = LoggerFactory.getLogger(LeaderboardService.class);
 
     private final LeaderboardRepository leaderboardRepository;
     private final UserService userService;

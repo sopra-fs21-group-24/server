@@ -332,15 +332,7 @@ public class GameService {
         }
         // case 2: game has not started yet
         else {
-            // TODO 
-            // entfernen
-            // singleplayer jemals set in lobby?, setinLobby wo anders verändert?
-/*             for(Long userId : game.getUserIds()){ 
-                User user = userService.getUserByUserId(userId);
-                user.setInLobby(false);
-            } */
-
-            // case 3: delete lobby only if multiplayer
+            // delete lobby only if multiplayer
             UserMode uMode = game.getUserMode();
             if (uMode.getName().equals("Multiplayer")){
                 lobbyService.deleteLobby(game.getLobbyId());
@@ -351,6 +343,9 @@ public class GameService {
         gameRepository.delete(game);
         gameRepository.flush();
         userRepository.flush();
+
+        // callback
+        lobbyService.handleLobbies();
     }
 
     public void exitGameUser(GameEntity game, User user) {
@@ -381,17 +376,9 @@ public class GameService {
             throw new PreconditionFailedException("Game has already started, Can not change running game");
         }
 
-        String nameUserModeLocal = gameLocal.getUserMode().getName();
-        String nameUserModePut = game.getUserMode().getName();
         String nameGameModeLocal = gameLocal.getGameMode().getName();
         String nameGameModePut = game.getGameMode().getName();
         Lobby lobbyLocal = lobbyService.getLobbyById(gameLocal.getLobbyId());
-
-        // TODO
-        // evt. wegnehmen
-        if (!nameUserModeLocal.equals(nameUserModePut)) {
-            gameLocal.setUserMode(game.getUserMode());
-        }
 
         if (!nameGameModeLocal.equals(nameGameModePut)) {
             gameLocal.setGameMode(game.getGameMode());
