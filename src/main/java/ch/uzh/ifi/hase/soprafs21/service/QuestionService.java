@@ -85,7 +85,6 @@ public class QuestionService {
                     "&size="+ String.valueOf(width) +"x"+ String.valueOf(height) +"&scale=2&maptype=satellite&key="+System.getenv("apikey"); //see on heroku if this works
 
             URL mapUrl = new URL(url);
-            logger.info("Url: {}", url);
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) mapUrl.openConnection();
             httpURLConnection.setRequestMethod("GET");

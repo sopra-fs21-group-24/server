@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
@@ -113,7 +114,9 @@ public class GameService {
         return game.getQuestions();
     }
 
+    @Scheduled(fixedDelay = 300000)
     public void closeLooseEnds() {
+        logger.info("[HomadeGarbageCollector] Closed open Games");
         List<GameEntity> endedGames = gameRepository.findByRoundEquals(4);
         Long currentTime = System.currentTimeMillis();
         for (GameEntity game : endedGames) {
@@ -127,12 +130,8 @@ public class GameService {
         return gameRepository.findByCreatorUserId(userId);
     }
 
+    @Deprecated
     public boolean existsGameByCreatorModded(Long userId) {
-        // TODO
-        // remove this closeLooseEnds 
-        // remove check for ended games
-        closeLooseEnds();
-
         Optional<GameEntity> found = gameRepository.findByCreatorUserId(userId);
         if (found.isPresent()) {
             // remove this - leave if present -> preconditionError
@@ -147,6 +146,19 @@ public class GameService {
         return false;
     }
 
+    public void closeFinishedGames(Long userId) {
+        Optional<GameEntity> found = gameRepository.findByCreatorUserId(userId);
+        if (found.isPresent()) {
+            GameEntity game = found.get();
+            if (game.getRound() == 4) {
+                exitGame(game);
+            }
+            else {
+                throw new PreconditionFailedException("User has already created a game");
+            }
+        }
+    }
+
     public GameEntity createGame(GameEntity gameRaw, boolean publicStatus) {
         Long userId = gameRaw.getCreatorUserId();
 
@@ -156,8 +168,8 @@ public class GameService {
         // does the user have another game?
         existsGameByCreatorModded(userId);
 
-        // TODO
-        // user in another game?
+        // user owns another running/unclose game?
+        closeFinishedGames(userId);
 
         GameEntity game = gameRepository.save(gameRaw);
 
@@ -165,8 +177,9 @@ public class GameService {
         UserMode uMode = game.getUserMode();
         uMode.setLobbyService(lobbyService);
         uMode.init(game, publicStatus);
-
         gameRepository.flush();
+
+        // callback
         lobbyService.handleLobbies();
 
         return game;
@@ -315,7 +328,6 @@ public class GameService {
                     highScores.put(gModeName, (int)totalScore);
                     user.setHighScores(highScores);
                 }
-                logger.info("Highscores: {}", user.getHighScores().get(gModeName));
             }
         }
         // case 2: game has not started yet
