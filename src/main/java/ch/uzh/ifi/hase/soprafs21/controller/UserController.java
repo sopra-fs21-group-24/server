@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTOWithoutToken;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
@@ -72,9 +73,7 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<UserGetDTO> logout(
         @RequestBody UserPostDTO userPostDTO,
-        @RequestHeader Map<String, String> header
-        ) {
-       
+        @RequestHeader Map<String, String> header) throws PreconditionFailedException {
         User userFromToken = userService.checkAuth(header);
         if(userFromToken == null){
             return ResponseEntity.status(403).body(null);

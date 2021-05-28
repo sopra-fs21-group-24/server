@@ -17,6 +17,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.exceptions.MissingInformationException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
+import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UserAlreadyExistsException;
 import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
@@ -106,6 +107,9 @@ public class UserService {
         }
         if (newUser.getUsername() == null || newUser.getUsername().equals("")){
             throw new MissingInformationException("Please provide a username");
+        }
+        if (newUser.getUsername().length() > 10){
+            throw new PreconditionFailedException("Please pick a username with less than 10 characters");
         }
 
         newUser.setToken(UUID.randomUUID().toString());
