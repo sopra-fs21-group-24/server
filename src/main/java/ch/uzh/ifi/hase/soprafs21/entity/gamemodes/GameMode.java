@@ -17,7 +17,7 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 @Table(name = "GAMEMODE")
 public abstract class GameMode implements Serializable {
     private static final int X_ZERO = 8000;
-    private static final int FULL_POINTS_RANGE = 15;
+    private static final int FULL_POINTS_RANGE = 25;
     private static final double M = 1/Math.pow((FULL_POINTS_RANGE - X_ZERO), 2);
 
 
