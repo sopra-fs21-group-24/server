@@ -31,7 +31,6 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
-import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.ScoreGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
@@ -46,7 +45,6 @@ public class GameService {
     private final Map<DeferredResult<List<ScoreGetDTO>>, Long> singleAllScoreRequests = new ConcurrentHashMap<>();
 
     private final GameRepository gameRepository;
-    private final UserRepository userRepository;
     private final LeaderboardService leaderboardService;
     private final QuestionService questionService;
     private final ScoreService scoreService;
@@ -59,7 +57,6 @@ public class GameService {
 
     @Autowired
     public GameService(@Qualifier("gameRepository") GameRepository gameRepository,
-                       UserRepository userRepository,
                        LeaderboardService leaderboardService,
                        QuestionService questionService,
                        ScoreService scoreService,
@@ -69,7 +66,6 @@ public class GameService {
         this.leaderboardService = leaderboardService;
         this.questionService = questionService;
         this.gameRepository = gameRepository;
-        this.userRepository = userRepository;
         this.scoreService = scoreService;
         this.lobbyService = lobbyService;
         this.userService = userService;
@@ -111,12 +107,6 @@ public class GameService {
 
     public List<GameEntity> getAllGames() {
         return gameRepository.findAll();
-    }
-
-    public void moveLobbyUsers(GameEntity game,  Lobby lobby) {
-        if (game.getLobbyId() != null) {
-            game.setUserIds(lobby.getUsers());
-        }
     }
 
     public List<Long> getQuestionsOfGame(GameEntity game) {
@@ -171,7 +161,7 @@ public class GameService {
 
         GameEntity game = gameRepository.save(gameRaw);
 
-        // Prep and setting UserMode specific Settings
+        // Usermode specific Settings
         UserMode uMode = game.getUserMode();
         uMode.setLobbyService(lobbyService);
         uMode.init(game, publicStatus);
@@ -204,11 +194,12 @@ public class GameService {
             throw new PreconditionFailedException("Game has already started!");
         }
 
+        // basic settings
         game.setQuestions(createQuestionList());
         game.setCurrentTime();
         game.setRound(1);
 
-
+        // Usermode Settings
         UserMode uMode = game.getUserMode();
         uMode.setLobbyService(lobbyService);
         uMode.setScoreService(scoreService);
@@ -271,7 +262,6 @@ public class GameService {
 
     public Score makeGuess(Answer answer) {
         long currentTime = System.currentTimeMillis();
-
         GameEntity game = gameById(answer.getGameId());
 
         checkGuessPreconditions(game, answer);
@@ -283,7 +273,6 @@ public class GameService {
         // timeFactor
         GameMode gMode = game.getGameMode();
         float timeFactor = gMode.calculateTimeFactor(game, currentTime);
-
         answer.setTimeFactor(timeFactor);
 
         // score calculation
@@ -334,7 +323,6 @@ public class GameService {
             // delete lobby only if multiplayer
             UserMode uMode = game.getUserMode();
             if (uMode.getName().equals("Multiplayer")){
-                logger.info("Was here");
                 lobbyService.deleteLobby(game.getLobbyId());
                 lobbyService.handleLobbies();
             }
@@ -351,9 +339,7 @@ public class GameService {
     }
 
     public void exitGameUser(GameEntity game, User user) {
-
         Long userId = user.getId();
-
 
         // remove user
         List<Long> users = new ArrayList<>(game.getUserIds());
@@ -368,6 +354,7 @@ public class GameService {
             answer.setUserId(user.getId());
             answer.setCoordGuess(new Coordinate(null, null));
 
+            // make 0 score guess
             apresGuess(game, answer, System.currentTimeMillis(), 0L);
         }
 
