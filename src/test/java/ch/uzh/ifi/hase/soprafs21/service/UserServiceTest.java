@@ -1,11 +1,14 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
-import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,13 +16,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Leaderboard;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UserAlreadyExistsException;
+import ch.uzh.ifi.hase.soprafs21.repository.LeaderboardRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
 
@@ -58,7 +62,9 @@ public class UserServiceTest {
         // when -> any object is being save in the userRepository -> return the dummy testUser
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser);
 
-        Mockito.when(leaderboardRepository.findByUsername(testUser.getUsername())).thenReturn(testLeaderboard);
+        List<Leaderboard> leaderboards = new ArrayList<>();
+        leaderboards.add(testLeaderboard);
+        Mockito.when(leaderboardRepository.findByUsername(testUser.getUsername())).thenReturn(leaderboards);
 
         ArrayList<Leaderboard> leaderboardArrayList = new ArrayList<>();
         leaderboardArrayList.add(testLeaderboard);

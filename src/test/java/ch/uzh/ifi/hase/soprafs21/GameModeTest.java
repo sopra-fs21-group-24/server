@@ -1,18 +1,19 @@
 package ch.uzh.ifi.hase.soprafs21;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import ch.uzh.ifi.hase.soprafs21.entity.Answer;
 import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class GameModeTest {
@@ -36,7 +37,7 @@ public class GameModeTest {
     @Test
     public void calculateScoreTest_success(){
         //random points
-        Assertions.assertEquals(gameModeTest.calculateScore(answerTest),456);
+        Assertions.assertEquals(gameModeTest.calculateScore(answerTest),457);
 
     }
     @Test

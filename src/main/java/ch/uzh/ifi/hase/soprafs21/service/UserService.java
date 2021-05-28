@@ -131,20 +131,19 @@ public class UserService {
             userToBeUpdated.setPassword(user.getPassword());
         }
         if (user.getUsername() != null){
-        for (Leaderboard leaderboard : leaderboardRepository.findAll()){
-            if (leaderboardRepository.findByUsername(userToBeUpdated.getUsername()) != null){
-                leaderboard.setUsername(user.getUsername());
-                leaderboardRepository.save(leaderboard);
-                leaderboardRepository.flush();
+            // update leaderboard
+            for (Leaderboard entry : leaderboardRepository.findByUsername(userToBeUpdated.getUsername())){
+                entry.setUsername(user.getUsername());
             }
-        }
-            userToBeUpdated.setUsername(user.getUsername());
-    }
 
+            // update the user
+            userToBeUpdated.setUsername(user.getUsername());
+        }
 
         User newUser = userRepository.save(userToBeUpdated);
         userRepository.flush();
         log.debug("Information updated for User: {}", newUser);
+
         return newUser;
     }
 

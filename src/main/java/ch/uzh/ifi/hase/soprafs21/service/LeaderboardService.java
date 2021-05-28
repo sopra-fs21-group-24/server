@@ -31,14 +31,12 @@ public class LeaderboardService implements Observer {
     public LeaderboardService(@Qualifier("leaderboardRepository") LeaderboardRepository leaderboardRepository, UserService userService) {
         this.leaderboardRepository = leaderboardRepository;
         this.userService = userService;
-
     }
+
     @Override
     public void updateLeaderboard(String gameMode, ListIterator<Score> scores) {
         while (scores.hasNext()) {
             Score score = scores.next();
-           // for (Leaderboard l : leaderboardRepository.findTop5ByGameMode(gameMode)) {
-                    //leaderboardRepository.delete(l);
             Leaderboard update = new Leaderboard();
             update.setUsername(userService.getUserByUserId(score.getUserId()).getUsername());
             update.setScore(score.getTotalScore());
@@ -57,7 +55,4 @@ public class LeaderboardService implements Observer {
         return finalList;
 
     }
-
-
-
 }
