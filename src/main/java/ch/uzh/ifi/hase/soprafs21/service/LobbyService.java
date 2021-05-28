@@ -39,7 +39,7 @@ public class LobbyService {
     private Queue<DeferredResult<List<LobbyGetDTOAllLobbies>>> allLobbiesRequests = new ConcurrentLinkedQueue<>();
     private Map<DeferredResult<LobbyGetDTO>, Long> singleLobbyRequests = new ConcurrentHashMap<>();
 
-    static final int MAX_PLAYERS = 3;
+    static final int MAX_PLAYERS = 4;
 
     private final LobbyRepository lobbyRepository;
     private final UserRepository userRepository;
