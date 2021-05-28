@@ -97,7 +97,6 @@ public class GameService {
         }
     }
 
-
     public GameEntity gameById(Long gameId) {
         Optional<GameEntity> found = gameRepository.findById(gameId);
         if (found.isEmpty()) {
@@ -130,22 +129,6 @@ public class GameService {
         return gameRepository.findByCreatorUserId(userId);
     }
 
-    @Deprecated
-    public boolean existsGameByCreatorModded(Long userId) {
-        Optional<GameEntity> found = gameRepository.findByCreatorUserId(userId);
-        if (found.isPresent()) {
-            // remove this - leave if present -> preconditionError
-            GameEntity game = found.get();
-            if (game.getRound() == 4) {
-                exitGame(game);
-            }
-            else {
-                throw new PreconditionFailedException("User has already created a game");
-            }
-        }
-        return false;
-    }
-
     public void closeFinishedGames(Long userId) {
         Optional<GameEntity> found = gameRepository.findByCreatorUserId(userId);
         if (found.isPresent()) {
@@ -164,9 +147,6 @@ public class GameService {
 
         // does user exist?
         userService.getUserByUserId(userId);
-
-        // does the user have another game?
-        existsGameByCreatorModded(userId);
 
         // user owns another running/unclose game?
         closeFinishedGames(userId);

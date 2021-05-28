@@ -136,15 +136,6 @@ public class LobbyController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Deprecated
-    @GetMapping("/lobby/roomKey/{roomKey}")
-    @ResponseStatus(HttpStatus.OK)
-    public LobbyGetDTO getLobbyWithRoomKey(@PathVariable("roomKey") Long roomKey) {
-        Lobby lobby = lobbyService.getLobbyByRoomkey(roomKey);
-        GameMode gMode = gameService.gameById(lobby.getId()).getGameMode();
-        return lobbyService.getLobbyGetDTO(lobby, gMode);
-    }
-
     @PutMapping("/lobby/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
