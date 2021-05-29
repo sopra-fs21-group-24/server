@@ -278,6 +278,10 @@ public class GameService {
         GameEntity game = gameById(answer.getGameId());
         Long tempScore = 0L;
 
+        // set solution in answer
+        Question question = questionService.questionById(answer.getQuestionId());
+        answer.setCoordQuestion(question.getCoordinate());
+
         return apresGuess(game, answer, currentTime, tempScore);
     }
 
