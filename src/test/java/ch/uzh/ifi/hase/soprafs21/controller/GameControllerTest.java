@@ -452,7 +452,49 @@ public class GameControllerTest {
     }
 
     @Test
-    public void makeGuessFailed() throws Exception {
+    public void makeGuessFailed_NullNullAsCoordinates() throws Exception {
+            //Check if timeout answer is accepted
+
+            GameEntity game = new GameEntity();
+            game.setGameId(1L);
+            game.setCreatorUserId(2L);
+            game.setRound(1);
+            game.setRoundDuration(20);
+            game.setCurrentTime();
+            game.setRoundStart(12L);
+            game.setGameMode(new Pixelation());
+
+
+            User user = new User();
+            user.setId(3L);
+            user.setUsername("TestUser");
+
+            Answer answer = new Answer();
+            answer.setTimeFactor(12f);
+            answer.setUserId(3L);
+            //timeout answer
+            answer.setCoordGuess(new Coordinate(null,null));
+            answer.setCoordQuestion(new Coordinate(123.1,123.1));
+            Score score = new Score();
+            score.setTotalScore(12);
+            score.setTempScore(0);
+            score.setUserId(3L);
+            score.setLastCoordinate(new Coordinate(12.12,12.12));
+            given(gameService.gameById(Mockito.any())).willReturn(game);
+            when(gameService.checkAuth(Mockito.any())).thenReturn(user);
+            when(gameService.makeZeroScoreGuess(Mockito.any())).thenReturn(score);
+
+
+            MockHttpServletRequestBuilder putRequest = post("/games/1/guess")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(asJsonString(answer))
+                    .header("token","1");
+
+            mockMvc.perform(putRequest)
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.userId", is(user.getId().intValue())))
+                    .andExpect(jsonPath("$.tempScore", is(0)))
+                    .andExpect(jsonPath("$.totalScore", is(12)));
 
     }
 
