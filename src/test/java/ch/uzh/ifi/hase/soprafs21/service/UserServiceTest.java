@@ -51,7 +51,7 @@ public class UserServiceTest {
         testUser.setToken("token");
         testUser.setInLobby(true);
         //testUser.setHighScores(Map<>);TODO:
-        testUser.setUsername("testUsername");
+        testUser.setUsername("testUser");
 
         testLeaderboard = new Leaderboard();
         testLeaderboard.setUsername(testUser.getUsername());

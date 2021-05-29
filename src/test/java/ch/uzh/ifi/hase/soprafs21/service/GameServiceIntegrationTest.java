@@ -69,7 +69,7 @@ public class GameServiceIntegrationTest {
 
         User testUser = new User();
         testUser.setPassword("password");
-        testUser.setUsername("testUsername");
+        testUser.setUsername("testUser");
         testUser.setInLobby(true);
 
         User createdUser = userService.createUser(testUser);
@@ -102,7 +102,7 @@ public class GameServiceIntegrationTest {
 
         User testUser = new User();
         testUser.setPassword("password");
-        testUser.setUsername("testUsername");
+        testUser.setUsername("testUser");
         testUser.setInLobby(true);
 
         User createdUser = userService.createUser(testUser);
@@ -124,7 +124,7 @@ public class GameServiceIntegrationTest {
     public void exitGame_success() {
         User testUser = new User();
         testUser.setPassword("password");
-        testUser.setUsername("testUsername");
+        testUser.setUsername("testUser");
         testUser.setInLobby(true);
         HashMap<String, Integer> highScores = new HashMap<>();
         highScores.put("Time", 0);

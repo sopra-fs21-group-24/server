@@ -137,9 +137,7 @@ public class LobbyControllerTest {
         lobby.addUser(1L);
 
         LobbyGetDTOAllLobbies lobbyGetDTOAllLobbies = DTOMapper.INSTANCE.convertEntityToLobbyGetDTOAllLobbies(lobby);
-/*         lobbyGetDTOAllLobbies.setUsers(lobby.getUsers().size());
-        lobbyGetDTOAllLobbies.setUsername(userService.getUserByUserId(lobby.getCreator()).getUsername());
-        lobbyGetDTOAllLobbies.setGameMode(gameByLobbyId(lobby.getId()).getGameMode().getName()); */
+
 
         List<LobbyGetDTOAllLobbies> lobbies = new ArrayList<>();
         lobbies.add(lobbyGetDTOAllLobbies);
@@ -158,7 +156,6 @@ public class LobbyControllerTest {
         mockMvc.perform(asyncDispatch(asyncListener))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id", is(1)))
-                // .andExpect(jsonPath("$.[0].users", is(1)))
                 .andExpect(jsonPath("$.[0].publicStatus", is(true)));
 
     }
@@ -226,7 +223,8 @@ public class LobbyControllerTest {
 
     }
 
-    @Test
+  /* can be deleted, corresponding endpoint was deleted.
+  @Test
     public void getLobbyWithRoomKeySuccessful() throws Exception {
 
         Lobby lobby = new Lobby();
@@ -256,6 +254,7 @@ public class LobbyControllerTest {
 
 
         MockHttpServletRequestBuilder getRequest = get("/lobby/roomKey/123")
+                .header("")
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(getRequest)
@@ -267,7 +266,7 @@ public class LobbyControllerTest {
                 .andExpect(jsonPath("$.publicStatus", is(true)))
                 .andExpect(jsonPath("$.gamemode.name", is("Pixelation")));
 
-    }
+    }*/
 
     @Test
     public void getLobbyWithRoomKeyFailed() throws Exception {

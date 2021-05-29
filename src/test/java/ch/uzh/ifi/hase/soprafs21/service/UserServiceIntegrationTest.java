@@ -41,7 +41,7 @@ public class UserServiceIntegrationTest {
 
         User testUser = new User();
         testUser.setPassword("password");
-        testUser.setUsername("testUsername");
+        testUser.setUsername("testUser");
         testUser.setInLobby(true);
 
         // when
@@ -58,11 +58,11 @@ public class UserServiceIntegrationTest {
     @Test
     public void createUser_duplicateUsername_throwsException() {
 
-        assertNull(userRepository.findByUsername("testUsername"));
+        assertNull(userRepository.findByUsername("testUser"));
 
         User testUser = new User();
         testUser.setPassword("password");
-        testUser.setUsername("testUsername");
+        testUser.setUsername("testUser");
         testUser.setInLobby(true);
 
         User createdUser = userService.createUser(testUser);
@@ -72,7 +72,7 @@ public class UserServiceIntegrationTest {
 
         // change the password but forget about the username
         testUser2.setPassword("passwordNew");
-        testUser2.setUsername("testUsername");
+        testUser2.setUsername("testUser");
 
         // check that an error is thrown
         assertThrows(UserAlreadyExistsException.class, () -> userService.createUser(testUser2));
@@ -81,11 +81,11 @@ public class UserServiceIntegrationTest {
     @Test
     public void updateUserName_throwsException() {
 
-        assertNull(userRepository.findByUsername("testUsername"));
+        assertNull(userRepository.findByUsername("testUser"));
 
         User testUser = new User();
         testUser.setPassword("password");
-        testUser.setUsername("testUsername");
+        testUser.setUsername("testUser");
         testUser.setInLobby(true);
 
         User createdUser = userService.createUser(testUser);
@@ -94,11 +94,11 @@ public class UserServiceIntegrationTest {
         User testUser2 = new User();
 
         testUser2.setPassword("passwordNew");
-        testUser2.setUsername("testUsername2");
+        testUser2.setUsername("testUser2");
 
         User createdUser2 = userService.createUser(testUser2);
         //Chose an already used username
-        createdUser2.setUsername("testUsername");
+        createdUser2.setUsername("testUser");
         // check that an error is thrown
         assertThrows(DataIntegrityViolationException.class, () -> userService.updateUser(testUser2.getId(), testUser2));
     }
