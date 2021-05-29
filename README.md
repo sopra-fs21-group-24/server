@@ -81,11 +81,11 @@ If you want to avoid running all tests with every change, use the following comm
 
 To deploy a new release, you have to merge the working (and tested) branch into the master branch, which then gets automatically pushed on to heroku.
 ## Roadmap
-* Add a new endpoint in [gameConroller](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/controller/GameController.java) to choose from different map modes(e.g. Switzerland, Cities, Europe, Monuments). 
+* Add a **new endpoint** in [gameConroller](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/controller/GameController.java) to choose from different **map modes**(e.g. Switzerland, Cities, Europe, Monuments). 
   Don't forget the corresponding functions in the Service! If the data is not present in the data folder, add it, or insert a new csv file. 
   Talk to the Front-End developers for deployment.
-* Check coordinates in the [data](https://github.com/sopra-fs21-group-24/server/tree/master/data) folder, sometimes they are a bit of. Correct them and feel free to add new ones.
-* Tweak the scoring function in the [GameMode](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/gamemodes/GameMode.java) function.
+* Check **coordinates** in the [data](https://github.com/sopra-fs21-group-24/server/tree/master/data) folder, sometimes they are a bit of. Correct them and feel free to add new ones. E.g. for new map modes.
+* Tweak the **scoring function** in the [GameMode](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/gamemodes/GameMode.java) function for the new map modes created in the first point.
 
 ## Authors and acknowledgment
 This project was started using the following front end [template](https://github.com/HASEL-UZH/sopra-fs21-template-client) provided by the University of Zurich.
