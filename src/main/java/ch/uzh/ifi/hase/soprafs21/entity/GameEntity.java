@@ -60,7 +60,7 @@ public class GameEntity implements Serializable {
     private Long lobbyId;
 
     @Column()
-    private transient int roundDuration = 30;
+    private transient int roundDuration = 32;
 
     @Column()
     private transient int breakDuration = 8;
