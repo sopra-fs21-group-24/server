@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 @Table(name = "GAMEENTITY")
 public class GameEntity implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -48,26 +50,26 @@ public class GameEntity implements Serializable {
     @Column(nullable = false)
     private GameMode gameMode;
 
-    @Column(nullable = true)
+    @Column()
     private Long gameStartTime;
 
-    @Column(nullable = true)
+    @Column()
     private Long roundStart;
 
-    @Column(nullable = true)
+    @Column()
     private Long lobbyId;
 
-    @Column(nullable = true)
+    @Column()
     private transient int roundDuration = 30;
 
-    @Column(nullable = true)
+    @Column()
     private transient int breakDuration = 5; // nur zum debuggen anstatt 5
     
-    @Column(nullable = true)
+    @Column()
     @ElementCollection
     private List<Long> usersAnswered;
 
-    @Column(nullable = true)
+    @Column()
     private int threshold;
 
     @Column(nullable = false)
@@ -139,27 +141,12 @@ public class GameEntity implements Serializable {
     }
 
     public void setGameModeFromName(String gameModeName){
-        GameMode gMode;
 
-        switch (gameModeName) {
-            case "Pixelation":
-                gMode = new Pixelation(); 
-                break;
-
-            case "Time":
-                gMode = new Time(); 
-                break;
-
-            case "Clouds":
-                gMode = new Clouds(); 
-                break;
-        
-            default:
-                gMode = new Time();
-                break;
-        }
-        
-        this.gameMode = gMode;
+        this.gameMode = switch (gameModeName) {
+            case "Pixelation" -> new Pixelation();
+            case "Clouds" -> new Clouds();
+            default -> new Time();
+        };
     }
 
     public void setUserMode(UserMode userMode){

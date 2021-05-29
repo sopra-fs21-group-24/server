@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +47,7 @@ import ch.uzh.ifi.hase.soprafs21.service.ScoreService;
 @RestController
 public class GameController {
 
-    Logger logger = LoggerFactory.getLogger(GameController.class);
+    final Logger logger = LoggerFactory.getLogger(GameController.class);
 
     private final GameService gameService;
     private final QuestionService questionService;
@@ -59,21 +57,6 @@ public class GameController {
         this.gameService = gameService;
         this.questionService = questionService;
         this.scoreService = scoreService;
-    }
-
-    // evtl implementieren fürs debugging
-    @GetMapping("/games")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public List<GameGetDTO> getAllGames() {
-
-        List<GameGetDTO> allGames = new ArrayList<>();
-
-        for (GameEntity game : gameService.getAllGames()) {
-            allGames.add(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
-        }
-
-        return allGames;
     }
 
     @PostMapping("/games")
@@ -117,9 +100,7 @@ public class GameController {
             result.setResult(DTOMapper.INSTANCE.convertGameEntityToGameGetDTO(game));
         });
 
-        result.onCompletion(() -> {
-            gameService.removeRequestFromGameMap(result);
-        });
+        result.onCompletion(() -> gameService.removeRequestFromGameMap(result));
 
         if(header.get("initial") == null){
             // TODO
@@ -247,9 +228,7 @@ public class GameController {
             result.setResult(scoreService.getScoreGetDTOs(game));
         });
 
-        result.onCompletion(() -> {
-            gameService.removeRequestFromAllScoreMap(result);
-        });
+        result.onCompletion(() -> gameService.removeRequestFromAllScoreMap(result));
 
         if(header.get("initial") == null){
             result.setResult(scoreService.getScoreGetDTOs(game));
@@ -276,20 +255,21 @@ public class GameController {
         return gameService.getQuestionsOfGame(game);
     }
 
-    // just for debug resons
+    // TODO: remove
+/*     // just for debug resons
     @GetMapping("/games/questions")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<Question> getGameQuestions() throws NotFoundException, UnauthorizedException {
         return questionService.getAllQuestions();
-    }
+    } */
 
     @PostMapping("/games/{gameId}/questions/{questionId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String getGameQuestionsSpecific(@PathVariable Long gameId, @PathVariable Long questionId,
                                            @RequestBody QuestionGetDTO qDTO, @RequestHeader Map<String, String> header)
-            throws NotFoundException, UnauthorizedException, PreconditionFailedException, MalformedURLException {
+            throws NotFoundException, UnauthorizedException, PreconditionFailedException {
 
         GameEntity game = gameService.gameById(gameId);
         // checkAuth

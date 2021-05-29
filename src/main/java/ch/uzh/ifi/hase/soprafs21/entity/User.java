@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import javax.persistence.Table;
 @Table(name = "USER")
 public class User implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -44,10 +46,6 @@ public class User implements Serializable {
 
     @Column(nullable = false)
     private Boolean isInLobby  = false;
-
-    // TODO
-    //List with already answered questions
-
 
     public Long getId() { return id; }
 

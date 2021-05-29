@@ -11,8 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 public class GameRepositoryIntegrationTest {
@@ -31,7 +30,7 @@ public class GameRepositoryIntegrationTest {
         //game.setGameId(1L);
         game.setGameMode(new Time());
         game.setUserMode(new MultiPlayer());
-        game.setCreatorUserId(1l);
+        game.setCreatorUserId(1L);
         game.setBreakDuration(5);
         game.setLobbyId(5L);
 
@@ -41,7 +40,7 @@ public class GameRepositoryIntegrationTest {
         // when
         Optional<GameEntity> found = gameRepository.findById(game.getGameId());
         // then
-        assertNotNull(found);
+        assertTrue(found.isPresent());
 
         GameEntity foundGameEntity = found.get();
         assertEquals(foundGameEntity.getGameMode(), game.getGameMode());
@@ -58,7 +57,7 @@ public class GameRepositoryIntegrationTest {
         //game.setGameId(1L);
         game.setGameMode(new Time());
         game.setUserMode(new MultiPlayer());
-        game.setCreatorUserId(1l);
+        game.setCreatorUserId(1L);
         game.setBreakDuration(5);
         game.setLobbyId(5L);
 
@@ -68,7 +67,7 @@ public class GameRepositoryIntegrationTest {
         // when
         Optional<GameEntity> found = gameRepository.findById(game.getGameId() -1);
         // then
-        assertEquals(found.isEmpty(), true);
+        assertTrue(found.isEmpty());
     }
 
     @Test
@@ -79,7 +78,7 @@ public class GameRepositoryIntegrationTest {
         //game.setGameId(1L);
         game.setGameMode(new Time());
         game.setUserMode(new MultiPlayer());
-        game.setCreatorUserId(1l);
+        game.setCreatorUserId(1L);
         game.setBreakDuration(5);
         game.setLobbyId(5L);
 
@@ -89,7 +88,7 @@ public class GameRepositoryIntegrationTest {
         // when
         Optional<GameEntity> found = gameRepository.findByCreatorUserId(game.getCreatorUserId());
         // then
-        assertNotNull(found);
+        assertTrue(found.isPresent());
 
         GameEntity foundGameEntity = found.get();
         assertEquals(foundGameEntity.getGameMode(), game.getGameMode());
@@ -106,7 +105,7 @@ public class GameRepositoryIntegrationTest {
         //game.setGameId(1L);
         game.setGameMode(new Time());
         game.setUserMode(new MultiPlayer());
-        game.setCreatorUserId(1l);
+        game.setCreatorUserId(1L);
         game.setBreakDuration(5);
         game.setLobbyId(5L);
 
@@ -116,7 +115,7 @@ public class GameRepositoryIntegrationTest {
         // when
         Optional<GameEntity> found = gameRepository.findByCreatorUserId(game.getCreatorUserId() -1);
         // then
-        assertEquals(found.isEmpty(), true);
+        assertTrue(found.isEmpty());
     }
 
     @Test
@@ -127,7 +126,7 @@ public class GameRepositoryIntegrationTest {
         //game.setGameId(1L);
         game.setGameMode(new Time());
         game.setUserMode(new MultiPlayer());
-        game.setCreatorUserId(1l);
+        game.setCreatorUserId(1L);
         game.setRound(2);
         game.setBreakDuration(5);
         game.setLobbyId(5L);
@@ -138,9 +137,7 @@ public class GameRepositoryIntegrationTest {
         // when
         List<GameEntity> found = gameRepository.findByRoundEquals(game.getRound());
         // then
-        found.forEach(l->{
-            assertEquals(l.getRound(),game.getRound());
-        });
+        found.forEach(l-> assertEquals(l.getRound(),game.getRound()));
     }
 
     @Test
@@ -151,7 +148,7 @@ public class GameRepositoryIntegrationTest {
         //game.setGameId(1L);
         game.setGameMode(new Time());
         game.setUserMode(new MultiPlayer());
-        game.setCreatorUserId(1l);
+        game.setCreatorUserId(1L);
         game.setRound(2);
         game.setBreakDuration(5);
         game.setLobbyId(5L);
@@ -163,7 +160,7 @@ public class GameRepositoryIntegrationTest {
         GameEntity game2 = new GameEntity();
         game2.setGameMode(new Time());
         game2.setUserMode(new MultiPlayer());
-        game2.setCreatorUserId(4l);
+        game2.setCreatorUserId(4L);
         game2.setRound(3);
         game2.setBreakDuration(5);
         game2.setLobbyId(5L);

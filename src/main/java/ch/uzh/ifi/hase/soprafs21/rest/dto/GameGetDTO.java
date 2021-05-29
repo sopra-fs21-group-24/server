@@ -10,7 +10,7 @@ public class GameGetDTO {
     private Long creatorId;
     private Long lobbyId;
     private int round;
-    private Long gameStartTime; // entfernen nur debug
+    private Long gameStartTime;
     private UserMode userMode;
     private GameMode gameMode;
     private Set<Long> players;

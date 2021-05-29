@@ -1,7 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
 import java.io.Serial;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
@@ -18,7 +18,7 @@ public class SinglePlayer extends UserMode {
     @Override
     public void init(GameEntity game, boolean publicStatus) {
         game.setLobbyId(null);
-        game.setUserIds(Arrays.asList(game.getCreatorUserId()));
+        game.setUserIds(Collections.singletonList(game.getCreatorUserId()));
     }
 
     @Override
@@ -41,8 +41,8 @@ public class SinglePlayer extends UserMode {
     @Override
     public void nextRoundPrep(GameEntity game, long currentTime){
         game.setRound(game.getRound() + 1);
-        game.setRoundStart(currentTime + (game.getBreakDuration() * 1000)) ;
-        game.setUsersAnswered(Arrays.asList());
+        game.setRoundStart(currentTime + (game.getBreakDuration() * 1000L)) ;
+        game.setUsersAnswered(Collections.emptyList());
     }
 
     @Override

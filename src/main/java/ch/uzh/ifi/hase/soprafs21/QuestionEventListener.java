@@ -13,12 +13,13 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class QuestionEventListener{
     private final QuestionRepository questionRepository;
     
-    Logger logger = LoggerFactory.getLogger(QuestionEventListener.class);
+    final Logger logger = LoggerFactory.getLogger(QuestionEventListener.class);
 
     @Autowired
     public QuestionEventListener(QuestionRepository questionRepository){
@@ -31,7 +32,7 @@ public class QuestionEventListener{
 
         String filename = "data/data.csv";
 
-        try (Reader reader =  new BufferedReader(new InputStreamReader(new FileInputStream(filename),"utf-8"))) {
+        try (Reader reader =  new BufferedReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8))) {
 
             // read csv file
             Iterable<CSVRecord> records = CSVFormat.DEFAULT

@@ -34,7 +34,7 @@ import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 
 @RestController
 public class LobbyController {
-    Logger logger = LoggerFactory.getLogger(LobbyController.class);
+    final Logger logger = LoggerFactory.getLogger(LobbyController.class);
 
     private final LobbyService lobbyService;
     private final GameService gameService;
@@ -59,9 +59,7 @@ public class LobbyController {
             result.setResult(lobbyService.getLobbyGetDTO(lobby, game.getGameMode()));
         });
 
-        result.onCompletion(() -> {
-            lobbyService.removeRequestFromLobbyMap(result);
-        });
+        result.onCompletion(() -> lobbyService.removeRequestFromLobbyMap(result));
 
         if(header.get("initial") == null){
             result.setResult(lobbyService.getLobbyGetDTO(lobby, game.getGameMode()));
@@ -77,20 +75,16 @@ public class LobbyController {
     @GetMapping("/lobby")
     @ResponseStatus(HttpStatus.OK)
     public DeferredResult<List<LobbyGetDTOAllLobbies>> getAllLobbies(@RequestHeader Map<String, String> header) 
-    throws IllegalStateException, InterruptedException{
+    throws IllegalStateException {
         // TODO
         // authentication?
 
         final DeferredResult<List<LobbyGetDTOAllLobbies>> result = new DeferredResult<>(3000L);
         lobbyService.addRequestToQueueLobbies(result);
 
-        result.onTimeout(() -> {
-            result.setResult(lobbyService.getLobbyGetDTOAllLobbies());
-        });
+        result.onTimeout(() -> result.setResult(lobbyService.getLobbyGetDTOAllLobbies()));
 
-        result.onCompletion(() -> {
-            lobbyService.removeRequestFromQueueLobbies(result);
-        });
+        result.onCompletion(() -> lobbyService.removeRequestFromQueueLobbies(result));
 
         if(header.get("initial") == null){
             result.setResult(lobbyService.getLobbyGetDTOAllLobbies());

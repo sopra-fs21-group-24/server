@@ -62,42 +62,6 @@ public class GameControllerTest {
     private QuestionService questionService;
 
     @Test
-    public void getAllGamesSuccess() throws Exception {
-
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setGameMode(new Pixelation());
-
-        GameEntity game2 = new GameEntity();
-        game2.setGameId(2L);
-        game2.setGameMode(new Pixelation());
-
-        List<GameEntity> gamelist = new ArrayList<>();
-        gamelist.add((game));
-        gamelist.add((game2));
-
-        given(gameService.getAllGames()).willReturn(gamelist);
-        given(gameService.gameById(Mockito.any())).willReturn(game,game2);
-
-
-        MockHttpServletRequestBuilder getRequest = get("/games")
-                .contentType(MediaType.APPLICATION_JSON);
-
-        for (int i=0; i< gamelist.size();i++ ){
-            String s = String.valueOf(i);
-
-            mockMvc.perform(getRequest)
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath(String.format("$[%s].gameId",s), is(i+1)))
-                    .andExpect(jsonPath(String.format("$[%s].gameMode.name",s), is("Pixelation"))) ;
-        }
-
-
-
-    }
-    
-
-    @Test
     public void createGameSuccess() throws Exception {
 
 

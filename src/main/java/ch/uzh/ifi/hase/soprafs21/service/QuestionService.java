@@ -30,7 +30,7 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
 
-    Logger logger = LoggerFactory.getLogger(QuestionService.class);
+    final Logger logger = LoggerFactory.getLogger(QuestionService.class);
 
     @Autowired
     public QuestionService(@Qualifier("questionRepository") QuestionRepository questionRepository) {
@@ -55,10 +55,11 @@ public class QuestionService {
         }
     }
 
-    // debug
+    // TODO: remove
+/*     // debug
     public List<Question> getAllQuestions(){
         return questionRepository.findAll();
-    }
+    } */
 
     public Coordinate getRoundQuestionSolution(GameEntity game){
         List<Long> questions = game.getQuestions();
@@ -82,7 +83,7 @@ public class QuestionService {
             Coordinate coord = question.getCoordinate();
 
             String url = "https://maps.googleapis.com/maps/api/staticmap?center="+coord.getLat()+","+coord.getLon()+"&zoom="+ question.getZoomLevel() +
-                    "&size="+ String.valueOf(width) +"x"+ String.valueOf(height) +"&scale=2&maptype=satellite&key="+System.getenv("apikey"); //see on heroku if this works
+                    "&size="+ width +"x"+ height +"&scale=2&maptype=satellite&key="+System.getenv("apikey"); //see on heroku if this works
 
             URL mapUrl = new URL(url);
 

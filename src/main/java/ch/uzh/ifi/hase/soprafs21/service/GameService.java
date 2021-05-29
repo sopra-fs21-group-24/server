@@ -105,17 +105,18 @@ public class GameService {
         return found.get();
     }
 
-    public List<GameEntity> getAllGames() {
+    // TODO: remove
+/*     public List<GameEntity> getAllGames() {
         return gameRepository.findAll();
     }
-
+ */
     public List<Long> getQuestionsOfGame(GameEntity game) {
         return game.getQuestions();
     }
 
     @Scheduled(fixedDelay = 300000)
     public void closeLooseEnds() {
-        logger.info("[HomadeGarbageCollector] Closed open Games");
+        logger.info("[HomemadeGarbageCollector] Closed open Games");
         List<GameEntity> endedGames = gameRepository.findByRoundEquals(4);
         Long currentTime = System.currentTimeMillis();
         for (GameEntity game : endedGames) {
@@ -166,8 +167,6 @@ public class GameService {
     }
 
     public List<Long> createQuestionList(){
-        // TODO
-        // set of distinct questions, zukunft mit users
         long questionId;
         List<Long> questions = new ArrayList<>();
 
@@ -242,7 +241,7 @@ public class GameService {
         score.setTotalScore(score.getTotalScore() + tempScore);
         score.setLastCoordinate(answer.getCoordGuess());
 
-        // gameContiune
+        // prep
         UserMode uMode = game.getUserMode();
         uMode.nextRoundPrep(game, currentTime);
 
