@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.QuestionGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.ScoreGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.QuestionService;
@@ -16,9 +17,11 @@ import ch.uzh.ifi.hase.soprafs21.service.ScoreService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,6 +30,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -46,6 +50,11 @@ import static org.mockito.BDDMockito.given;
 @WebMvcTest(GameController.class)
 public class GameControllerTest {
 
+    GameEntity game;
+    User user;
+    Answer answer;
+    Score score;
+
     @Autowired
     private MockMvc mockMvc;
     
@@ -60,6 +69,41 @@ public class GameControllerTest {
 
     @MockBean
     private QuestionService questionService;
+
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+
+        // given
+        game = new GameEntity();
+        game.setGameId(1L);
+        game.setCreatorUserId(2L);
+        game.setRound(1);
+        game.setRoundDuration(20);
+        game.setCurrentTime();
+        game.setRoundStart(12L);
+        game.setGameMode(new Pixelation());
+
+        user = new User();
+        user.setId(3L);
+        user.setUsername("TestUser");
+
+        answer = new Answer();
+        answer.setTimeFactor(12f);
+        answer.setUserId(3L);
+        answer.setCoordGuess(new Coordinate(12.12,12.12));
+        answer.setCoordQuestion(new Coordinate(123.1,123.1));
+
+        score = new Score();
+        score.setTotalScore(12);
+        score.setTempScore(2);
+        score.setUserId(3L);
+        score.setLastCoordinate(new Coordinate(12.12,12.12));
+
+
+    }
+
+
 
     @Test
     public void getAllGamesSuccess() throws Exception {
@@ -250,11 +294,6 @@ public class GameControllerTest {
     @Test
     public void startGameSuccess() throws Exception {
 
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setGameMode(new Pixelation());
-
-        User user = new User();
 
 
         given(gameService.checkAuth(Mockito.any())).willReturn(user);
@@ -327,15 +366,6 @@ public class GameControllerTest {
     @Test
     public void exitGameSuccess() throws Exception {
 
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setCreatorUserId(2L);
-        game.setGameMode(new Pixelation());
-
-        User user = new User();
-        user.setId(2L);
-
-
         given(gameService.checkAuth(Mockito.any())).willReturn(user);
         doNothing().when(gameService).exitGame(Mockito.any());
         given(gameService.gameById(Mockito.any())).willReturn(game);
@@ -353,13 +383,6 @@ public class GameControllerTest {
     @Test
     public void exitGameFailedByCheckAuth() throws Exception {
 
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setCreatorUserId(2L);
-        game.setGameMode(new Pixelation());
-
-        User user = new User();
-        user.setId(3L);
 
         when(gameService.gameById(Mockito.any())).thenReturn(game);
         when(gameService.checkAuth(Mockito.any())).thenThrow(new UnauthorizedException("Not authorized"));
@@ -380,15 +403,6 @@ public class GameControllerTest {
     @Test
     public void exitGameFailedByCheckPartOfGame() throws Exception {
 
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setCreatorUserId(2L);
-        game.setGameMode(new Pixelation());
-
-        User user = new User();
-        user.setId(3L);
-
-
         given(gameService.checkAuth(Mockito.any())).willReturn(user);
         given(gameService.gameById(Mockito.any())).willReturn(game);
         doThrow(new UnauthorizedException("Precondition Failed")).when(gameService).checkPartofGame(Mockito.any(), Mockito.any());
@@ -406,14 +420,6 @@ public class GameControllerTest {
 
     @Test
     public void changeGameInfoSuccess() throws Exception {
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setCreatorUserId(2L);
-        game.setGameMode(new Pixelation());
-
-
-        User user = new User();
-        user.setId(3L);
 
         GamePutDTO gamePutDTO = new GamePutDTO();
         gamePutDTO.setPublicStatus(true);
@@ -444,33 +450,10 @@ public class GameControllerTest {
     @Test
     public void makeGuessSuccess() throws Exception {
 
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setCreatorUserId(2L);
-        game.setRound(1);
-        game.setRoundDuration(20);
-        game.setCurrentTime();
-        game.setRoundStart(12L);
-        game.setGameMode(new Pixelation());
-
-
-        User user = new User();
-        user.setId(3L);
-        user.setUsername("TestUser");
-
-        Answer answer = new Answer();
-        answer.setTimeFactor(12f);
-        answer.setUserId(3L);
-        answer.setCoordGuess(new Coordinate(12.12,12.12));
-        answer.setCoordQuestion(new Coordinate(123.1,123.1));
-        Score score = new Score();
-        score.setTotalScore(12);
-        score.setTempScore(2);
-        score.setUserId(3L);
-        score.setLastCoordinate(new Coordinate(12.12,12.12));
         given(gameService.gameById(Mockito.any())).willReturn(game);
         when(gameService.checkAuth(Mockito.any())).thenReturn(user);
         when(gameService.makeGuess(Mockito.any())).thenReturn(score);
+
 
 
         MockHttpServletRequestBuilder putRequest = post("/games/1/guess")
@@ -491,30 +474,12 @@ public class GameControllerTest {
     public void makeGuessFailed_NullNullAsCoordinates() throws Exception {
             //Check if timeout answer is accepted
 
-            GameEntity game = new GameEntity();
-            game.setGameId(1L);
-            game.setCreatorUserId(2L);
-            game.setRound(1);
-            game.setRoundDuration(20);
-            game.setCurrentTime();
-            game.setRoundStart(12L);
-            game.setGameMode(new Pixelation());
 
 
-            User user = new User();
-            user.setId(3L);
-            user.setUsername("TestUser");
-
-            Answer answer = new Answer();
-            answer.setTimeFactor(12f);
-            answer.setUserId(3L);
             //timeout answer
             answer.setCoordGuess(new Coordinate(null,null));
             answer.setCoordQuestion(new Coordinate(123.1,123.1));
-            Score score = new Score();
-            score.setTotalScore(12);
-            score.setTempScore(0);
-            score.setUserId(3L);
+
             score.setLastCoordinate(new Coordinate(12.12,12.12));
             given(gameService.gameById(Mockito.any())).willReturn(game);
             when(gameService.checkAuth(Mockito.any())).thenReturn(user);
@@ -529,14 +494,44 @@ public class GameControllerTest {
             mockMvc.perform(putRequest)
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.userId", is(user.getId().intValue())))
-                    .andExpect(jsonPath("$.tempScore", is(0)))
+                    .andExpect(jsonPath("$.tempScore", is(2)))
                     .andExpect(jsonPath("$.totalScore", is(12)));
 
     }
 
     @Test
     public void getGameScoresSuccess() throws Exception {
+        final DeferredResult<List<ScoreGetDTO>> result = new DeferredResult<>(null);
 
+        List resultList = new ArrayList();
+        resultList.add(score);
+        result.setResult(resultList);
+
+        //timeout answer
+        answer.setCoordGuess(new Coordinate(null,null));
+        answer.setCoordQuestion(new Coordinate(123.1,123.1));
+
+        score.setLastCoordinate(new Coordinate(12.12,12.12));
+        given(gameService.gameById(Mockito.any())).willReturn(game);
+        when(gameService.checkAuth(Mockito.any())).thenReturn(user);
+        when(gameService.makeZeroScoreGuess(Mockito.any())).thenReturn(score);
+
+
+
+        //TODO: Fix LongPolling test
+
+        MockHttpServletRequestBuilder getRequest = get("/games/1/scores")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("initial", "true");
+
+
+        MvcResult asyncListener = mockMvc
+                .perform(getRequest)
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(asyncListener))
+                .andExpect(status().isOk());
 
     }
 
@@ -549,10 +544,7 @@ public class GameControllerTest {
     public void getGameQuestionsSuccess() throws Exception {
 
         List<Long> questions = new ArrayList<>();
-        GameEntity game = new GameEntity();
         game.setQuestions(questions);
-
-        User user = new User();
 
         when(gameService.gameById(Mockito.any())).thenReturn(game);
         when(gameService.checkAuth(Mockito.any())).thenReturn(user);
@@ -573,9 +565,6 @@ public class GameControllerTest {
     @Test
     public void getGameQuestionsFailedByCheckPartOfGame() throws Exception {
 
-        GameEntity game = new GameEntity();
-
-        User user = new User();
 
         when(gameService.gameById(Mockito.any())).thenReturn(game);
         when(gameService.checkAuth(Mockito.any())).thenReturn(user);
@@ -595,9 +584,6 @@ public class GameControllerTest {
     @Test
     public void getGameQuestionsFailedByCheckAuth() throws Exception {
 
-        GameEntity game = new GameEntity();
-
-
         when(gameService.gameById(Mockito.any())).thenReturn(game);
         when(gameService.checkAuth(Mockito.any())).thenThrow(new UnauthorizedException("Not Authorized"));
 
@@ -614,8 +600,6 @@ public class GameControllerTest {
 
     @Test
     public void getGameQuestionsFailedByGameById() throws Exception {
-
-        GameEntity game = new GameEntity();
 
 
         when(gameService.gameById(Mockito.any())).thenThrow(new NotFoundException("Game with this gameId does not exist"));
@@ -639,14 +623,9 @@ public class GameControllerTest {
         questionGetDTO.setHeight(500);
         questionGetDTO.setWidth(500);
 
-        // Create GameEntity
-        GameEntity game = new GameEntity();
 
         // Create Question
         Question question = new Question();
-
-        // Create User
-        User user = new User();
 
         // Mock methods from services to avoid exceptions
         when(gameService.checkAuth(Mockito.any())).thenReturn(user);
@@ -671,8 +650,6 @@ public class GameControllerTest {
     @Test
     public void getGameQuestionsSpecificFailedByQuestionById() throws Exception {
 
-        GameEntity game = new GameEntity();
-
         QuestionGetDTO questionGetDTO = new QuestionGetDTO();
         questionGetDTO.setHeight(500);
         questionGetDTO.setWidth(500);
@@ -695,8 +672,6 @@ public class GameControllerTest {
 
     @Test
     public void getGameQuestionsSpecificFailedByCheckQuestionIdInQuestions() throws Exception {
-
-        GameEntity game = new GameEntity();
 
         QuestionGetDTO questionGetDTO = new QuestionGetDTO();
         questionGetDTO.setHeight(500);
