@@ -1,14 +1,15 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
-import ch.uzh.ifi.hase.soprafs21.entity.Question;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Pixelation;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.QuestionGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.QuestionService;
 import ch.uzh.ifi.hase.soprafs21.service.ScoreService;
@@ -405,16 +406,84 @@ public class GameControllerTest {
 
     @Test
     public void changeGameInfoSuccess() throws Exception {
+        GameEntity game = new GameEntity();
+        game.setGameId(1L);
+        game.setCreatorUserId(2L);
+        game.setGameMode(new Pixelation());
+
+
+        User user = new User();
+        user.setId(3L);
+
+        GamePutDTO gamePutDTO = new GamePutDTO();
+        gamePutDTO.setPublicStatus(true);
+        gamePutDTO.setGamemode("Time");
+        gamePutDTO.setUserId(1L);
+
+
+        given(gameService.gameById(Mockito.any())).willReturn(game);
+        when(gameService.checkAuth(Mockito.any())).thenReturn(user);
+        GameEntity newGame = DTOMapper.INSTANCE.convertGamePutDTOToGameEntity(gamePutDTO);
+        newGame.setGameMode(new Time());
+        when(gameService.update(Mockito.any(), Mockito.anyBoolean())).thenReturn(newGame);
+
+
+        MockHttpServletRequestBuilder putRequest = put("/games/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(gamePutDTO))
+                .header("token","1");
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.creatorId", is(1)))
+                .andExpect(jsonPath("$.gameMode.name", is("Time")));
 
     }
 
-    @Test
-    public void changeGameInfoFailed() throws Exception {
-
-    }
 
     @Test
     public void makeGuessSuccess() throws Exception {
+
+        GameEntity game = new GameEntity();
+        game.setGameId(1L);
+        game.setCreatorUserId(2L);
+        game.setRound(1);
+        game.setRoundDuration(20);
+        game.setCurrentTime();
+        game.setRoundStart(12L);
+        game.setGameMode(new Pixelation());
+
+
+        User user = new User();
+        user.setId(3L);
+        user.setUsername("TestUser");
+
+        Answer answer = new Answer();
+        answer.setTimeFactor(12f);
+        answer.setUserId(3L);
+        answer.setCoordGuess(new Coordinate(12.12,12.12));
+        answer.setCoordQuestion(new Coordinate(123.1,123.1));
+        Score score = new Score();
+        score.setTotalScore(12);
+        score.setTempScore(2);
+        score.setUserId(3L);
+        score.setLastCoordinate(new Coordinate(12.12,12.12));
+        given(gameService.gameById(Mockito.any())).willReturn(game);
+        when(gameService.checkAuth(Mockito.any())).thenReturn(user);
+        when(gameService.makeGuess(Mockito.any())).thenReturn(score);
+
+
+        MockHttpServletRequestBuilder putRequest = post("/games/1/guess")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(answer))
+                .header("token","1");
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.tempScore", is(2)))
+                .andExpect(jsonPath("$.totalScore", is(12)));
+
 
     }
 
