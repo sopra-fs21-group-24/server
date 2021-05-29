@@ -105,11 +105,6 @@ public class GameService {
         return found.get();
     }
 
-    // TODO: remove
-/*     public List<GameEntity> getAllGames() {
-        return gameRepository.findAll();
-    }
- */
     public List<Long> getQuestionsOfGame(GameEntity game) {
         return game.getQuestions();
     }
@@ -288,7 +283,6 @@ public class GameService {
 
     public void exitGame(GameEntity game) {
         // TODO
-        // Do scores get deleted?
         // update personalHighscores in eine eigene method machen
 
         // case 1: game has started
@@ -311,8 +305,12 @@ public class GameService {
                     highScores.put(gModeName, (int)totalScore);
                     user.setHighScores(highScores);
                 }
+
+                scoreService.delete(score);
+                scores.remove();
             }
         }
+        
         // case 2: game has not started yet
         else {
             // delete lobby only if multiplayer

@@ -255,15 +255,6 @@ public class GameController {
         return gameService.getQuestionsOfGame(game);
     }
 
-    // TODO: remove
-/*     // just for debug resons
-    @GetMapping("/games/questions")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public List<Question> getGameQuestions() throws NotFoundException, UnauthorizedException {
-        return questionService.getAllQuestions();
-    } */
-
     @PostMapping("/games/{gameId}/questions/{questionId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody

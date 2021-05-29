@@ -55,12 +55,6 @@ public class QuestionService {
         }
     }
 
-    // TODO: remove
-/*     // debug
-    public List<Question> getAllQuestions(){
-        return questionRepository.findAll();
-    } */
-
     public Coordinate getRoundQuestionSolution(GameEntity game){
         List<Long> questions = game.getQuestions();
         if (game.getRound() == 0){
