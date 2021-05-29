@@ -36,8 +36,8 @@ public class LobbyService {
 
     private final Logger log = LoggerFactory.getLogger(LobbyService.class);
 
-    private Queue<DeferredResult<List<LobbyGetDTOAllLobbies>>> allLobbiesRequests = new ConcurrentLinkedQueue<>();
-    private Map<DeferredResult<LobbyGetDTO>, Long> singleLobbyRequests = new ConcurrentHashMap<>();
+    private final Queue<DeferredResult<List<LobbyGetDTOAllLobbies>>> allLobbiesRequests = new ConcurrentLinkedQueue<>();
+    private final Map<DeferredResult<LobbyGetDTO>, Long> singleLobbyRequests = new ConcurrentHashMap<>();
 
     static final int MAX_PLAYERS = 4;
 
@@ -75,7 +75,7 @@ public class LobbyService {
 
         User creator = foundCreator.get();
 
-        if(creator.getInLobby().booleanValue()){
+        if(creator.getInLobby()){
             throw new PreconditionFailedException("User is already in another Lobby");
         }
 
@@ -107,7 +107,7 @@ public class LobbyService {
     }
 
     public void addUserToExistingLobby(User user, Lobby lobby){
-        if(user.getInLobby().booleanValue()){
+        if(user.getInLobby()){
             throw new NotFoundException("User is already in Lobby");
         }
         else if (lobby == null){

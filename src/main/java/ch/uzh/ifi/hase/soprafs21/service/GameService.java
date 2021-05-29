@@ -105,17 +105,13 @@ public class GameService {
         return found.get();
     }
 
-    public List<GameEntity> getAllGames() {
-        return gameRepository.findAll();
-    }
-
     public List<Long> getQuestionsOfGame(GameEntity game) {
         return game.getQuestions();
     }
 
     @Scheduled(fixedDelay = 300000)
     public void closeLooseEnds() {
-        logger.info("[HomadeGarbageCollector] Closed open Games");
+        logger.info("[HomemadeGarbageCollector] Closed open Games");
         List<GameEntity> endedGames = gameRepository.findByRoundEquals(4);
         Long currentTime = System.currentTimeMillis();
         for (GameEntity game : endedGames) {
@@ -166,8 +162,6 @@ public class GameService {
     }
 
     public List<Long> createQuestionList(){
-        // TODO
-        // set of distinct questions, zukunft mit users
         long questionId;
         List<Long> questions = new ArrayList<>();
 
@@ -242,7 +236,7 @@ public class GameService {
         score.setTotalScore(score.getTotalScore() + tempScore);
         score.setLastCoordinate(answer.getCoordGuess());
 
-        // gameContiune
+        // prep
         UserMode uMode = game.getUserMode();
         uMode.nextRoundPrep(game, currentTime);
 
@@ -279,13 +273,16 @@ public class GameService {
         GameEntity game = gameById(answer.getGameId());
         Long tempScore = 0L;
 
+        // set solution in answer
+        Question question = questionService.questionById(answer.getQuestionId());
+        answer.setCoordQuestion(question.getCoordinate());
+
         return apresGuess(game, answer, currentTime, tempScore);
     }
 
 
     public void exitGame(GameEntity game) {
         // TODO
-        // Do scores get deleted?
         // update personalHighscores in eine eigene method machen
 
         // case 1: game has started
@@ -308,8 +305,12 @@ public class GameService {
                     highScores.put(gModeName, (int)totalScore);
                     user.setHighScores(highScores);
                 }
+
+                scoreService.delete(score);
+                scores.remove();
             }
         }
+        
         // case 2: game has not started yet
         else {
             // delete lobby only if multiplayer

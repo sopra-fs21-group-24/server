@@ -1,4 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -12,6 +13,7 @@ import javax.persistence.Table;
 @Table(name = "Score")
 public class Score implements Serializable{
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -24,7 +26,7 @@ public class Score implements Serializable{
     @Column(nullable = false)
     private long totalScore = 0;
 
-    @Column(nullable = true)
+    @Column()
     private Coordinate lastCoordinate; 
 
     public long getUserId() {

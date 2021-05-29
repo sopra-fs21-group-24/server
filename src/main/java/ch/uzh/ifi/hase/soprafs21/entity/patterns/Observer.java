@@ -5,5 +5,5 @@ import ch.uzh.ifi.hase.soprafs21.entity.Score;
 import java.util.ListIterator;
 
 public interface Observer {
-    public void updateLeaderboard(String gameMode, ListIterator<Score> scores);
+    void updateLeaderboard(String gameMode, ListIterator<Score> scores);
 }

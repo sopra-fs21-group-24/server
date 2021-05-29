@@ -14,13 +14,13 @@ public class Lobby {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = true, unique =  true)
+    @Column(unique =  true)
     private Long gameId;
 
     @Column(nullable = false)
     private Long creator;
 
-    @Column(nullable = true, unique =  true)
+    @Column(unique =  true)
     private Long roomKey;
 
     @Column(nullable = false)

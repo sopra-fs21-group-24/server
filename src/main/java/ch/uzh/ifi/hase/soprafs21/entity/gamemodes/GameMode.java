@@ -49,7 +49,7 @@ public abstract class GameMode implements Serializable {
 
     public void checkTimeValid(GameEntity game, long currentTime) {
         Long roundStart = game.getRoundStart();
-        if (currentTime < roundStart || currentTime > (roundStart + game.getRoundDuration() * 1000)){
+        if (currentTime < roundStart || currentTime > (roundStart + game.getRoundDuration() * 1000L)){
             throw new PreconditionFailedException("Request outside of round timeframe");
         } 
     }

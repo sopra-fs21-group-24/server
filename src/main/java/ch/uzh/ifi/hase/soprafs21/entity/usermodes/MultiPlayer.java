@@ -2,7 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.entity.usermodes;
 
 import java.io.Serial;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
@@ -27,7 +27,7 @@ public class MultiPlayer extends UserMode {
         lobby.setGameId(game.getGameId());
         lobby = lobbyService.createLobby(lobby);
         game.setLobbyId(lobby.getId());
-        game.setUserIds(Arrays.asList(creator));
+        game.setUserIds(Collections.singletonList(creator));
     }
 
     @Override
@@ -64,9 +64,9 @@ public class MultiPlayer extends UserMode {
         int threshold = game.getThreshold();
 
         if (this.playersFinished == threshold){
-            game.setRoundStart(currentTime + (game.getBreakDuration() * 1000));
+            game.setRoundStart(currentTime + (game.getBreakDuration() * 1000L));
             game.setRound(game.getRound() + 1);
-            game.setUsersAnswered(Arrays.asList());
+            game.setUsersAnswered(Collections.emptyList());
             this.playersFinished = 0;
 
         } else {
