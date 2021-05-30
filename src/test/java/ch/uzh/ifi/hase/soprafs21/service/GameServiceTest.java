@@ -515,15 +515,89 @@ public class GameServiceTest {
     }
 
     @Test
-    void makeGuessTimeFailure() {
+    void makeGuessTimeFailure_TakeToLongToAnswer() {
+        //set round start to far in the past
+        testGame.setRoundStart(System.currentTimeMillis()-200000);
+
+        //set some things for passing of checks, check for success
+        List<Long> questionsList = new ArrayList<Long>();
+        questionsList.add(question.getQuestionId());
+        questionsList.add(11L);
+        testGame.setQuestions(questionsList);
+        answer.setQuestionId(1L);
+        testGame.setRound(1);
+        testGame.setGameMode(new Time());
+        answer.setQuestionId(question.getQuestionId());
+
+        when(questionService.count()).thenReturn(3L);
+        when(questionService.questionById(Mockito.any())).thenReturn(question);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+        when(scoreService.findById(Mockito.any())).thenReturn(score);
+
+
+        assertThrows(PreconditionFailedException.class, () ->  gameService.makeGuess(answer));
     }
 
     @Test
     void makeGuessCloudsFailure() {
+
+        //empty question list given will throw error
+        List<Long> questionsList = new ArrayList<Long>();
+        testGame.setQuestions(questionsList);
+        answer.setQuestionId(1L);
+        testGame.setRound(1);
+        testGame.setGameMode(new Clouds());
+        answer.setQuestionId(question.getQuestionId());
+
+        when(questionService.count()).thenReturn(3L);
+        when(questionService.questionById(Mockito.any())).thenReturn(question);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+        when(scoreService.findById(Mockito.any())).thenReturn(score);
+
+
+        assertThrows(PreconditionFailedException.class, () ->  gameService.makeGuess(answer));
+
     }
 
     @Test
     void makeGuessPixelationFailure() {
+        //Wrong question id, rest stays the same
+        List<Long> questionsList = new ArrayList<Long>();
+        questionsList.add(88L);
+        questionsList.add(99L);
+        testGame.setQuestions(questionsList);
+        answer.setQuestionId(1L);
+        testGame.setRound(3);
+        testGame.setGameMode(new Pixelation());
+        answer.setQuestionId(question.getQuestionId());
+
+
+        when(questionService.count()).thenReturn(3L);
+        when(questionService.questionById(Mockito.any())).thenReturn(question);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+        when(scoreService.findById(Mockito.any())).thenReturn(score);
+
+
+        assertThrows(PreconditionFailedException.class, () ->  gameService.makeGuess(answer));
+
+    }
+
+    @Test
+    void makeZeroScoreGuessSuccess() {
+
+
+        when(questionService.count()).thenReturn(3L);
+        when(questionService.questionById(Mockito.any())).thenReturn(question);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+        when(scoreService.findById(Mockito.any())).thenReturn(score);
+        Score returnedScore = gameService.makeZeroScoreGuess(answer);
+
+        assertTrue(returnedScore instanceof Score);
+        assertEquals(score.getTotalScore(), returnedScore.getTotalScore());
+        //check if score 0 was given
+        assertEquals(0, returnedScore.getTempScore());
+
+
     }
 
     @Test
