@@ -140,6 +140,7 @@ public class LobbyService {
     }
 
     public void userExitLobby(User user, Long lobbyId){
+        handleLobbies();
         Long userId = user.getId();
 
         if (!user.getInLobby()){
