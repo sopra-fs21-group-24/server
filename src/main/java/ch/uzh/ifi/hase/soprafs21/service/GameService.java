@@ -235,6 +235,8 @@ public class GameService {
         score.setTempScore(tempScore);
         score.setTotalScore(score.getTotalScore() + tempScore);
         score.setLastCoordinate(answer.getCoordGuess());
+        score.setCountry(answer.getCountry());
+        score.setCity(answer.getCity());
 
         // prep
         UserMode uMode = game.getUserMode();
@@ -256,7 +258,9 @@ public class GameService {
         // set solution in answer
         Question question = questionService.questionById(answer.getQuestionId());
         answer.setCoordQuestion(question.getCoordinate());
-
+        answer.setCountry(question.getCountry());
+        answer.setCity(question.getCity());
+;
         // timeFactor
         GameMode gMode = game.getGameMode();
         float timeFactor = gMode.calculateTimeFactor(game, currentTime);
@@ -276,6 +280,8 @@ public class GameService {
         // set solution in answer
         Question question = questionService.questionById(answer.getQuestionId());
         answer.setCoordQuestion(question.getCoordinate());
+        answer.setCity(question.getCity());
+        answer.setCountry(question.getCountry());
 
         return apresGuess(game, answer, currentTime, tempScore);
     }
@@ -358,6 +364,14 @@ public class GameService {
         // adjust the playercount for next round
         MultiPlayer uMode = (MultiPlayer) game.getUserMode();
         uMode.adjustThreshold(game, user);
+
+        // callback 
+        handleGame(game);
+
+        if (game.getRound() == 0){
+            lobbyService.handleLobby(lobbyService.getLobbyById(game.getLobbyId()), game.getGameMode());   
+            lobbyService.handleLobbies();
+        }
     }
 
     public GameEntity update(GameEntity game, Boolean publicStatus) {
