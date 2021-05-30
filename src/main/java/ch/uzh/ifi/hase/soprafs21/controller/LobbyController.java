@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -23,11 +22,8 @@ import org.springframework.web.context.request.async.DeferredResult;
 import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.GameMode;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 
@@ -124,6 +120,24 @@ public class LobbyController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void userExitLobby(
+            @PathVariable Long lobbyId,
+            @RequestHeader Map<String, String> header) {
+        User user = lobbyService.checkAuth(header);
+        
+        // when host leaves lobby
+        Optional<GameEntity> found = gameService.gameByCreatorUserIdOptional(user.getId());
+        if (found.isPresent()){
+            gameService.exitGame(found.get());
+        }
+        else {
+            lobbyService.userExitLobby(user,lobbyId);
+        }
+    }
+
+    @PutMapping("/lobby/{lobbyId}/leave")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void userExitLobbyLeave(
             @PathVariable Long lobbyId,
             @RequestHeader Map<String, String> header) {
         User user = lobbyService.checkAuth(header);
