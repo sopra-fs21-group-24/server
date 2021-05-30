@@ -632,6 +632,19 @@ public class GameServiceTest {
     // exitGame Functionality
     @Test
     void exitGameUser() {
+        testGame.setUserMode(new MultiPlayer());
+
+        when(questionService.count()).thenReturn(3L);
+        when(questionService.questionById(Mockito.any())).thenReturn(question);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+        when(scoreService.findById(Mockito.any())).thenReturn(score);
+
+        gameService.exitGameUser(testGame, user);
+        List<Long> preExit = testGame.getUserIds();
+        preExit.remove(user.getId());
+        //check if user was removed from userlist
+        assertEquals(testGame.getUserIds(), preExit);
+
     }
 
     @Test
@@ -644,7 +657,7 @@ public class GameServiceTest {
         //create new game which is the "template" for the one that has to be updated.
         GameEntity testGame2 = new GameEntity();
         testGame2.setCreatorUserId(13L);
-        testGame2.setGameId(13L);
+        testGame2.setGameId(testGame.getGameId());
         testGame2.setGameMode(new Clouds());
         testGame2.setLobbyId(null);
         testGame2.setBreakDuration(40);
@@ -662,13 +675,48 @@ public class GameServiceTest {
         when(lobbyService.getLobbyById(Mockito.any())).thenReturn(lobby);
 
 
-        GameEntity gameReturned =  gameService.update(testGame2, true);
+        GameEntity gameReturned =  gameService.update(testGame2, false);
         //check if gameRepo was called en game was updated in the database.
         Mockito.verify(gameRepository, Mockito.times(1)).saveAndFlush(Mockito.any());
         //check if GameMode was updated to Clouds
         assertEquals(gameReturned.getGameMode().getName(),"Clouds");
+        //check if lobby was set to private
+        assertEquals(lobby.getPublicStatus(),false);
 
     }
+
+
+    @Test
+    void update_fail() {
+
+        //create new game which is the "template" for the one that has to be updated.
+        GameEntity testGame2 = new GameEntity();
+        testGame2.setCreatorUserId(13L);
+        testGame2.setGameId(testGame.getGameId());
+        testGame2.setGameMode(new Clouds());
+        testGame2.setLobbyId(null);
+        testGame2.setBreakDuration(40);
+        testGame2.setUserMode(new SinglePlayer());
+
+        //Game has already started
+        testGame.setRound(1);
+        testGame2.setRound(1);
+
+        when(questionService.count()).thenReturn(3L);
+        when(questionService.questionById(Mockito.any())).thenReturn(question);
+        when(gameRepository.findById(testGame.getGameId())).thenReturn(Optional.ofNullable(testGame));
+        when(gameRepository.findById(testGame2.getGameId())).thenReturn(Optional.ofNullable(testGame2));
+        when(scoreService.findById(Mockito.any())).thenReturn(score);
+        when(lobbyService.getLobbyById(Mockito.any())).thenReturn(lobby);
+
+
+        //check if error is thrown, when i try to update an already started game
+        assertThrows(PreconditionFailedException.class, () ->  gameService.update(testGame2, false));
+
+
+    }
+
+
 
     @Test
     void handleGame() {
