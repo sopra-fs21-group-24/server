@@ -358,6 +358,10 @@ public class GameService {
         // adjust the playercount for next round
         MultiPlayer uMode = (MultiPlayer) game.getUserMode();
         uMode.adjustThreshold(game, user);
+
+        // callback 
+        handleGame(game);
+        lobbyService.handleLobbies();
     }
 
     public GameEntity update(GameEntity game, Boolean publicStatus) {
