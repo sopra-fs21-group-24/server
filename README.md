@@ -5,7 +5,7 @@
 </p>
 
 ## Introduction
-We created a game similair to [GeoGuessr](https://www.geoguessr.com/). The players will be randomly placed somewhere on Google maps (for example: a country, a city or a monumental place like the eiffel tower). At the beginning of the game the map won't be visible and there are some clouds over the map. The goal of the player is to brush away as little as possible of the clouds to recognize the place he is located in. The player will give his answer by placing a pin on a map that is displayed on the lower left side of the screen. The scoring will be based on points. Depending on the game mode points are computed by time, accuracy of guess and amount of clouds brushed away.
+We created a game similair to [GeoGuessr](https://www.geoguessr.com/). The players will be randomly shown a satelite picture from a popular city around the world. At the beginning of the game the map won't be visible and there are some clouds over the map. The goal of the player is to brush away as little as possible of the clouds to recognize the place he is located in. The player will give his answer by placing a pin on a map that is displayed on the lower left side of the screen. The scoring will be based on points. Depending on the game mode points are computed by time, accuracy of guess and amount of clouds brushed away.
 
 Deployed instance: [sopra-fs21-group-24-client.herokuapp.com](https://sopra-fs21-group-24-client.herokuapp.com/)
 
@@ -15,10 +15,11 @@ Data & Reports regarding the project: [Data Repository](https://github.com/sopra
 
 - [Technologies](#technologies)
 - [High-level components](#high-level-components)
-- [Launch & Deployment](#launch-&-deployment)
+- [Launch & Deployment](#launch-and-deployment)
 - [Roadmap](#roadmap)
-    - [Question Type Selection Module](#question-type-selection-module)
-    - [Tinting of Satellite Image](#tinting-of-satellite-image)
+    - [Map Mode Endpoint](#question-type-selection-module)
+    - [Adding more Places](#tinting-of-satellite-image)
+    - [Tweak with Scoring Function](#a)
 - [Authors and acknowledgment](#authors-and-acknowledgment)
 - [License](#license)
 ## Technologies
@@ -38,8 +39,7 @@ entity is created with the username, score and gameMode(Clouds, Pixelation, Time
 The new entity is stored in the LeaderboardRepository.
 
 
-TODO: insert a graphic
-## Launch & Deployment
+## Launch and Deployment
 One special thing in our project is the API key. We stored the key as a local variable on our server, so no one can use it without our permission.
 To add a new local variable follow these steps:
 1. Open the Start Search, type in “env”, and choose “Edit the system environment variables”:
