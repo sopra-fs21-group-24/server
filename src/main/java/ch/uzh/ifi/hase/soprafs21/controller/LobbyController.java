@@ -98,16 +98,6 @@ public class LobbyController {
 
     }
 
-    //only for testing
-    @PostMapping("/lobby")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public LobbyGetDTO createLobby(@RequestBody LobbyPostDTO lobbyPostDTO) {
-        Lobby lobby = DTOMapper.INSTANCE.convertLobbyPostDTOtoEntity(lobbyPostDTO);
-        Lobby createdLobby = lobbyService.createLobby(lobby);
-        GameMode gMode = gameService.gameById(createdLobby.getId()).getGameMode();
-        return lobbyService.getLobbyGetDTO(createdLobby, gMode);
-    }
 
     @PostMapping("/lobby/{roomKey}/roomkey")
     @ResponseStatus(HttpStatus.OK)

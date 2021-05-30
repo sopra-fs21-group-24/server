@@ -18,9 +18,9 @@ import java.util.List;
 public class MultiPlayerTest {
 
 
-    Answer answerTest;
-    GameEntity game;
-    User testUser;
+    private Answer answerTest;
+    private GameEntity game;
+    private User testUser;
 
     @InjectMocks
     private MultiPlayer multiPlayer;

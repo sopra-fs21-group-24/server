@@ -18,8 +18,8 @@ import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 
 public class GameModeTest {
 
-    GameMode gameModeTest;
-    Answer answerTest;
+    private GameMode gameModeTest;
+    private Answer answerTest;
 
     @BeforeEach
     public void setup() {

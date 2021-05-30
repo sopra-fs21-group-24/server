@@ -1,11 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -14,21 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.assertj.core.util.Arrays;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Clouds;
+import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Pixelation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import ch.uzh.ifi.hase.soprafs21.entity.Answer;
-import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
-import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Time;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.MultiPlayer;
 import ch.uzh.ifi.hase.soprafs21.entity.usermodes.SinglePlayer;
@@ -64,6 +55,9 @@ public class GameServiceTest {
     private GameEntity testGame;
     private User user;
     private Answer answer;
+    private Question question;
+    private Score score;
+
 
     @BeforeEach
     public void setup() {
@@ -83,6 +77,16 @@ public class GameServiceTest {
         answer.setCoordGuess(new Coordinate(1.0, 1.2));
         answer.setQuestionId(0L);
 
+        question = new Question();
+        question.setCoordinate(new Coordinate(-44.247274, 168.828488));
+        question.setZoomLevel(15);
+        question.setQuestionId(10L);
+
+        score = new Score();
+        score.setTempScore(100L);
+        score.setTotalScore(50L);
+        score.setLastCoordinate(new Coordinate(15.15,15.15));
+
         // given
         testGame = new GameEntity();
         testGame.setCreatorUserId(1L);
@@ -91,6 +95,11 @@ public class GameServiceTest {
         testGame.setLobbyId(null);
         testGame.setBreakDuration(40);
         testGame.setUserMode(new SinglePlayer());
+        List<Long> userAnsweredList = new ArrayList<>();
+        userAnsweredList.add(user.getId());
+        testGame.setUsersAnswered(userAnsweredList);
+        testGame.setCurrentTime();
+        testGame.setRoundStart(System.currentTimeMillis()-10);
 
         // user list initial
         List<Long> usersInitial = new ArrayList<>();
@@ -397,18 +406,112 @@ public class GameServiceTest {
     // MakeGuess Functionality
     @Test
     void makeGuessGeneralSucess() {
+
+        //set some things for passing of checks, check for success
+        List<Long> questionsList = new ArrayList<Long>();
+        questionsList.add(question.getQuestionId());
+        questionsList.add(11L);
+        testGame.setQuestions(questionsList);
+        answer.setQuestionId(1L);
+        testGame.setRound(1);
+        answer.setQuestionId(question.getQuestionId());
+
+        when(questionService.count()).thenReturn(3L);
+        when(questionService.questionById(Mockito.any())).thenReturn(question);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+        when(scoreService.findById(Mockito.any())).thenReturn(score);
+
+        Score returnedScore = gameService.makeGuess(answer);
+        assertTrue(returnedScore instanceof Score);
+        assertEquals(returnedScore.getTotalScore(), score.getTotalScore());
+        assertEquals(returnedScore.getLastCoordinate(), score.getLastCoordinate());
+
     }
 
     @Test
     void makeGuessTimeSuccess() {
+
+
+        //longer time to answer - 50 score
+        testGame.setRoundStart(System.currentTimeMillis()-20000);
+
+        //set some things for passing of checks, check for success
+        List<Long> questionsList = new ArrayList<Long>();
+        questionsList.add(question.getQuestionId());
+        questionsList.add(11L);
+        testGame.setQuestions(questionsList);
+        answer.setQuestionId(1L);
+        testGame.setRound(1);
+        testGame.setGameMode(new Time());
+        answer.setQuestionId(question.getQuestionId());
+
+        when(questionService.count()).thenReturn(3L);
+        when(questionService.questionById(Mockito.any())).thenReturn(question);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+        when(scoreService.findById(Mockito.any())).thenReturn(score);
+
+
+        long scorePreChange = score.getTotalScore();
+        Score returnedScore = gameService.makeGuess(answer);
+        assertTrue(returnedScore instanceof Score);
+        assertEquals(returnedScore.getTotalScore(), score.getTotalScore());
+        System.out.println((returnedScore.getTotalScore()));
+        assertEquals(returnedScore.getUserId(), score.getUserId());
+        assertEquals(answer.getDifficultyFactor(),1);
+        assertEquals(returnedScore.getLastCoordinate(), score.getLastCoordinate());
+
     }
 
     @Test
     void makeGuessCloudsSuccess() {
+
+
+        //set some things for passing of checks, check for success
+        List<Long> questionsList = new ArrayList<Long>();
+        questionsList.add(question.getQuestionId());
+        questionsList.add(11L);
+        testGame.setQuestions(questionsList);
+        answer.setQuestionId(1L);
+        testGame.setRound(1);
+        testGame.setGameMode(new Clouds());
+        answer.setQuestionId(question.getQuestionId());
+
+        when(questionService.count()).thenReturn(3L);
+        when(questionService.questionById(Mockito.any())).thenReturn(question);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+        when(scoreService.findById(Mockito.any())).thenReturn(score);
+
+        Score returnedScore = gameService.makeGuess(answer);
+        assertTrue(returnedScore instanceof Score);
+        assertEquals(returnedScore.getTotalScore(), score.getTotalScore());
+        assertEquals(returnedScore.getLastCoordinate(), score.getLastCoordinate());
+
     }
 
     @Test
     void makeGuessPixelationSuccess() {
+        //set some things for passing of checks, check for success
+        answer.setQuestionId(1L);
+        testGame.setRound(1);
+        testGame.setGameMode(new Pixelation());
+
+        answer.setQuestionId(question.getQuestionId());
+
+        List<Long> questionsList = new ArrayList<Long>();
+        questionsList.add(question.getQuestionId());
+        questionsList.add(11L);
+        testGame.setQuestions(questionsList);
+
+        when(questionService.count()).thenReturn(3L);
+        when(questionService.questionById(Mockito.any())).thenReturn(question);
+        when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testGame));
+        when(scoreService.findById(Mockito.any())).thenReturn(score);
+
+        Score returnedScore = gameService.makeGuess(answer);
+        assertTrue(returnedScore instanceof Score);
+        assertEquals(returnedScore.getTotalScore(), score.getTotalScore());
+        assertEquals(returnedScore.getLastCoordinate(), score.getLastCoordinate());
+
     }
 
     @Test
