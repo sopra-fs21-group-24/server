@@ -1,42 +1,23 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.async.DeferredResult;
-
-import ch.uzh.ifi.hase.soprafs21.entity.Answer;
-import ch.uzh.ifi.hase.soprafs21.entity.Coordinate;
-import ch.uzh.ifi.hase.soprafs21.entity.GameEntity;
-import ch.uzh.ifi.hase.soprafs21.entity.Question;
-import ch.uzh.ifi.hase.soprafs21.entity.Score;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotCreatorException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.UnauthorizedException;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.AnswerPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.GameGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePostDTOCreate;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.GamePutDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.QuestionGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.ScoreGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.QuestionService;
 import ch.uzh.ifi.hase.soprafs21.service.ScoreService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -204,6 +185,7 @@ public class GameController {
         ScoreGetDTO scoreDTO = DTOMapper.INSTANCE.convertScoreEntityToScoreGetDTO(score);
         scoreDTO.setSolutionCoordinate(answer.getCoordQuestion());
         scoreDTO.setUsername(user.getUsername());
+
 
         return scoreDTO;
     }

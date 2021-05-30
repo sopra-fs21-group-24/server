@@ -235,6 +235,8 @@ public class GameService {
         score.setTempScore(tempScore);
         score.setTotalScore(score.getTotalScore() + tempScore);
         score.setLastCoordinate(answer.getCoordGuess());
+        score.setCountry(answer.getCountry());
+        score.setCity(answer.getCity());
 
         // prep
         UserMode uMode = game.getUserMode();
@@ -256,7 +258,9 @@ public class GameService {
         // set solution in answer
         Question question = questionService.questionById(answer.getQuestionId());
         answer.setCoordQuestion(question.getCoordinate());
-
+        answer.setCountry(question.getCountry());
+        answer.setCity(question.getCity());
+;
         // timeFactor
         GameMode gMode = game.getGameMode();
         float timeFactor = gMode.calculateTimeFactor(game, currentTime);

@@ -10,7 +10,13 @@ public class ScoreGetDTO {
     private String username;
     private Coordinate lastCoordinate;
     private Coordinate solutionCoordinate;
+    private String city;
+    private String country;
 
+    public void setCity(String city){this.city = city; }
+    public String getCity(){return this.city;}
+    public void setCountry(String country){this.country = country;}
+    public String getCountry(){return this.country;}
 
     public long getUserId() { return userId; }
 

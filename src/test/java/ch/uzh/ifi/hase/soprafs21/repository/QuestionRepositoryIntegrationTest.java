@@ -26,6 +26,7 @@ public class QuestionRepositoryIntegrationTest {
         question.setCoordinate(new Coordinate(1.0,2.0));
         question.setZoomLevel(12);
         question.setCountry("Cuba");
+        question.setCity("City");
         entityManager.persist(question);
         entityManager.flush();
 
