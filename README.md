@@ -24,7 +24,7 @@ Data & Reports regarding the project: [Data Repository](https://github.com/sopra
 - [License](#license)
 ## Technologies
 Our geography-game is a Spring application running Java, Gradle and JPA Hibernate. JPA is used for all persistence related functionalities; declaring entities and handling the repositories. 
-The Groovy based buld automation tool Gradle is used from compilation, packaging to testing and deployment.
+The Groovy based build automation tool Gradle is used from compilation, packaging to testing and deployment.
 <p float="left">
 <img height="200px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/java/java.png"></img>
 </p>
