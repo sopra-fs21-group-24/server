@@ -7,7 +7,7 @@
 ## Introduction
 We created a game similair to [GeoGuessr](https://www.geoguessr.com/). The players will be randomly shown a satellite picture from a popular city around the world. At the beginning of the game the map won't be visible and there are some clouds over the map. The goal of the player is to brush away as little as possible of the clouds to recognize the place he is located in. The player will give his answer by placing a pin on a map that is displayed on the lower left side of the screen. The scoring will be based on points. Depending on the game mode points are computed by time, accuracy of guess and amount of clouds brushed away.
 
-Deployed instance: [sopra-fs21-group-24-client.herokuapp.com](https://sopra-fs21-group-24-client.herokuapp.com/)
+Deployed instance: [mapguessr.ch](http://www.mapguessr.ch)
 
 Associated Front End repository can be found here: [Client Repository](https://github.com/sopra-fs21-group-24/client)
 
@@ -30,10 +30,10 @@ The Groovy based buld automation tool Gradle is used from compilation, packaging
 </p>
 
 ## High-level components
-The main components of ou project are also the main components of the whole Game. 
-To be able to play the game a user has to register himself. The request is sent from the Front-End to the [UserController](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/controller/UserController.java), which creates a new [**User**](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/User.java) entity.
-Whenever a user clicks on a GameMode (Multiplayer, Singleplayer), a new [**GameEntity**](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/GameEntity.java) is created.
-If a player chose the Multiplayer modes, additionally to the GameEntity a [**Lobby**](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/Lobby.java) is created. The lobby(service) handles all user organization functionalities, e.g. join/leave lobby join through RoomKey. 
+The main components of our project are also the main components of the whole game. 
+To be able to play the game a user has to register himself. The request is sent from the front-end to the [UserController](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/controller/UserController.java), which creates a new [**User**](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/User.java) entity.
+Whenever a user clicks on a gamemode (Multiplayer, Singleplayer), a new [**GameEntity**](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/GameEntity.java) is created.
+If a player chose the multiplayer mode, additionally to the GameEntity a [**Lobby**](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/Lobby.java) is created. The lobby(service) handles all user organization functionalities, e.g. join/leave lobby join through an invite key. 
 Whenever a user finishes a game, a new [**Leaderboard**](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/Leaderboard.java) 
 entity is created with the username, score and gameMode(Clouds, Pixelation, Time).
 The new entity is stored in the LeaderboardRepository.
@@ -79,17 +79,17 @@ If you want to avoid running all tests with every change, use the following comm
 
 `./gradlew build --continuous -xtest`
 
-To deploy a new release, you have to merge the working (and tested) branch into the master branch, which then gets automatically pushed on to heroku.
+To deploy a new release, you have to merge the working (and tested) branch into the master branch, which then gets automatically pushed on to Heroku.
 ## Roadmap
 * Add a **new endpoint** in [gameConroller](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/controller/GameController.java) to choose from different **map modes**(e.g. Switzerland, Cities, Europe, Monuments). 
   Don't forget the corresponding functions in the Service! If the data is not present in the data folder, add it, or insert a new csv file. 
   Talk to the Front-End developers for deployment.
-* Check **coordinates** in the [data](https://github.com/sopra-fs21-group-24/server/tree/master/data) folder, sometimes they are a bit of. Correct them and feel free to add new ones. E.g. for new map modes.
+* Check **coordinates** in the [data](https://github.com/sopra-fs21-group-24/server/tree/master/data) folder, sometimes they are a bit off. Correct them and feel free to add new ones. E.g. for new map modes.
 * Tweak the **scoring function** in the [GameMode](https://github.com/sopra-fs21-group-24/server/blob/master/src/main/java/ch/uzh/ifi/hase/soprafs21/entity/gamemodes/GameMode.java) function for the new map modes created in the first point.
 
 ## Authors and acknowledgment
 This project was started using the following front end [template](https://github.com/HASEL-UZH/sopra-fs21-template-client) provided by the University of Zurich.
-The Satellite get fetched through the GoogleMaps API.
+The satellite image is fetched through the Google Maps API.
 #### Team Members
 * Claudio Gebbia - [@claudioge](https://github.com/claudioge)
 * Jérôme Hadorn - [@jeromehadorn](https://github.com/jeromehadorn)
