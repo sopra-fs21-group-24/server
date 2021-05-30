@@ -97,6 +97,8 @@ public interface DTOMapper {
     @Mapping(source = "tempScore", target = "tempScore")
     @Mapping(source = "totalScore", target = "totalScore")
     @Mapping(source = "lastCoordinate", target = "lastCoordinate")
+    @Mapping(source = "city", target = "city")
+    @Mapping(source = "country", target = "country")
     @Mapping(target = "solutionCoordinate", ignore = true)
     ScoreGetDTO convertScoreEntityToScoreGetDTO(Score score);
 

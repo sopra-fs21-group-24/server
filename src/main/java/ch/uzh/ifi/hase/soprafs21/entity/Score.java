@@ -1,11 +1,10 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
-import java.io.Serial;
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serial;
+import java.io.Serializable;
 
 
 
@@ -27,8 +26,29 @@ public class Score implements Serializable{
     private long totalScore = 0;
 
     @Column()
-    private Coordinate lastCoordinate; 
+    private Coordinate lastCoordinate;
 
+    @Column()
+    private String city;
+
+    @Column()
+    private String country;
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
     public long getUserId() {
         return userId;
     }

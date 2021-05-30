@@ -22,7 +22,18 @@ public class Question implements Serializable{
     private String country;
 
     @Column(nullable = false)
+    private String city;
+
+    @Column(nullable = false)
     private Coordinate coordinate;
+
+    public String getCity() {
+        return this.city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public String getCountry() {
         return this.country;

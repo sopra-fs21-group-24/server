@@ -42,6 +42,7 @@ public class QuestionEventListener{
                 double lon = Double.parseDouble(record.get("Lng"));
                 double lat = Double.parseDouble(record.get("Lat"));
                 String country = record.get("Country"); // Switzerland | Europe | Worldwide
+                String city = record.get("City");
                 // evtl. add zoom reading from file
 
                 Coordinate coordinate = new Coordinate(lon, lat);
@@ -49,6 +50,7 @@ public class QuestionEventListener{
                 Question question = new Question();
                 question.setZoomLevel(12);
                 question.setCountry(country);
+                question.setCity(city);
                 question.setCoordinate(coordinate);
 
                 questionRepository.save(question);
