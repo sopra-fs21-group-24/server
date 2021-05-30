@@ -5,7 +5,7 @@
 </p>
 
 ## Introduction
-We created a game similair to [GeoGuessr](https://www.geoguessr.com/). The players will be randomly shown a satelite picture from a popular city around the world. At the beginning of the game the map won't be visible and there are some clouds over the map. The goal of the player is to brush away as little as possible of the clouds to recognize the place he is located in. The player will give his answer by placing a pin on a map that is displayed on the lower left side of the screen. The scoring will be based on points. Depending on the game mode points are computed by time, accuracy of guess and amount of clouds brushed away.
+We created a game similair to [GeoGuessr](https://www.geoguessr.com/). The players will be randomly shown a satellite picture from a popular city around the world. At the beginning of the game the map won't be visible and there are some clouds over the map. The goal of the player is to brush away as little as possible of the clouds to recognize the place he is located in. The player will give his answer by placing a pin on a map that is displayed on the lower left side of the screen. The scoring will be based on points. Depending on the game mode points are computed by time, accuracy of guess and amount of clouds brushed away.
 
 Deployed instance: [sopra-fs21-group-24-client.herokuapp.com](https://sopra-fs21-group-24-client.herokuapp.com/)
 
