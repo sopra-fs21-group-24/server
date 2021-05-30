@@ -268,6 +268,8 @@ public class GameService {
         // set solution in answer
         Question question = questionService.questionById(answer.getQuestionId());
         answer.setCoordQuestion(question.getCoordinate());
+        answer.setCity(question.getCity());
+        answer.setCountry(question.getCountry());
 
         return apresGuess(game, answer, currentTime, tempScore);
     }
