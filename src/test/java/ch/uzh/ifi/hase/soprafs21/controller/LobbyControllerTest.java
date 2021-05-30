@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
-import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,6 +40,8 @@ import ch.uzh.ifi.hase.soprafs21.entity.gamemodes.Pixelation;
 import ch.uzh.ifi.hase.soprafs21.exceptions.NotFoundException;
 import ch.uzh.ifi.hase.soprafs21.exceptions.PreconditionFailedException;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTOAllLobbies;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
@@ -165,7 +165,6 @@ public class LobbyControllerTest {
 
     }
 
-    //
     @Test
     public void joinLobbySuccessful() throws Exception {
 /* 
@@ -223,51 +222,6 @@ public class LobbyControllerTest {
 
     }
 
-  /* can be deleted, corresponding endpoint was deleted.
-  @Test
-    public void getLobbyWithRoomKeySuccessful() throws Exception {
-
-        Lobby lobby = new Lobby();
-        lobby.setId(1L);
-        lobby.setGameId(1L);
-        lobby.setCreator(1L);
-        lobby.setPublicStatus(true);
-        lobby.setRoomKey(123L);
-
-        GameEntity game = new GameEntity();
-        game.setGameId(1L);
-        game.setGameMode(new Pixelation());
-
-        LobbyGetDTO lobbyGetDTO = new LobbyGetDTO();
-        lobbyGetDTO.setId(1L);
-        lobbyGetDTO.setGameId(1L);
-        lobbyGetDTO.setCreator(1L);
-        lobbyGetDTO.setPublicStatus(true);
-        lobbyGetDTO.setRoomKey(123L);
-        lobbyGetDTO.setGamemode(game.getGameMode());
-        lobbyGetDTO.setUsers(Collections.emptyList());
-
-        given(lobbyService.getLobbyByRoomkey(Mockito.any())).willReturn(lobby);
-        given(lobbyService.getLobbyById(Mockito.any())).willReturn(lobby);
-        given(lobbyService.getLobbyGetDTO(Mockito.any(), Mockito.any())).willReturn(lobbyGetDTO);
-        given(gameService.gameById(Mockito.any())).willReturn(game);
-
-
-        MockHttpServletRequestBuilder getRequest = get("/lobby/roomKey/123")
-                .header("")
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mockMvc.perform(getRequest)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.gameId", is(1)))
-                .andExpect(jsonPath("$.creator", is(1)))
-                .andExpect(jsonPath("$.roomKey", is(123)))
-                .andExpect(jsonPath("$.publicStatus", is(true)))
-                .andExpect(jsonPath("$.gamemode.name", is("Pixelation")));
-
-    }*/
-
     @Test
     public void getLobbyWithRoomKeyFailed() throws Exception {
 
@@ -307,7 +261,7 @@ public class LobbyControllerTest {
         given(lobbyService.checkAuth(Mockito.any())).willReturn(user);
         doThrow(new PreconditionFailedException("User is not in a lobby!")).when(lobbyService).userExitLobby(Mockito.any(), Mockito.any());
 
-        MockHttpServletRequestBuilder putRequest = put("/lobby/1")
+        MockHttpServletRequestBuilder putRequest = put("/lobby/1/leave")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("token", "1");
 
